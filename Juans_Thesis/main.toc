@@ -1,0 +1,144 @@
+\babel@toc {english}{}
+\babel@toc {ngerman}{}
+\babel@toc {english}{}
+\contentsline {chapter}{\nonumberline Abstract}{ix}{chapter*.1}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Pathophysiology of chronical lung diseases}{1}{section.1.1}%
+\contentsline {subsection}{\numberline {1.1.1}Bronchopulmonary Dysplasia (BPD)}{1}{subsection.1.1.1}%
+\contentsline {subsection}{\numberline {1.1.2}Asthma}{1}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Chronic Obstructive Pulmonary Disease (COPD)}{1}{subsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.1.4}Idiopathic Pulmonary Fibrosis (IPF)}{1}{subsection.1.1.4}%
+\contentsline {section}{\numberline {1.2}Cumputational biology and chronic lung diseases}{1}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Multi-omics data integration}{1}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Clinical prediction}{1}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Systems biology}{1}{subsection.1.2.3}%
+\contentsline {subsection}{\numberline {1.2.4}Single-cell transcriptomics}{1}{subsection.1.2.4}%
+\contentsline {section}{\numberline {1.3}Aims}{1}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Methodology}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Data gathering}{4}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Mice data}{4}{subsection.2.1.1}%
+\contentsline {subsubsection}{\nonumberline Transcriptomics}{4}{section*.3}%
+\contentsline {subsection}{\numberline {2.1.2}Human data}{4}{subsection.2.1.2}%
+\contentsline {subsubsection}{\nonumberline Transcriptomics}{4}{section*.4}%
+\contentsline {subsubsection}{\nonumberline Metabolomics}{4}{section*.5}%
+\contentsline {subsection}{\numberline {2.1.3}Public data}{4}{subsection.2.1.3}%
+\contentsline {subsubsection}{\nonumberline Multi-omics bulk data}{4}{section*.6}%
+\contentsline {subsubsection}{\nonumberline Neonatal single-cell transcriptomics}{4}{section*.7}%
+\contentsline {section}{\numberline {2.2}Preprocessing}{4}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Normalization}{4}{subsection.2.2.1}%
+\contentsline {subsubsection}{\nonumberline DESeq2}{4}{section*.8}%
+\contentsline {subsubsection}{\nonumberline Pareto scaling}{4}{section*.9}%
+\contentsline {subsubsection}{\nonumberline Size-effect}{4}{section*.10}%
+\contentsline {subsection}{\numberline {2.2.2}Data imputation}{4}{subsection.2.2.2}%
+\contentsline {subsubsection}{\nonumberline Random-forest}{4}{section*.11}%
+\contentsline {subsubsection}{\nonumberline knn-Imputation}{4}{section*.12}%
+\contentsline {subsection}{\numberline {2.2.3}Batch-effect detection}{4}{subsection.2.2.3}%
+\contentsline {subsubsection}{\nonumberline Principal component analysis (PCA)}{4}{section*.13}%
+\contentsline {subsubsection}{\nonumberline Hierarchical clustering}{4}{section*.14}%
+\contentsline {subsubsection}{\nonumberline K-BET}{4}{section*.15}%
+\contentsline {section}{\numberline {2.3}Differential expression analysis}{4}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Limma}{4}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}DESeq2}{4}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.4}Enrichment analysis}{4}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Gene list functional enrichment analysis}{4}{subsection.2.4.1}%
+\contentsline {section}{\numberline {2.5}Multi-omics factor analysis (MOFA)}{4}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Clinical data correlation}{5}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Linear regression}{5}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Binomial regression}{5}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}Ordinal regression}{5}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.4}Multinomial logistic regression}{5}{subsection.2.6.4}%
+\contentsline {subsection}{\numberline {2.6.5}Dirichlet regression}{5}{subsection.2.6.5}%
+\contentsline {section}{\numberline {2.7}Benchmarking of Lasso models dealing with missing values}{5}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Knowledge guided multi-level network inference}{5}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Two-steps based models}{5}{subsection.2.7.2}%
+\contentsline {subsubsection}{\nonumberline Grouped adaptive Lasso (GALasso)}{5}{section*.16}%
+\contentsline {subsubsection}{\nonumberline Stacked adaptive Lasso (SALasso)}{5}{section*.17}%
+\contentsline {subsection}{\numberline {2.7.3}Inverse covariance based methods}{5}{subsection.2.7.3}%
+\contentsline {subsubsection}{\nonumberline Convexed conditioned Lasso (CoCoLasso)}{5}{section*.18}%
+\contentsline {subsubsection}{\nonumberline Lasso with high missing rate (HMLasso)}{5}{section*.19}%
+\contentsline {section}{\numberline {2.8}Adult data correlation}{5}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}Random forest}{5}{subsection.2.8.1}%
+\contentsline {subsubsection}{\nonumberline Imbalanced random forest}{5}{section*.20}%
+\contentsline {subsubsection}{\nonumberline Nested cross-validation in random forest}{5}{section*.21}%
+\contentsline {subsection}{\numberline {2.8.2}t-test, manova, log-reg}{5}{subsection.2.8.2}%
+\contentsline {chapter}{\numberline {3}Hyperoxia-induced cell cycle arrest drives long-term impairment of lung development and DNA repair in neonates}{7}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Summary}{8}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Transcriptional characterization of \textit {in vitro} and \textit {in vivo} mice under hyperoxia and mechanical ventilation}{8}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}\textit {in vitro} samples}{8}{subsection.3.2.1}%
+\contentsline {subsubsection}{\nonumberline Alveolar type 1/2 (AT1/2)}{8}{section*.22}%
+\contentsline {subsubsection}{\nonumberline Endothelial cells (EC)}{8}{section*.23}%
+\contentsline {subsubsection}{\nonumberline Myofibroblast (MFB)}{8}{section*.24}%
+\contentsline {subsection}{\numberline {3.2.2}\textit {In vivo} samples}{8}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Transcriptional commonalities between \textit {in vitro} samples}{8}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Transcriptional commonalities between AT1/2, EC and MFB}{8}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Transcriptional commonalities between AT1/2 and MFB}{8}{subsection.3.3.2}%
+\contentsline {section}{\numberline {3.4}Transcriptional singularities between \textit {in vitro} samples}{8}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Alveolar type 1/2 (AT1/2)}{8}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Myofibroblast (MFB)}{8}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Deep transcriptional characterization of cell-cycle arrest under hyperoxia}{8}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Pre-replication complex hypothesis}{8}{subsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.5.2}Experimental validation}{8}{subsection.3.5.2}%
+\contentsline {section}{\numberline {3.6}Transcriptional comparison between \textit {in vitro} and \textit {in vivo} samples}{8}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Multi-systemic development arrest hypothesis}{8}{subsection.3.6.1}%
+\contentsline {section}{\numberline {3.7}Discussion}{8}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Limitations}{8}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Outlooks}{8}{subsection.3.7.2}%
+\contentsline {chapter}{\numberline {4}Multi-omic integration characterizes major endotypes of bronchopulmonary dysplasia linked to adult chronic lung disease}{9}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Summary}{10}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Feature selection based on differential abundance analysis}{10}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Proteomics}{10}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Metabolomics}{10}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Enrichment analysis of differentially abundant proteins between BPD and no-BPD samples}{10}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Latent factor identification as potential BPD endotypes}{10}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Factor 1:}{10}{subsection.4.4.1}%
+\contentsline {subsubsection}{\nonumberline Clinical variable correlation}{10}{section*.25}%
+\contentsline {subsubsection}{\nonumberline Systems biology of Factor 1}{10}{section*.26}%
+\contentsline {subsection}{\numberline {4.4.2}Factor 2:}{10}{subsection.4.4.2}%
+\contentsline {subsubsection}{\nonumberline Clinical variable correlation}{10}{section*.27}%
+\contentsline {subsubsection}{\nonumberline Systems biology of Factor 2}{10}{section*.28}%
+\contentsline {subsection}{\numberline {4.4.3}Factor 3:}{10}{subsection.4.4.3}%
+\contentsline {subsubsection}{\nonumberline Clinical variable correlation}{10}{section*.29}%
+\contentsline {subsubsection}{\nonumberline Systems biology of Factor 3}{10}{section*.30}%
+\contentsline {subsection}{\numberline {4.4.4}Factor 4:}{10}{subsection.4.4.4}%
+\contentsline {subsubsection}{\nonumberline Clinical variable correlation}{10}{section*.31}%
+\contentsline {subsubsection}{\nonumberline Systems biology of Factor 4}{10}{section*.32}%
+\contentsline {subsection}{\numberline {4.4.5}Factor 5:}{10}{subsection.4.4.5}%
+\contentsline {subsubsection}{\nonumberline Clinical variable correlation}{10}{section*.33}%
+\contentsline {subsubsection}{\nonumberline Systems biology of Factor 5}{10}{section*.34}%
+\contentsline {section}{\numberline {4.5}Summary of BPD endotypes}{11}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Acute BPD signature}{11}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Late/chronic BPD sugnature}{11}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Correlation between BPD endotypes and chronical adult lung diseases}{11}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Use of imbalanced random forest to separate between COPD and IPF patients using BPD latent factor loadings}{11}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Characterization of most explanatory features per significant BPD endotype regarding COPD and IPF}{11}{subsection.4.6.2}%
+\contentsline {subsubsection}{\nonumberline Factor 1}{11}{section*.35}%
+\contentsline {subsubsection}{\nonumberline Factor 4}{11}{section*.36}%
+\contentsline {subsubsection}{\nonumberline Factor 5}{11}{section*.37}%
+\contentsline {section}{\numberline {4.7}Discussion}{11}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Limitations}{11}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}Outlooks}{11}{subsection.4.7.2}%
+\contentsline {chapter}{\numberline {5}Multi-Omics Regulatory Network Inference in the Presence of Missing Data}{13}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Summary}{13}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Experimental set-up}{13}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Data preprocessing}{13}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Parameter selection}{13}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Missingness simulated scenarios}{13}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Performance evaluation criteria}{13}{subsection.5.2.4}%
+\contentsline {section}{\numberline {5.3}Performance evaluation over different missingness scenarios}{13}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Single-omics random missingness}{13}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Multi-omics random missingness}{13}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Block-wise random missingness}{13}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}General method performance evaluation}{13}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Performance evaluation over down-sampling}{13}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Computational runtime evaluation}{13}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Discussion}{13}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Limitations}{13}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Outlooks}{13}{subsection.5.5.2}%
+\contentsline {chapter}{\numberline {6}scNodes: Graphical Interface for Single-Cell Transcriptomics Workflow Development}{15}{chapter.6}%
+\contentsline {section}{\numberline {6.1}A section}{15}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Another section}{15}{section.6.2}%
+\contentsline {chapter}{\numberline {7}Cytokines Derived from Nasal Epithelial Lining Fluid in Patients with Asthma}{17}{chapter.7}%
+\contentsline {section}{\numberline {7.1}A section}{17}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Another section}{17}{section.7.2}%
+\contentsline {chapter}{\numberline {8}Discussion}{19}{chapter.8}%
+\contentsline {chapter}{\numberline {A}Appendix}{21}{appendix.A}%

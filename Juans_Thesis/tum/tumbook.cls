@@ -101,18 +101,18 @@
 % .:: Load TUM packages
 % ----------------------------------------------------------------------------
 
-\RequirePackage{tumbase}
-\RequirePackage{tumcolors}
-\RequirePackage{tumlogo}
-\RequirePackage{tumlang}
-\RequirePackage{tumcaptions}
-\RequirePackage{tumpage}
-\RequirePackage{tumfonts}
-\RequirePackage{tumboxes}
-\RequirePackage{tumuser}
+\RequirePackage{tum/tumbase}
+\RequirePackage{tum/tumcolors}
+\RequirePackage{tum/tumlogo}
+\RequirePackage{tum/tumlang}
+\RequirePackage{tum/tumcaptions}
+\RequirePackage{tum/tumpage}
+\RequirePackage{tum/tumfonts}
+\RequirePackage{tum/tumboxes}
+\RequirePackage{tum/tumuser}
 
 % load book package with common macros for tumbook and tumcover
-\RequirePackage{tumbook}
+\RequirePackage{tum/tumbook}
 
 
 % .:: General layout settings
