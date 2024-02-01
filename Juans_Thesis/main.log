@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  31 JAN 2024 17:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  1 FEB 2024 15:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1606,13 +1606,16 @@ Underfull \hbox (badness 10000) in paragraph at lines 2--3
 
  []
 
+LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 11.
+LaTeX Font Info:    Font shape `T1/phv/m/sl' will be
+(Font)              scaled to size 10.40245pt on input line 11.
 
-Overfull \hbox (14.13187pt too wide) in paragraph at lines 8--9
+Overfull \hbox (14.13187pt too wide) in paragraph at lines 20--21
 \T1/phv/m/n/10.95 Thiele5,14, MSc, Adam M. Chaker6,7, MD, Con-stanze A. Jak-w-e
 rth 7,15, PhD, Ben-jamin Waschki1,8,14,
  []
 
-)
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: a4paper
@@ -1645,12 +1648,9 @@ rth 7,15, PhD, Ben-jamin Waschki1,8,14,
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
- [7
+[7
 
-] [8
-
-
-]
+]) [8]
 chapter 4.
 (./chapters/discussion.tex)
 *geometry* verbose mode - [ newgeometry ] result:
@@ -1686,6 +1686,8 @@ chapter 4.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
  [9
+
+
 
 ] [10
 
@@ -1738,21 +1740,21 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 30491 strings out of 480608
- 652201 string characters out of 5903631
+ 30497 strings out of 480608
+ 652260 string characters out of 5903631
  1306385 words of memory out of 5000000
- 45700 multiletter control sequences out of 15000+600000
- 581040 words of font info for 68 fonts, out of 8000000 for 9000
+ 45702 multiletter control sequences out of 15000+600000
+ 584056 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  78i,20n,99p,10100b,785s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
 2020/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2020/te
 xmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on main.pdf (23 pages, 288807 bytes).
+Output written on main.pdf (23 pages, 291489 bytes).
 PDF statistics:
- 388 PDF objects out of 1000 (max. 8388607)
- 354 compressed objects within 4 object streams
- 93 named destinations out of 1000 (max. 500000)
+ 391 PDF objects out of 1000 (max. 8388607)
+ 357 compressed objects within 4 object streams
+ 96 named destinations out of 1000 (max. 500000)
  362 words of extra memory for PDF output out of 10000 (max. 10000000)
 
