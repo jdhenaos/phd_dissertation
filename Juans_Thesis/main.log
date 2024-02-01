@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  31 JAN 2024 17:45
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  31 JAN 2024 17:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1606,6 +1606,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 2--3
 
  []
 
+
+Overfull \hbox (14.13187pt too wide) in paragraph at lines 8--9
+\T1/phv/m/n/10.95 Thiele5,14, MSc, Adam M. Chaker6,7, MD, Con-stanze A. Jak-w-e
+rth 7,15, PhD, Ben-jamin Waschki1,8,14,
+ []
+
 )
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
@@ -1739,18 +1745,14 @@ Here is how much of TeX's memory you used:
  581040 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  78i,20n,99p,10100b,785s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/
-texlive/2020/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/20
-20/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/texlive/2020/texmf-dist/f
-onts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1
-/public/lm/lmr10.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/helvet
-ic/uhvb8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvr
-8a.pfb></usr/local/texlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb
->
-Output written on main.pdf (23 pages, 310365 bytes).
+{/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
+2020/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2020/te
+xmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on main.pdf (23 pages, 288807 bytes).
 PDF statistics:
- 398 PDF objects out of 1000 (max. 8388607)
- 362 compressed objects within 4 object streams
+ 388 PDF objects out of 1000 (max. 8388607)
+ 354 compressed objects within 4 object streams
  93 named destinations out of 1000 (max. 500000)
  362 words of extra memory for PDF output out of 10000 (max. 10000000)
 
