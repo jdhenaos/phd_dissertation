@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  2 FEB 2024 17:35
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  6 FEB 2024 00:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1655,7 +1655,10 @@ Overfull \hbox (14.13187pt too wide) in paragraph at lines 22--23
 rth 7,15, PhD, Ben-jamin Waschki1,8,14,
  []
 
-) [8]
+[8]) [9] [10
+
+
+]
 chapter 4.
 (./chapters/discussion.tex)
 *geometry* verbose mode - [ newgeometry ] result:
@@ -1690,11 +1693,9 @@ chapter 4.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
- [9
+ [11
 
-
-
-] [10
+] [12
 
 
 ]
@@ -1733,7 +1734,7 @@ AED: lastpage setting LastPage
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-[11
+[13
 
 ]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 102.
@@ -1745,9 +1746,9 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 30497 strings out of 480608
- 652260 string characters out of 5903631
- 1306385 words of memory out of 5000000
+ 30499 strings out of 480608
+ 652274 string characters out of 5903631
+ 1306422 words of memory out of 5000000
  45702 multiletter control sequences out of 15000+600000
  584056 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1756,10 +1757,10 @@ Here is how much of TeX's memory you used:
 exlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
 2020/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2020/te
 xmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on main.pdf (23 pages, 291730 bytes).
+Output written on main.pdf (25 pages, 295340 bytes).
 PDF statistics:
- 391 PDF objects out of 1000 (max. 8388607)
- 357 compressed objects within 4 object streams
- 96 named destinations out of 1000 (max. 500000)
+ 401 PDF objects out of 1000 (max. 8388607)
+ 365 compressed objects within 4 object streams
+ 98 named destinations out of 1000 (max. 500000)
  362 words of extra memory for PDF output out of 10000 (max. 10000000)
 
