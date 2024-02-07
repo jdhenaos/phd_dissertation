@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  6 FEB 2024 00:40
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.3)  6 FEB 2024 00:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1080,6 +1080,28 @@ Package: lipsum 2019/01/02 v2.2 150 paragraphs of Lorem Ipsum dummy text
 (/usr/local/texlive/2020/texmf-dist/tex/latex/lipsum/lipsum.ltd.tex
 File: lipsum.ltd.tex 2019/01/02 v2.2 The Lorem ipsum dummy text
 ))
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2020/01/28 v0.5q Insert pages of external PDF documents (AM)
+
+(/usr/local/texlive/2020/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/usr/local/texlive/2020/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2018/04/12 v2.0h eso-pic (RN)
+)
+\AM@pagewidth=\dimen277
+\AM@pageheight=\dimen278
+
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pdfpages/pppdftex.def
+File: pppdftex.def 2020/01/28 v0.5q Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box76
+\AM@global@opts=\toks53
+\AM@pagecnt=\count326
+\AM@toc@title=\toks54
+\c@AM@survey=\count327
+\AM@templatesizebox=\box77
+)
 
 LaTeX Warning: Unused global option(s):
     [thesis=phd].
@@ -1136,17 +1158,17 @@ Package scrbase Info: activating english \listfigurename on input line 74.
 Package scrbase Info: activating english \listtablename on input line 74.
  (/usr/local/texlive/2020/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count326
-\scratchdimen=\dimen277
-\scratchbox=\box76
-\nofMPsegments=\count327
-\nofMParguments=\count328
-\everyMPshowfont=\toks53
-\MPscratchCnt=\count329
-\MPscratchDim=\dimen278
-\MPnumerator=\count330
-\makeMPintoPDFobject=\count331
-\everyMPtoPDFconversion=\toks54
+\scratchcounter=\count328
+\scratchdimen=\dimen279
+\scratchbox=\box78
+\nofMPsegments=\count329
+\nofMParguments=\count330
+\everyMPshowfont=\toks55
+\MPscratchCnt=\count331
+\MPscratchDim=\dimen280
+\MPnumerator=\count332
+\makeMPintoPDFobject=\count333
+\everyMPtoPDFconversion=\toks56
 ) (/usr/local/texlive/2020/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
@@ -1198,7 +1220,7 @@ Package caption Info: End \AtBeginDocument code.
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
 (lastpage)             ! on input line 74.
-\AtBeginShipoutBox=\box77
+\AtBeginShipoutBox=\box79
 Package hyperref Info: Link coloring OFF on input line 74.
 (/usr/local/texlive/2020/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2019/09/16 v2.46 Cross-referencing by name of section
@@ -1210,7 +1232,7 @@ Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 ty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 )
-\c@section@level=\count332
+\c@section@level=\count334
 )
 LaTeX Info: Redefining \ref on input line 74.
 LaTeX Info: Redefining \pageref on input line 74.
@@ -1236,8 +1258,16 @@ File: bkm-pdftex.def 2019/12/03 v1.28 bookmark driver for pdfTeX (HO)
 Package auxhook Info: \AddLineBeginMainAux comes a little late,
 (auxhook)             because the main .aux file is already opened on input lin
 e 168.
-\BKM@id=\count333
+\BKM@id=\count335
 ))
+(/usr/local/texlive/2020/texmf-dist/tex/latex/pdflscape/pdflscape.sty
+Package: pdflscape 2019/12/05 v0.12 Display of landscape pages in PDF (HO)
+
+(/usr/local/texlive/2020/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: a4paper
@@ -1283,8 +1313,7 @@ File: tum/resources/TUM_Tower.png Graphic file (type png)
 <use tum/resources/TUM_Tower.png>
 Package pdftex.def Info: tum/resources/TUM_Tower.png  used on input line 77.
 (pdftex.def)             Requested size: 270.3012pt x 208.51859pt.
-
-[1{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
+ [1{/usr/local/texlive/2020/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 
 
@@ -1701,7 +1730,41 @@ chapter 4.
 ]
 chapter A.
 
-AED: lastpage setting LastPage
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=229, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf>
+Package pdftex.def Info: papers/benchmarking.pdf  used on input line 97.
+(pdftex.def)             Requested size: 597.49077pt x 785.26881pt.
+
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf>
+Package pdftex.def Info: papers/benchmarking.pdf  used on input line 97.
+(pdftex.def)             Requested size: 597.49077pt x 785.26881pt.
+
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=232, page=1, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 1>
+Package pdftex.def Info: papers/benchmarking.pdf , page1 used on input line 97.
+
+(pdftex.def)             Requested size: 597.49077pt x 785.26881pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 1>
+Package pdftex.def Info: papers/benchmarking.pdf , page1 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: a4paper
@@ -1737,30 +1800,292 @@ AED: lastpage setting LastPage
 [13
 
 ]
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 1>
+Package pdftex.def Info: papers/benchmarking.pdf , page1 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 1>
+Package pdftex.def Info: papers/benchmarking.pdf , page1 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 1>
+Package pdftex.def Info: papers/benchmarking.pdf , page1 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+ [14 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=282, page=2, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 2>
+Package pdftex.def Info: papers/benchmarking.pdf , page2 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 2>
+Package pdftex.def Info: papers/benchmarking.pdf , page2 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 2>
+Package pdftex.def Info: papers/benchmarking.pdf , page2 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[15 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=302, page=3, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 3>
+Package pdftex.def Info: papers/benchmarking.pdf , page3 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 3>
+Package pdftex.def Info: papers/benchmarking.pdf , page3 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 3>
+Package pdftex.def Info: papers/benchmarking.pdf , page3 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[16 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=307, page=4, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 4>
+Package pdftex.def Info: papers/benchmarking.pdf , page4 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 4>
+Package pdftex.def Info: papers/benchmarking.pdf , page4 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 4>
+Package pdftex.def Info: papers/benchmarking.pdf , page4 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[17 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=312, page=5, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 5>
+Package pdftex.def Info: papers/benchmarking.pdf , page5 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 5>
+Package pdftex.def Info: papers/benchmarking.pdf , page5 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 5>
+Package pdftex.def Info: papers/benchmarking.pdf , page5 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[18 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=319, page=6, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 6>
+Package pdftex.def Info: papers/benchmarking.pdf , page6 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 6>
+Package pdftex.def Info: papers/benchmarking.pdf , page6 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 6>
+Package pdftex.def Info: papers/benchmarking.pdf , page6 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[19 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=329, page=7, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 7>
+Package pdftex.def Info: papers/benchmarking.pdf , page7 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 7>
+Package pdftex.def Info: papers/benchmarking.pdf , page7 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 7>
+Package pdftex.def Info: papers/benchmarking.pdf , page7 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[20 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=337, page=8, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 8>
+Package pdftex.def Info: papers/benchmarking.pdf , page8 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 8>
+Package pdftex.def Info: papers/benchmarking.pdf , page8 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 8>
+Package pdftex.def Info: papers/benchmarking.pdf , page8 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[21 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=345, page=9, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 9>
+Package pdftex.def Info: papers/benchmarking.pdf , page9 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 9>
+Package pdftex.def Info: papers/benchmarking.pdf , page9 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 9>
+Package pdftex.def Info: papers/benchmarking.pdf , page9 used on input line 97.
+
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[22 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=350, page=10, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 10>
+Package pdftex.def Info: papers/benchmarking.pdf , page10 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 10>
+Package pdftex.def Info: papers/benchmarking.pdf , page10 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 10>
+Package pdftex.def Info: papers/benchmarking.pdf , page10 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[23 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=358, page=11, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 11>
+Package pdftex.def Info: papers/benchmarking.pdf , page11 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 11>
+Package pdftex.def Info: papers/benchmarking.pdf , page11 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 11>
+Package pdftex.def Info: papers/benchmarking.pdf , page11 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[24 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=363, page=12, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 12>
+Package pdftex.def Info: papers/benchmarking.pdf , page12 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 12>
+Package pdftex.def Info: papers/benchmarking.pdf , page12 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 12>
+Package pdftex.def Info: papers/benchmarking.pdf , page12 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[25 <./papers/benchmarking.pdf>]
+
+pdfTeX warning: /Library/TeX/texbin/pdflatex (file ./papers/benchmarking.pdf): 
+PDF inclusion: found PDF version <1.7>, but at most version <1.5> allowed
+<papers/benchmarking.pdf, id=369, page=13, 597.49223pt x 785.27074pt>
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 13>
+Package pdftex.def Info: papers/benchmarking.pdf , page13 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 13>
+Package pdftex.def Info: papers/benchmarking.pdf , page13 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+File: papers/benchmarking.pdf Graphic file (type pdf)
+<use papers/benchmarking.pdf, page 13>
+Package pdftex.def Info: papers/benchmarking.pdf , page13 used on input line 97
+.
+(pdftex.def)             Requested size: 597.99219pt x 785.92783pt.
+[26 <./papers/benchmarking.pdf>] 
+AED: lastpage setting LastPage
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 102.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 102.
- (./main.aux)
+(./main.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 102.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 102.
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
  ) 
 Here is how much of TeX's memory you used:
- 30499 strings out of 480608
- 652274 string characters out of 5903631
- 1306422 words of memory out of 5000000
- 45702 multiletter control sequences out of 15000+600000
+ 31260 strings out of 480608
+ 665552 string characters out of 5903631
+ 1320529 words of memory out of 5000000
+ 46426 multiletter control sequences out of 15000+600000
  584056 words of font info for 70 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  78i,20n,99p,10100b,785s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
-exlive/2020/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/
-2020/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2020/te
-xmf-dist/fonts/type1/urw/helvetic/uhvro8a.pfb>
-Output written on main.pdf (25 pages, 295340 bytes).
+exlive/2020/texmf-dist/fonts/type1/public/belleek/blex.pfb></usr/local/texlive/
+2020/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2020/te
+xmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2020/texmf-dis
+t/fonts/type1/urw/helvetic/uhvro8a.pfb>
+Output written on main.pdf (38 pages, 5511143 bytes).
 PDF statistics:
- 401 PDF objects out of 1000 (max. 8388607)
- 365 compressed objects within 4 object streams
- 98 named destinations out of 1000 (max. 500000)
- 362 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 547 PDF objects out of 1000 (max. 8388607)
+ 451 compressed objects within 5 object streams
+ 111 named destinations out of 1000 (max. 500000)
+ 442 words of extra memory for PDF output out of 10000 (max. 10000000)
 
