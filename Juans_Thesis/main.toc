@@ -5,61 +5,61 @@
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}%
 \contentsline {section}{\numberline {1.1}Pathophysiology of chronical lung diseases}{1}{section.1.1}%
 \contentsline {subsection}{\numberline {1.1.1}Bronchopulmonary Dysplasia (BPD)}{1}{subsection.1.1.1}%
-\contentsline {subsection}{\numberline {1.1.2}Asthma}{1}{subsection.1.1.2}%
-\contentsline {subsection}{\numberline {1.1.3}Chronic Obstructive Pulmonary Disease (COPD)}{1}{subsection.1.1.3}%
-\contentsline {subsection}{\numberline {1.1.4}Idiopathic Pulmonary Fibrosis (IPF)}{1}{subsection.1.1.4}%
-\contentsline {section}{\numberline {1.2}Computational biology and chronic lung diseases}{1}{section.1.2}%
-\contentsline {subsection}{\numberline {1.2.1}Multi-omics data integration}{1}{subsection.1.2.1}%
-\contentsline {subsection}{\numberline {1.2.2}Clinical prediction}{1}{subsection.1.2.2}%
-\contentsline {subsection}{\numberline {1.2.3}Systems biology}{1}{subsection.1.2.3}%
-\contentsline {section}{\numberline {1.3}Aims}{1}{section.1.3}%
-\contentsline {chapter}{\numberline {2}Methodology}{3}{chapter.2}%
-\contentsline {section}{\numberline {2.1}Data gathering}{4}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}Mice data}{4}{subsection.2.1.1}%
-\contentsline {subsubsection}{\nonumberline Transcriptomics}{4}{section*.3}%
-\contentsline {subsection}{\numberline {2.1.2}Human data}{4}{subsection.2.1.2}%
-\contentsline {subsubsection}{\nonumberline Transcriptomics}{4}{section*.4}%
-\contentsline {subsubsection}{\nonumberline Metabolomics}{4}{section*.5}%
-\contentsline {subsection}{\numberline {2.1.3}Public data}{4}{subsection.2.1.3}%
-\contentsline {subsubsection}{\nonumberline Multi-omics bulk data}{4}{section*.6}%
-\contentsline {subsubsection}{\nonumberline Neonatal single-cell transcriptomics}{4}{section*.7}%
-\contentsline {section}{\numberline {2.2}Preprocessing}{4}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Normalization}{4}{subsection.2.2.1}%
-\contentsline {subsubsection}{\nonumberline DESeq2}{4}{section*.8}%
-\contentsline {subsubsection}{\nonumberline Pareto scaling}{4}{section*.9}%
-\contentsline {subsubsection}{\nonumberline Size-effect}{4}{section*.10}%
-\contentsline {subsection}{\numberline {2.2.2}Data imputation}{4}{subsection.2.2.2}%
-\contentsline {subsubsection}{\nonumberline Random-forest}{4}{section*.11}%
-\contentsline {subsubsection}{\nonumberline knn-Imputation}{4}{section*.12}%
-\contentsline {subsection}{\numberline {2.2.3}Batch-effect detection}{4}{subsection.2.2.3}%
-\contentsline {subsubsection}{\nonumberline Principal component analysis (PCA)}{4}{section*.13}%
-\contentsline {subsubsection}{\nonumberline Hierarchical clustering}{4}{section*.14}%
-\contentsline {subsubsection}{\nonumberline K-BET}{4}{section*.15}%
-\contentsline {section}{\numberline {2.3}Differential expression analysis}{4}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Limma}{4}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}DESeq2}{4}{subsection.2.3.2}%
-\contentsline {section}{\numberline {2.4}Enrichment analysis}{4}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Gene list functional enrichment analysis}{4}{subsection.2.4.1}%
-\contentsline {section}{\numberline {2.5}Multi-omics factor analysis (MOFA)}{4}{section.2.5}%
-\contentsline {section}{\numberline {2.6}Clinical data correlation}{5}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Linear regression}{5}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Binomial regression}{5}{subsection.2.6.2}%
-\contentsline {subsection}{\numberline {2.6.3}Ordinal regression}{5}{subsection.2.6.3}%
-\contentsline {subsection}{\numberline {2.6.4}Multinomial logistic regression}{5}{subsection.2.6.4}%
-\contentsline {subsection}{\numberline {2.6.5}Dirichlet regression}{5}{subsection.2.6.5}%
-\contentsline {section}{\numberline {2.7}Benchmarking of Lasso models dealing with missing values}{5}{section.2.7}%
-\contentsline {subsection}{\numberline {2.7.1}Knowledge guided multi-level network inference}{5}{subsection.2.7.1}%
-\contentsline {subsection}{\numberline {2.7.2}Two-steps based models}{5}{subsection.2.7.2}%
-\contentsline {subsubsection}{\nonumberline Grouped adaptive Lasso (GALasso)}{5}{section*.16}%
-\contentsline {subsubsection}{\nonumberline Stacked adaptive Lasso (SALasso)}{5}{section*.17}%
-\contentsline {subsection}{\numberline {2.7.3}Inverse covariance based methods}{5}{subsection.2.7.3}%
-\contentsline {subsubsection}{\nonumberline Convexed conditioned Lasso (CoCoLasso)}{5}{section*.18}%
-\contentsline {subsubsection}{\nonumberline Lasso with high missing rate (HMLasso)}{5}{section*.19}%
-\contentsline {section}{\numberline {2.8}Adult data correlation}{5}{section.2.8}%
-\contentsline {subsection}{\numberline {2.8.1}Random forest}{5}{subsection.2.8.1}%
-\contentsline {subsubsection}{\nonumberline Imbalanced random forest}{5}{section*.20}%
-\contentsline {subsubsection}{\nonumberline Nested cross-validation in random forest}{5}{section*.21}%
-\contentsline {subsection}{\numberline {2.8.2}t-test, manova, log-reg}{5}{subsection.2.8.2}%
-\contentsline {chapter}{\numberline {3}Summary of publications}{7}{chapter.3}%
-\contentsline {chapter}{\numberline {4}Discussion}{11}{chapter.4}%
-\contentsline {chapter}{\numberline {A}Appendix}{13}{appendix.A}%
+\contentsline {subsection}{\numberline {1.1.2}Asthma}{3}{subsection.1.1.2}%
+\contentsline {subsection}{\numberline {1.1.3}Chronic Obstructive Pulmonary Disease (COPD)}{3}{subsection.1.1.3}%
+\contentsline {subsection}{\numberline {1.1.4}Idiopathic Pulmonary Fibrosis (IPF)}{3}{subsection.1.1.4}%
+\contentsline {section}{\numberline {1.2}Computational biology and chronic lung diseases}{3}{section.1.2}%
+\contentsline {subsection}{\numberline {1.2.1}Multi-omics data integration}{3}{subsection.1.2.1}%
+\contentsline {subsection}{\numberline {1.2.2}Clinical prediction}{3}{subsection.1.2.2}%
+\contentsline {subsection}{\numberline {1.2.3}Systems biology}{3}{subsection.1.2.3}%
+\contentsline {section}{\numberline {1.3}Aims}{3}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Methodology}{5}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Data gathering}{6}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Mice data}{6}{subsection.2.1.1}%
+\contentsline {subsubsection}{\nonumberline Transcriptomics}{6}{section*.3}%
+\contentsline {subsection}{\numberline {2.1.2}Human data}{6}{subsection.2.1.2}%
+\contentsline {subsubsection}{\nonumberline Transcriptomics}{6}{section*.4}%
+\contentsline {subsubsection}{\nonumberline Metabolomics}{6}{section*.5}%
+\contentsline {subsection}{\numberline {2.1.3}Public data}{6}{subsection.2.1.3}%
+\contentsline {subsubsection}{\nonumberline Multi-omics bulk data}{6}{section*.6}%
+\contentsline {subsubsection}{\nonumberline Neonatal single-cell transcriptomics}{6}{section*.7}%
+\contentsline {section}{\numberline {2.2}Preprocessing}{6}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Normalization}{6}{subsection.2.2.1}%
+\contentsline {subsubsection}{\nonumberline DESeq2}{6}{section*.8}%
+\contentsline {subsubsection}{\nonumberline Pareto scaling}{6}{section*.9}%
+\contentsline {subsubsection}{\nonumberline Size-effect}{6}{section*.10}%
+\contentsline {subsection}{\numberline {2.2.2}Data imputation}{6}{subsection.2.2.2}%
+\contentsline {subsubsection}{\nonumberline Random-forest}{6}{section*.11}%
+\contentsline {subsubsection}{\nonumberline knn-Imputation}{6}{section*.12}%
+\contentsline {subsection}{\numberline {2.2.3}Batch-effect detection}{6}{subsection.2.2.3}%
+\contentsline {subsubsection}{\nonumberline Principal component analysis (PCA)}{6}{section*.13}%
+\contentsline {subsubsection}{\nonumberline Hierarchical clustering}{6}{section*.14}%
+\contentsline {subsubsection}{\nonumberline K-BET}{6}{section*.15}%
+\contentsline {section}{\numberline {2.3}Differential expression analysis}{6}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Limma}{6}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}DESeq2}{6}{subsection.2.3.2}%
+\contentsline {section}{\numberline {2.4}Enrichment analysis}{6}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Gene list functional enrichment analysis}{6}{subsection.2.4.1}%
+\contentsline {section}{\numberline {2.5}Multi-omics factor analysis (MOFA)}{6}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Clinical data correlation}{7}{section.2.6}%
+\contentsline {subsection}{\numberline {2.6.1}Linear regression}{7}{subsection.2.6.1}%
+\contentsline {subsection}{\numberline {2.6.2}Binomial regression}{7}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.3}Ordinal regression}{7}{subsection.2.6.3}%
+\contentsline {subsection}{\numberline {2.6.4}Multinomial logistic regression}{7}{subsection.2.6.4}%
+\contentsline {subsection}{\numberline {2.6.5}Dirichlet regression}{7}{subsection.2.6.5}%
+\contentsline {section}{\numberline {2.7}Benchmarking of Lasso models dealing with missing values}{7}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Knowledge guided multi-level network inference}{7}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}Two-steps based models}{7}{subsection.2.7.2}%
+\contentsline {subsubsection}{\nonumberline Grouped adaptive Lasso (GALasso)}{7}{section*.16}%
+\contentsline {subsubsection}{\nonumberline Stacked adaptive Lasso (SALasso)}{7}{section*.17}%
+\contentsline {subsection}{\numberline {2.7.3}Inverse covariance based methods}{7}{subsection.2.7.3}%
+\contentsline {subsubsection}{\nonumberline Convexed conditioned Lasso (CoCoLasso)}{7}{section*.18}%
+\contentsline {subsubsection}{\nonumberline Lasso with high missing rate (HMLasso)}{7}{section*.19}%
+\contentsline {section}{\numberline {2.8}Adult data correlation}{7}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}Random forest}{7}{subsection.2.8.1}%
+\contentsline {subsubsection}{\nonumberline Imbalanced random forest}{7}{section*.20}%
+\contentsline {subsubsection}{\nonumberline Nested cross-validation in random forest}{7}{section*.21}%
+\contentsline {subsection}{\numberline {2.8.2}t-test, manova, log-reg}{7}{subsection.2.8.2}%
+\contentsline {chapter}{\numberline {3}Summary of publications}{9}{chapter.3}%
+\contentsline {chapter}{\numberline {4}Discussion}{13}{chapter.4}%
+\contentsline {chapter}{\numberline {A}Appendix}{15}{appendix.A}%
