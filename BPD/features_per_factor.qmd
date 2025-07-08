@@ -1,0 +1,220 @@
+---
+title: "Explanatory features per latent factor (BPD experiment)"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(MOFA2)
+library(tibble)
+library(ggplot2)
+
+input_folder <- "/home/rstudio/project/"
+dic <- read.table(paste0(input_folder,"input_data/raw_data/230212_proteomics_dictionary.tsv"),sep = "\t",header = TRUE,row.names = 1)
+MOFA.object <- readRDS(paste0(input_folder,"input_data/rds_data/MOFA.rds"))
+```
+
+# Factor 4
+
+## Acycarnitines
+
+```{r}
+w <- get_weights(object = MOFA.object,views = "acylcarnitines",factors = 4)[[1]]
+w <- tibble("Feature"=rownames(w),
+           "Weight"=w[,"Factor4"])
+w <- w[order(abs(w$Weight),decreasing = T),]
+
+rmarkdown::paged_table(w)
+
+p <- plot_top_weights(MOFA.object,
+                 view = "acylcarnitines",
+                 factor = 4,
+                 nfeatures = 10,
+                 scale = FALSE
+) + labs(title="Acylcarnitines (AC)",
+         subtitle = "Factor 4") +
+  theme(strip.text.x = element_blank()) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8))
+
+p$layers[[1]]$aes_params$colour <- "#1b9e77"  # segments
+p$layers[[2]]$aes_params$colour <- "#1b9e77"  # points
+p$layers[3][[1]]$aes_params$size <- 4
+
+ggsave(filename = paste0(input_folder,"results/BPD/mofa/features/250708_factor4_ac.pdf"),plot = p, width = 2.5,height = 2.5,units = "in")
+
+p
+```
+
+## Proteomics
+
+```{r}
+w <- get_weights(object = MOFA.object,views = "proteomics",factors = 4)[[1]]
+w <- tibble("Feature"=rownames(w),
+           "Weight"=w[,"Factor4"])
+w <- w[order(abs(w$Weight),decreasing = T),]
+
+rmarkdown::paged_table(w)
+
+p <- plot_top_weights(MOFA.object,
+                 view = "proteomics",
+                 factor = 4,
+                 nfeatures = 10,
+                 scale = FALSE
+) + labs(title="Proteomics (PR)",
+         subtitle = "Factor 4") +
+  scale_x_discrete(labels = c("AZU1",
+                              "CFHR5",
+                              "MFGE8",
+                              "RPS7",
+                              "DCTN2",
+                              "EIF4A3",
+                              "TACSTD2",
+                              "RPS6KA5",
+                              "CRISP3",
+                              "SSRP1")) +
+  theme(strip.text.x = element_blank()) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8))
+
+p$layers[[1]]$aes_params$colour <- "#1b9e77"  # segments
+p$layers[[2]]$aes_params$colour <- "#1b9e77"  # points
+p$layers[3][[1]]$aes_params$size <- 4
+
+ggsave(filename = paste0(input_folder,"results/BPD/mofa/features/250708_factor4_pr.pdf"),plot = p, width = 2.5,height = 2.5,units = "in")
+
+
+p
+```
+
+# Factor 5
+
+## Non-triglycerides
+
+```{r}
+w <- get_weights(object = MOFA.object,views = "non.triglycerides",factors = 5)[[1]]
+w <- tibble("Feature"=rownames(w),
+           "Weight"=w[,"Factor5"])
+w <- w[order(abs(w$Weight),decreasing = T),]
+
+rmarkdown::paged_table(w)
+
+p <- plot_top_weights(MOFA.object,
+                 view = "non.triglycerides",
+                 factor = 5,
+                 nfeatures = 10,
+                 scale = FALSE
+) + labs(title="Non-triglycerides (nTG)",
+         subtitle = "Factor 5") +
+  theme(strip.text.x = element_blank()) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8))
+
+p$layers[[1]]$aes_params$colour <- "#d95f02"  # segments
+p$layers[[2]]$aes_params$colour <- "#d95f02"  # points
+p$layers[3][[1]]$aes_params$size <- 4
+
+ggsave(filename = paste0(input_folder,"results/BPD/mofa/features/250708_factor5_ntg.pdf"),plot = p, width = 2.5,height = 2.5,units = "in")
+
+p
+```
+
+## Proteomics
+
+```{r}
+w <- get_weights(object = MOFA.object,views = "proteomics",factors = 5)[[1]]
+w <- tibble("Feature"=rownames(w),
+           "Weight"=w[,"Factor5"])
+w <- w[order(abs(w$Weight),decreasing = T),]
+
+rmarkdown::paged_table(w)
+
+p <- plot_top_weights(MOFA.object,
+                 view = "proteomics",
+                 factor = 5,
+                 nfeatures = 10,
+                 scale = FALSE
+) + labs(title="Proteomics (PR)",
+         subtitle = "Factor 5") +
+  scale_x_discrete(labels = c("KLRF1",
+                              "ROBO3",
+                              "KRAS",
+                              "MICA",
+                              "PDGFC",
+                              "TGM3",
+                              "FGFR2",
+                              "HNRNPK",
+                              "DDX19B",
+                              "CA2")) +
+  theme(strip.text.x = element_blank()) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8))
+
+p$layers[[1]]$aes_params$colour <- "#d95f02"  # segments
+p$layers[[2]]$aes_params$colour <- "#d95f02"  # points
+p$layers[3][[1]]$aes_params$size <- 4
+p$layers[3][[1]]$aes_params$y <- p$layers[3][[1]]$aes_params$y + 0.05
+
+ggsave(filename = paste0(input_folder,"results/BPD/mofa/features/250708_factor5_pr.pdf"),plot = p, width = 2.5,height = 2.5,units = "in")
+
+p
+```
+
+# Factor 6
+
+## Proteomics
+
+```{r}
+w <- get_weights(object = MOFA.object,views = "proteomics",factors = 6)[[1]]
+w <- tibble("Feature"=rownames(w),
+           "Weight"=w[,"Factor6"])
+w <- w[order(abs(w$Weight),decreasing = T),]
+
+rmarkdown::paged_table(w)
+
+p <- plot_top_weights(MOFA.object,
+                 view = "proteomics",
+                 factor = 6,
+                 nfeatures = 10,
+                 scale = FALSE
+) + labs(title="Proteomics (PR)",
+         subtitle = "Factor 6") +
+  scale_x_discrete(labels = c("PAK6",
+                              "LYN",
+                              "MAPKAPK2",
+                              "PPID",
+                              "PRKCA",
+                              "PRKCB",
+                              "BTK",
+                              "PDPK1",
+                              "EIF4G2",
+                              "SRC")) +
+  theme(strip.text.x = element_blank()) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8))
+
+p$layers[[1]]$aes_params$colour <- "#7570b3"  # segments
+p$layers[[2]]$aes_params$colour <- "#7570b3"  # points
+p$layers[3][[1]]$aes_params$size <- 4
+p$layers[3][[1]]$aes_params$y <- p$layers[3][[1]]$aes_params$y + 0.05
+
+ggsave(filename = paste0(input_folder,"results/BPD/mofa/features/250708_factor6_pr.pdf"),plot = p, width = 2.5,height = 2.5,units = "in")
+
+p
+```
+
+```{r}
+sessionInfo()
+```
