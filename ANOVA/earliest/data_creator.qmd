@@ -303,6 +303,19 @@ prot.preprocess <- function(soma,outliers,layer){
 
 ```
 
+# Acylcarnitines
+
+## Pre-processing
+
+```{r}
+met.abundance <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Acylcarnitines")
+acyl <- met.preprocess(met.abundance = met.abundance,outliers=c("Mvlh924","Mccj021","Mxht359","Mpgh976"),layer = "Acylcarnitines")
+
+saveRDS(object = acyl,file = paste0(input_folder,"/rds_data/earlier_acyl.rds"))
+
+dim(acyl$abundances)
+```
+
 # Positive lipids non-triglycerides
 
 ## Pre-processing
