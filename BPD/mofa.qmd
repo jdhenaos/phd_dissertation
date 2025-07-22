@@ -120,42 +120,19 @@ FCplotter = function(pathways, weights, dic, to.map, n.paths){
     gene_set = res$meta$genes_metadata$query$query_1$ensgs
     gene_set <- gconvert(query = gene_set,organism = "hsapiens",target = "ENTREZGENE_ACC")$target
     
-    to.plot <- rbind(to.plot,
-                     data.frame(
+    pre.plot <- data.frame(
                        Name=pathways[i,"term_name"],
                        weights=weights[names(weights) %in% gene_set],
-                       Set_size = length(weights[names(weights) %in% gene_set]))
-                     )
+                       ids=names(weights[names(weights) %in% gene_set])
+                       )
+    
+    pre.plot <- pre.plot[!duplicated(pre.plot$ids),]
+    pre.plot$Set_size <- nrow(pre.plot)
+    
+    to.plot <- rbind(to.plot, pre.plot)
   }
   
   if(any(is.nan(to.plot$weights))){stop("anormal expression detected")}
-  
-  best <- data.frame()
-  for(p in unique(to.plot$Name)){
-    best <- rbind(best,data.frame(Name = p, mean = mean(to.plot$weights[which(to.plot$Name == p)])))
-  }
-  
-  pos <- sum(as.numeric(best$mean > 0))
-  
-  if(pos > 0 & pos < n.paths){
-    best <- best[order(best$mean,decreasing = TRUE),]
-    collector <- best[seq(pos),]
-    
-    best <- best[which(!best$Name %in% unique(collector$Name)),]
-    best <- best[order(best$mean),]
-    
-    collector <- rbind(collector,best[seq(n.paths - pos),])
-  } else if(pos > 0 & pos >= n.paths){
-    best <- best[order(best$mean,decreasing = TRUE),]
-    collector <- best[seq(n.paths),]
-  }else if(pos == 0){
-    best <- best[order(best$mean),]
-    collector <- best[seq(n.paths),]
-  }else{
-    stop("Internal error: incorrect pathway extraction")
-  }
-  
-  to.plot <- to.plot[which(to.plot$Name %in% collector$Name),]
   
   return(to.plot)
 }
@@ -400,10 +377,11 @@ p
 shared.paths <-  sig.react.f6[which(sig.react.f6$term_name %in% sig.react.f4$term_name & sig.react.f6$term_name %in% sig.react.f5$term_name),]
 shared.paths$p_value <- formatC(shared.paths$p_value,format = "e", digits = 2)
 shared.paths$recall <- formatC(shared.paths$recall,format = "e", digits = 2)
-rmarkdown::paged_table(shared.paths)
 
 uni.f4 <- sig.react.f4[which(sig.react.f4$term_name %in% sig.react.f6$term_name & sig.react.f4$term_name %in% sig.react.f5$term_name),]
-fc.f4 <- FCplotter(pathways = uni.f4,weights = w.f4,dic=dic,to.map=or.f4,n.paths=5)
+rmarkdown::paged_table(uni.f4)
+
+fc.f4 <- FCplotter(pathways = uni.f4[c(2,1,3,4),],weights = w.f4,dic=dic,to.map=or.f4,n.paths=5)
 
 to.plot <- rbind(fc.f4)
 
@@ -420,8 +398,7 @@ to.plot$Cell <- c(
   rep("Factor 4",length(fc.f4$weights)))
 
 to.plot$Cell <- factor(to.plot$Cell,levels = c("Factor 4"))
-#to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
-to.plot$Name <- factor(to.plot$Name)
+to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
 
 to.plot4 <- distinct(to.plot,Name,Set_size,Cell)
 
@@ -444,6 +421,8 @@ p
 #########################################
 
 uni.f5 <- sig.react.f5[which(sig.react.f5$term_name %in% sig.react.f4$term_name & sig.react.f5$term_name %in% sig.react.f6$term_name),]
+rmarkdown::paged_table(uni.f5)
+
 fc.f5 <- FCplotter(pathways = uni.f5,weights = w.f5,dic=dic,to.map=or.f5,n.paths=5)
 
 to.plot <- rbind(fc.f5)
@@ -461,8 +440,7 @@ to.plot$Cell <- c(
   rep("Factor 5",length(fc.f5$weights)))
 
 to.plot$Cell <- factor(to.plot$Cell,levels = c("Factor 5"))
-#to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
-to.plot$Name <- factor(to.plot$Name)
+to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
 
 to.plot5 <- distinct(to.plot,Name,Set_size,Cell)
 
@@ -485,6 +463,8 @@ p
 ##############################
 
 uni.f6 <- sig.react.f6[which(sig.react.f6$term_name %in% sig.react.f4$term_name & sig.react.f6$term_name %in% sig.react.f5$term_name),]
+rmarkdown::paged_table(uni.f6)
+
 fc.f6 <- FCplotter(pathways = uni.f6,weights = w.f6,dic=dic,to.map=or.f6,n.paths=5)
 
 to.plot <- rbind(fc.f6)
@@ -502,8 +482,7 @@ to.plot$Cell <- c(
   rep("Factor 6",length(fc.f6$weights)))
 
 to.plot$Cell <- factor(to.plot$Cell,levels = c("Factor 6"))
-#to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
-to.plot$Name <- factor(to.plot$Name)
+to.plot$Name <- factor(to.plot$Name,levels = unique(to.plot$Name))
 
 to.plot6 <- distinct(to.plot,Name,Set_size,Cell)
 

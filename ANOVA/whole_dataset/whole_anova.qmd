@@ -1,0 +1,367 @@
+---
+title: "Whole data - ANOVA"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(reshape2)
+library(ggplot2)
+library(ggpubr)
+
+input_folder <- "/home/rstudio/project/input_data/"
+
+met.aov <- function(met){
+  to.aov <- melt(met$abundance)
+  to.aov$BPD <- to.aov$sampling <- to.aov$gender <- to.aov$GA <- NA
+  
+  for (i in colnames(met$abundances)) {
+    to.aov$BPD[which(to.aov$Var2 == i)] <- as.numeric(met$annotation$BPDgrade[which(met$annotation$FullRunName == i)]) - 1
+    to.aov$sampling[which(to.aov$Var2 == i)] <- met$annotation$sample.times[which(met$annotation$FullRunName == i)]
+    to.aov$GA[which(to.aov$Var2 == i)] <- met$annotation$Gestational.age[which(met$annotation$FullRunName == i)]
+    to.aov$gender[which(to.aov$Var2 == i)] <- as.numeric(met$annotation$gender[which(met$annotation$FullRunName == i)]) - 1
+  }
+  
+  to.aov$BPD <- as.factor(to.aov$BPD)
+  to.aov$gender <- as.factor(to.aov$gender)
+  
+  res <- aov(value ~ BPD+sampling+gender+GA,to.aov)
+  
+  ps.feat <- c()
+  stats <- data.frame()
+  for(j in seq(nrow(met$abundances))){
+    val <- aov(met$abundances[j,]~met$annotation$BPDgrade+met$annotation$sample.times+met$annotation$gender+met$annotation$Gestational.age+met$annotation$`H2/Geburtsgewicht.[g]`)
+    ps.feat <- c(ps.feat,summary(val)[[1]][1,5])
+    stats <- rbind(stats,as.data.frame(summary(val)[[1]][1,]))
+  }
+  
+  stats$`adj. p-value` <- p.adjust(ps.feat,method = "BH")
+  rownames(stats) <- rownames(met$abundances)
+  
+  stats <- stats[order(stats$`adj. p-value`),]
+  
+  stats$`Sum Sq` <- formatC(x = stats$`Sum Sq`, digits = 2, format = "e")
+  stats$`Mean Sq` <- formatC(x = stats$`Mean Sq`, digits = 2, format = "e")
+  stats$`F value` <- formatC(x = stats$`F value`, digits = 2, format = "e")
+  stats$`Pr(>F)` <- formatC(x = stats$`Pr(>F)`, digits = 2, format = "e")
+  stats$`adj. p-value` <- formatC(x = stats$`adj. p-value`, digits = 2, format = "e")
+  
+  return(list(res,
+              to.aov,
+              stats))
+}
+
+prot.aov <- function(soma){
+  to.aov <- melt(soma$abundances.corrected)
+  colnames(to.aov) <- c("Var2","value")
+  to.aov$BPD <- to.aov$sampling <- to.aov$gender <- to.aov$GA <- to.aov$batch <- NA
+  
+  for (i in colnames(soma$abundances.corrected)) {
+    to.aov$BPD[which(to.aov$Var2 == i)] <- as.numeric(soma$annotation$BPDgrade[which(soma$annotation$FullRunName == i)]) - 1
+    to.aov$sampling[which(to.aov$Var2 == i)] <- soma$annotation$sample.times[which(soma$annotation$FullRunName == i)]
+    to.aov$GA[which(to.aov$Var2 == i)] <- soma$annotation$Gestational.age[which(soma$annotation$FullRunName == i)]
+    to.aov$gender[which(to.aov$Var2 == i)] <- as.numeric(soma$annotation$gender[which(soma$annotation$FullRunName == i)]) - 1
+    to.aov$batch[which(to.aov$Var2 == i)] <- as.numeric(soma$annotation$batch[which(soma$annotation$FullRunName == i)]) - 1
+  }
+  
+  to.aov$BPD <- as.factor(to.aov$BPD)
+  to.aov$gender <- as.factor(to.aov$gender)
+  to.aov$batch <- as.factor(to.aov$batch)
+  
+  res <- aov(value ~ BPD+sampling+gender+GA,to.aov)
+  
+  ps.feat <- c()
+  stats <- data.frame()
+  for(j in seq(nrow(soma$abundances.corrected))){
+   val <- aov(unlist(soma$abundances.corrected[j,])~soma$annotation$BPDgrade+soma$annotation$sample.times+soma$annotation$gender+soma$annotation$Gestational.age+soma$annotation$`H2/Geburtsgewicht.[g]`)
+   ps.feat <- c(ps.feat,summary(val)[[1]][1,5])
+   stats <- rbind(stats,as.data.frame(summary(val)[[1]][1,]))
+  }
+  
+  stats$`adj. p-value` <- p.adjust(ps.feat,method = "BH")
+  rownames(stats) <- rownames(soma$abundances.corrected)
+  
+  stats <- stats[order(stats$`adj. p-value`),]
+  
+  stats$`Sum Sq` <- formatC(x = stats$`Sum Sq`, digits = 2, format = "e")
+  stats$`Mean Sq` <- formatC(x = stats$`Mean Sq`, digits = 2, format = "e")
+  stats$`F value` <- formatC(x = stats$`F value`, digits = 2, format = "e")
+  stats$`Pr(>F)` <- formatC(x = stats$`Pr(>F)`, digits = 2, format = "e")
+  stats$`adj. p-value` <- formatC(x = stats$`adj. p-value`, digits = 2, format = "e")
+  
+  return(list(res,
+              to.aov,
+              stats))
+}
+```
+
+# Non-triglycrides
+
+```{r}
+non.pos.tgs <- readRDS(paste0(input_folder,"rds_data/non_pos_tgs.rds"))
+
+non.pos.tgs.aov <- met.aov(non.pos.tgs)
+rmarkdown::paged_table(as.data.frame(non.pos.tgs.aov[[3]]))
+```
+
+### PC(O-36:5)
+
+```{r}
+to.box.plot <- melt(t(non.pos.tgs$abundances))
+colnames(to.box.plot) <- c("Sample", "Protein","Expression")
+
+to.box.plot$Condition <- NA
+
+for (i in rownames(non.pos.tgs$abundances)) {
+  to.box.plot$Condition[which(to.box.plot$Protein == i)] <- as.numeric(non.pos.tgs$annotation$BPDgrade) - 1
+}
+
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+######
+
+to.box.plot <- to.box.plot[to.box.plot$Protein == "PC(O-36:5)",]
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+q <- ggplot(data = to.box.plot,aes(x=Condition, y=Expression,fill=Condition)) +
+  geom_boxplot() + 
+  geom_jitter(data = to.box.plot,color = "black", size = 0.7) +
+  theme_classic() +
+  scale_fill_manual(values = c("#66C2A5","#8DA0CB","#FC8D62"),labels=c("No BPD", "Mild BPD", "Moderate/Severe-BPD"),name="") +
+  scale_x_discrete(labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD")) +
+  xlab("") + ylab("Normalized abundances") +
+  labs(title = "PC(O-36:5) - ANOVA (adj. p-value= 0.02)",
+       subtitle = "t-test (post-hoc) - adj. p-values:") +
+  stat_compare_means(method = "anova", label.y=0.5)  + theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  stat_compare_means(method = "t.test",comparisons = list(c("0","1"),
+                                                          c("0","2"),
+                                                          c("1","2")))
+
+
+boxp2 <- ggplot_build(q)
+boxp2$data[[4]]$annotation <- p.adjust(boxp2$data[[4]]$annotation, method = "BH")
+boxp2$data[[3]]$label <- ""
+boxp2$data[[4]]$textsize <- boxp2$data[[3]]$size <- 2.5
+
+pdf(file = "/home/rstudio/project/results/BPD/whole_anova/240722_anova_pco36_5.pdf",width = 6.35/2.54,height = 6.35/2.54)
+plot(ggplot_gtable(boxp2))
+dev.off()
+
+plot(ggplot_gtable(boxp2))
+```
+
+# Proteomics
+
+```{r}
+proteomics <- readRDS(paste0(input_folder,"rds_data/proteomics.rds"))
+
+proteomics.aov <- prot.aov(proteomics)
+rmarkdown::paged_table(as.data.frame(proteomics.aov[[3]]))
+```
+
+### CCL22
+
+```{r}
+to.box.plot <- melt(t(proteomics$abundances.corrected))
+colnames(to.box.plot) <- c("Sample", "Protein","Expression")
+
+to.box.plot$Condition <- NA
+
+for (i in rownames(proteomics$abundances.corrected)) {
+  to.box.plot$Condition[which(to.box.plot$Protein == i)] <- as.numeric(proteomics$annotation$BPDgrade) - 1
+}
+
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+######
+
+to.box.plot <- to.box.plot[to.box.plot$Protein == "MDC",]
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+q <- ggplot(data = to.box.plot,aes(x=Condition, y=Expression,fill=Condition)) +
+  geom_boxplot() + 
+  geom_jitter(data = to.box.plot,color = "black", size = 0.7) +
+  theme_classic() +
+  scale_fill_manual(values = c("#66C2A5","#8DA0CB","#FC8D62"),labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD"),name="") +
+  scale_x_discrete(labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD")) +
+  xlab("") + ylab("Normalized abundances") +
+  labs(title = "CCL22 - ANOVA (adj. p-value= 0.0038)",
+       subtitle = "t-test (post-hoc) - adj. p-values:") +
+  stat_compare_means(method = "anova", label.y=12)  + theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  stat_compare_means(method = "t.test",comparisons = list(c("0","1"),
+                                                          c("0","2"),
+                                                          c("1","2")))
+
+
+boxp2 <- ggplot_build(q)
+boxp2$data[[4]]$annotation <- p.adjust(boxp2$data[[4]]$annotation, method = "BH")
+boxp2$data[[3]]$label <- ""
+boxp2$data[[4]]$textsize <- boxp2$data[[3]]$size <- 2.5
+
+pdf(file = "/home/rstudio/project/results/BPD/whole_anova/240722_anova_ccl22.pdf",width = 6.35/2.54,height = 6.35/2.54)
+plot(ggplot_gtable(boxp2))
+dev.off()
+
+plot(ggplot_gtable(boxp2))
+```
+
+### SCGF-beta
+
+```{r}
+to.box.plot <- melt(t(proteomics$abundances.corrected))
+colnames(to.box.plot) <- c("Sample", "Protein","Expression")
+
+to.box.plot$Condition <- NA
+
+for (i in rownames(proteomics$abundances.corrected)) {
+  to.box.plot$Condition[which(to.box.plot$Protein == i)] <- as.numeric(proteomics$annotation$BPDgrade) - 1
+}
+
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+######
+
+to.box.plot <- to.box.plot[to.box.plot$Protein == "SCGF-beta",]
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+q <- ggplot(data = to.box.plot,aes(x=Condition, y=Expression,fill=Condition)) +
+  geom_boxplot() + 
+  geom_jitter(data = to.box.plot,color = "black", size = 0.7) +
+  theme_classic() +
+  scale_fill_manual(values = c("#66C2A5","#8DA0CB","#FC8D62"),labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD"),name="") +
+  scale_x_discrete(labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD")) +
+  xlab("") + ylab("Normalized abundances") +
+  labs(title = expression("SCGF-"~beta~" - ANOVA (adj. p-value= 0.09)"),
+       subtitle = "t-test (post-hoc) - adj. p-values:") +
+  stat_compare_means(method = "anova", label.y=12)  + theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  stat_compare_means(method = "t.test",comparisons = list(c("0","1"),
+                                                          c("0","2"),
+                                                          c("1","2")))
+
+
+boxp2 <- ggplot_build(q)
+boxp2$data[[4]]$annotation <- p.adjust(boxp2$data[[4]]$annotation, method = "BH")
+boxp2$data[[3]]$label <- ""
+boxp2$data[[4]]$textsize <- boxp2$data[[3]]$size <- 2.5
+
+pdf(file = "/home/rstudio/project/results/BPD/whole_anova/240722_anova_scgf_beta.pdf",width = 6.35/2.54,height = 6.35/2.54)
+plot(ggplot_gtable(boxp2))
+dev.off()
+
+plot(ggplot_gtable(boxp2))
+```
+
+### SCGF-alpha
+
+```{r}
+to.box.plot <- melt(t(proteomics$abundances.corrected))
+colnames(to.box.plot) <- c("Sample", "Protein","Expression")
+
+to.box.plot$Condition <- NA
+
+for (i in rownames(proteomics$abundances.corrected)) {
+  to.box.plot$Condition[which(to.box.plot$Protein == i)] <- as.numeric(proteomics$annotation$BPDgrade) - 1
+}
+
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+######
+
+to.box.plot <- to.box.plot[to.box.plot$Protein == "SCGF-alpha",]
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+q <- ggplot(data = to.box.plot,aes(x=Condition, y=Expression,fill=Condition)) +
+  geom_boxplot() + 
+  geom_jitter(data = to.box.plot,color = "black", size = 0.7) +
+  theme_classic() +
+  scale_fill_manual(values = c("#66C2A5","#8DA0CB","#FC8D62"),labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD"),name="") +
+  scale_x_discrete(labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD")) +
+  xlab("") + ylab("Normalized abundances") +
+  labs(title = expression("SCGF-"~alpha~" - ANOVA (adj. p-value= 0.09)"),
+       subtitle = "t-test (post-hoc) - adj. p-values:") +
+  stat_compare_means(method = "anova", label.y=14.5)  + theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  stat_compare_means(method = "t.test",comparisons = list(c("0","1"),
+                                                          c("0","2"),
+                                                          c("1","2")))
+
+
+boxp2 <- ggplot_build(q)
+boxp2$data[[4]]$annotation <- p.adjust(boxp2$data[[4]]$annotation, method = "BH")
+boxp2$data[[3]]$label <- ""
+boxp2$data[[4]]$textsize <- boxp2$data[[3]]$size <- 2.5
+
+pdf(file = "/home/rstudio/project/results/BPD/whole_anova/240722_anova_scgf_alpha.pdf",width = 6.35/2.54,height = 6.35/2.54)
+plot(ggplot_gtable(boxp2))
+dev.off()
+
+plot(ggplot_gtable(boxp2))
+```
+
+### KIR3DL2
+
+```{r}
+to.box.plot <- melt(t(proteomics$abundances.corrected))
+colnames(to.box.plot) <- c("Sample", "Protein","Expression")
+
+to.box.plot$Condition <- NA
+
+for (i in rownames(proteomics$abundances.corrected)) {
+  to.box.plot$Condition[which(to.box.plot$Protein == i)] <- as.numeric(proteomics$annotation$BPDgrade) - 1
+}
+
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+######
+
+to.box.plot <- to.box.plot[to.box.plot$Protein == "KI3L2",]
+to.box.plot$Condition <- as.factor(to.box.plot$Condition)
+
+q <- ggplot(data = to.box.plot,aes(x=Condition, y=Expression,fill=Condition)) +
+  geom_boxplot() + 
+  geom_jitter(data = to.box.plot,color = "black", size = 0.7) +
+  theme_classic() +
+  scale_fill_manual(values = c("#66C2A5","#8DA0CB","#FC8D62"),labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD"),name="") +
+  scale_x_discrete(labels=c("No BPD", "Mild BPD", "Moderate/Severe BPD")) +
+  xlab("") + ylab("Normalized abundances") +
+  labs(title = "KIR3DL2 - ANOVA (adj. p-value= 0.09)",
+       subtitle = "t-test (post-hoc) - adj. p-values:") +
+  stat_compare_means(method = "anova", label.y=8)  + theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  stat_compare_means(method = "t.test",comparisons = list(c("0","1"),
+                                                          c("0","2"),
+                                                          c("1","2")))
+
+
+boxp2 <- ggplot_build(q)
+boxp2$data[[4]]$annotation <- p.adjust(boxp2$data[[4]]$annotation, method = "BH")
+boxp2$data[[3]]$label <- ""
+boxp2$data[[4]]$textsize <- boxp2$data[[3]]$size <- 2.5
+
+pdf(file = "/home/rstudio/project/results/BPD/whole_anova/240722_anova_kir3dl2.pdf",width = 6.35/2.54,height = 6.35/2.54)
+plot(ggplot_gtable(boxp2))
+dev.off()
+
+plot(ggplot_gtable(boxp2))
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```

@@ -1,0 +1,336 @@
+---
+title: "Early patients - Data creator"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(openxlsx)
+library(missRanger)
+library(vsn)
+library(reshape2)
+library(ggplot2)
+library(proBatch)
+library(dplyr)
+library(limma)
+library(SomaDataIO)
+#library(ggpubr)
+
+input_folder <- "/home/rstudio/project/input_data/"
+
+met.preprocess <- function(met.abundance, imputation = FALSE, outliers,layer){
+  #par(mar = c(1, 1, 1, 1))
+  
+  clinical.data <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/relevant2MOFA.xlsx"))
+  met.clinical <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Clinical data")
+  
+  clinical.data <- clinical.data[which(clinical.data$PhenoID %in% met.abundance$PhenoID),]
+  
+  # Extracting the info for explicitly corresponding sample time of patients taken and the clinical parameters associated
+  met.clinical <- do.call(rbind,apply(met.abundance,1, function(x){
+    met.clinical[which(met.clinical$PhenoID %in% x[1] & met.clinical$Sample.time %in% x[2]),]
+  }))
+  met.clinical <- met.clinical[!duplicated(met.clinical),]
+  
+  # Ordering all data according patients ID
+  met.abundance <- met.abundance[order(met.abundance$PhenoID),]
+  clinical.data <- clinical.data[order(clinical.data$PhenoID),]
+  met.clinical <- met.clinical[order(met.clinical$PhenoID),]
+  
+  if(any(met.abundance$PhenoID != clinical.data$PhenoID) | any(met.abundance$PhenoID != met.clinical$PhenoID) | any(met.abundance$PhenoID != clinical.data$PhenoID)){
+    stop("check order of input data: Samples do not match")
+  }
+  
+  # Adding data to clinical table
+  clinical.data$sample.times <- as.numeric(gsub(pattern = "Tag | - Geburt",replacement = "",x = met.clinical$Sample.time))
+  clinical.data$gender <- ifelse(met.clinical$Gender == "weiblich",0,1)
+  
+  met.matrix <- met.abundance[,seq(3,ncol(met.abundance))]
+  rownames(met.matrix) <- met.abundance$PhenoID
+  
+  clinical.data <- clinical.data[which(clinical.data$sample.times <= 28),]
+  met.matrix <- met.matrix[which(rownames(met.matrix) %in% clinical.data$PhenoID),]
+  
+  # Normalization
+  
+  #boxplot(log2(t(met.matrix)),outline = T,las=2)
+  
+  norm.matrix <- vsn2(ExpressionSet(assayData = t(met.matrix)),minDataPointsPerStratum=20)
+  norm.matrix <- exprs(norm.matrix)
+  
+  if(imputation){
+    colnames(norm.matrix) <- paste0("BPD",seq(ncol(norm.matrix)))
+    norm.matrix <- missRanger(data = as.data.frame(norm.matrix),num.trees=100,seed = 1234,verbose = FALSE)
+    
+    norm.matrix <- apply(norm.matrix,2,as.numeric)
+    colnames(norm.matrix) <- rownames(met.matrix)
+    rownames(norm.matrix) <- colnames(met.abundance[,3:ncol(met.abundance)])
+    
+    if(any(colnames(norm.matrix) != clinical.data$PhenoID) | any(met.matrix$PhenoID != colnames(norm.matrix)) | any(met.matrix$PhenoID != clinical.data$PhenoID)){
+      stop("check order of input data: Samples do not match")
+    }
+  }
+  
+  #boxplot(norm.matrix,outline = T,las=2)
+  
+  # Batch-effect detection
+  
+  annot.met <- clinical.data
+  colnames(annot.met)[1] <- "FullRunName"
+  
+  annot.met$gender <- as.factor(annot.met$gender)
+  annot.met$BPD <- as.factor(ifelse(annot.met$`D1/BPD.Grad` > 0,1,0))
+  annot.met$BPDgrade <- as.factor(ifelse(annot.met$`D1/BPD.Grad` == 3,2,annot.met$`D1/BPD.Grad`))
+  annot.met$Gestational.age <- annot.met$`H2/Gestationsalter.(als.Dezimalzahl.--.--)`
+  
+  array.comp <- c("gender","BPD","BPDgrade")
+  
+  if(any(annot.met$FullRunName != colnames(norm.matrix))){
+    stop("Clinical data and samples from matrix do not match")
+  }
+  
+  if(any(is.na(annot.met$sample.times)) |
+     any(is.na(annot.met$gender)) | 
+     any(is.na(annot.met$Gestational.age)) |
+     any(is.na(annot.met$`H4/BEATMUNG/O2-Bedarf.Tage`)) |
+     any(is.na(annot.met$`H4/BEATMUNG/CPAP/NiPPV.Tage`)) |
+     any(is.na(annot.met$`H4/BEATMUNG/Beatmung/IPPV/Dauer.der.Beatmung.gesamt,.IPPV.[Tage]`))){
+    stop("Incomplete clinical data")
+  }
+  
+  #plot_hierarchical_clustering(norm.matrix,
+  #sample_annotation = annot.met,
+  #factors_to_plot = array.comp,
+  #distance = 'euclidean', agglomeration = 'complete',
+  #label_samples = FALSE)
+  
+  p <- plot_PCA(data_matrix = norm.matrix,sample_annotation = annot.met, color_by = "BPDgrade") +
+    scale_color_manual(values = c("#66C2A5","#8DA0CB","#FC8D62")) + 
+    theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) + 
+    ggtitle(gsub(pattern = "_",replacement = " ",x = layer))
+  
+  #pdf(file = paste0("~/Documents/230322_BPD_paper/230810_paper_versions/231208_figures_V7/240125_Sfigure2/240125_",layer,".pdf"),width = 6.3/2.54,height = 6.3/2.54)
+  print(p) 
+  #dev.off()
+  
+  #par(mar = c(1, 1, 1, 1))
+  #{plot(pca.met[,1],pca.met[,2],cex=0.1)
+  #text(pca.met[,1],pca.met[,2],labels=rownames(pca.met),cex=0.6)}
+  
+  new.met <- norm.matrix[,which(!colnames(norm.matrix) %in% outliers)]
+  annot.met <- annot.met[which(!annot.met$FullRunName %in% outliers),]
+  
+  return(list(abundances = new.met,
+              annotation = annot.met
+  ))
+}
+
+prot.preprocess <- function(soma,outliers,layer){
+  selector <- function(x){
+    to.solve <- all.soma[which(all.soma$PhenoID == x),]
+    if(nrow(to.solve) > 1){
+      rownames(to.solve) <- to.solve$Barcode
+      reduced.to.solve <- to.solve[,seq(30,ncol(to.solve))]
+      cvs <- apply(reduced.to.solve,1,function(y){sd(y)/mean(y)})
+      return(all.soma[which(all.soma$Barcode == names(which(cvs == min(cvs)))),])
+    }else if(nrow(to.solve) == 1){
+      return(to.solve)
+    }else{
+      stop("Inconsequent multisample tracking")
+    }
+    
+  }
+  
+  #par(mar = c(1, 1, 1, 1))
+  
+  amines <- read.xlsx(paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Amines")
+  acyl <- read.xlsx(paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Acylcarnitines")
+  tgs <- read.xlsx(paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Positive lipids TG")
+  non.tgs <- read.xlsx(paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Positive lipids non TG")
+  
+  
+  t <- read_adat(paste0(input_folder,"raw_data/CPC-17-191.hybNorm.medNorm.20171113.adat"))
+  tt <- read.table(paste0(input_folder,"raw_data/CPC-17-191.hybNorm.plateScale.medNorm.calibrate.bridge.20171113.adat"),
+                   sep = "\t",skip=10,header = T)
+  
+  id.table <- read.xlsx(paste0(input_folder,"raw_data/Protein_IDs_20201012.xlsx"))
+  raw.clinical <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Clinical data")
+  clinical.data <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/relevant2MOFA.xlsx"))
+  
+  met.samples <- rbind(
+    amines[,1:2],
+    acyl[,1:2],
+    tgs[,1:2],
+    non.tgs[,1:2]
+  )
+  met.samples <- met.samples[!duplicated(met.samples),]
+  
+  # Matching samples and sampling times between metabolomics and proteomics data
+  reduced.soma <- do.call(rbind,apply(met.samples,1, function(x){
+    soma[which(soma$PhenoID %in% x[1] & soma$Zeitpunkt %in% x[2]),]
+  }))
+  
+  # Extracting the samples from proteomics without match in metabolimics
+  remain.soma <- soma[which(!soma$PhenoID %in% reduced.soma$PhenoID),]
+  
+  # Merging all proteomics data
+  raw.soma <- rbind(reduced.soma,remain.soma)
+  
+  # Extracting information from raw somalogic table
+  reduced.tt <- tt[which(tt$Barcode %in% raw.soma$Barcode),]
+  
+  # Ordering both tables
+  reduced.tt <- reduced.tt[order(reduced.tt$Barcode),]
+  raw.soma <- raw.soma[order(raw.soma$Barcode),]
+  
+  # Joining covariates and raw somalogic data for proteins
+  all.soma <- cbind(raw.soma,reduced.tt[,seq(26,ncol(reduced.tt))])
+  all.soma <- all.soma[order(all.soma$PhenoID),]
+  colnames(all.soma) <- c(colnames(raw.soma),attributes(t)$Col.Meta$Target)
+  
+  # Removing proteins not related with human genome - from viral sources
+  #cat("Proteins related to no-human proteins",id.table[7,grep("^Human$",x = id.table[7,],invert = T)])
+  all.soma <- all.soma[,grep(pattern = "HPV|HIV",x = colnames(all.soma),invert = T)]
+  
+  # Choosing the replica with lowest coefficient of variation
+  list.soma <- do.call(rbind,lapply(unique(all.soma$PhenoID),selector))
+  
+  # Creating the abundances table
+  soma <- list.soma[,seq(30,ncol(list.soma))]
+  rownames(soma) <- list.soma$PhenoID
+  
+  list.soma <- list.soma[which(as.numeric(gsub(pattern = "Tag | - Geburt",replacement = "",x = list.soma$Zeitpunkt)) <= 28),]
+  soma <- soma[which(rownames(soma) %in% list.soma$PhenoID),]
+  
+  if(any(list.soma$PhenoID != rownames(soma))){
+    stop("check order of input data: Samples do not match")
+  }
+  
+  # Normalization
+  
+  #boxplot(log2(t(soma)),outline = T,las=2)
+  
+  norm.soma <- vsn2(ExpressionSet(assayData = t(soma)))
+  norm.soma <- exprs(norm.soma)
+  
+  #boxplot(norm.soma,outline = T,las=2)
+  
+  # Batch-effect detection
+  
+  clinical.data <- clinical.data[which(clinical.data$PhenoID %in% rownames(soma)),]
+  
+  all.clinical <- raw.clinical[raw.clinical$PhenoID %in% clinical.data$PhenoID,]
+  all.clinical <- all.clinical[!duplicated(all.clinical$PhenoID),]
+  
+  clinical.data <- clinical.data[order(clinical.data$PhenoID),]
+  list.soma <- list.soma[order(list.soma$PhenoID),]
+  all.clinical <- all.clinical[match(clinical.data$PhenoID,all.clinical$PhenoID),]
+  
+  if(any(all.clinical$PhenoID != clinical.data$PhenoID | any(list.soma$PhenoID != all.clinical$PhenoID) | any(list.soma$PhenoID != clinical.data$PhenoID))){
+    stop("check order of input data: Samples do not match: Batch-effect")
+  }
+  
+  clinical.data$weight <- all.clinical$Weight
+  clinical.data$sample.times <- as.numeric(gsub(pattern = "Tag | - Geburt",replacement = "",x = list.soma$Zeitpunkt))
+  clinical.data$gender <- ifelse(all.clinical$Gender == "weiblich",0,1)
+  clinical.data$batch <- as.numeric(gsub(pattern = "Somalogic_Neo_",replacement = "",x = list.soma$Entnahmeantrag))
+  
+  annot.soma <- clinical.data
+  colnames(annot.soma)[1] <- "FullRunName"
+  
+  annot.soma$gender <- as.factor(annot.soma$gender)
+  annot.soma$BPD <- as.factor(ifelse(annot.soma$`D1/BPD.Grad` > 0,1,0))
+  annot.soma$BPDgrade <- as.factor(ifelse(annot.soma$`D1/BPD.Grad` == 3,2,annot.soma$`D1/BPD.Grad`))
+  annot.soma$batch <- as.factor(annot.soma$batch)
+  annot.soma$Gestational.age <- annot.soma$`H2/Gestationsalter.(als.Dezimalzahl.--.--)`
+  
+  array.comp <- c("gender","BPD","BPDgrade","batch")
+  
+  if(any(annot.soma$FullRunName != colnames(norm.soma))){
+    stop("Clinical data and samples from matrix do not match")
+  }
+  
+  if(any(is.na(annot.soma$sample.times)) |
+     any(is.na(annot.soma$gender)) | 
+     any(is.na(annot.soma$Gestational.age)) |
+     any(is.na(annot.soma$`H4/BEATMUNG/O2-Bedarf.Tage`)) |
+     any(is.na(annot.soma$`H4/BEATMUNG/CPAP/NiPPV.Tage`)) |
+     any(is.na(annot.soma$`H4/BEATMUNG/Beatmung/IPPV/Dauer.der.Beatmung.gesamt,.IPPV.[Tage]`))){
+    cat("Sommalogic has one sample NA for NiPPV")
+  }
+  
+  p <- plot_PCA(data_matrix = norm.soma,sample_annotation = annot.soma, color_by = "batch") +
+    scale_color_manual(values = c("red","blue")) + 
+    theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) + 
+    ggtitle(gsub(pattern = "_",replacement = " ",x = layer))
+  
+  #pdf(file = paste0("~/Documents/230322_BPD_paper/230810_paper_versions/231208_figures_V7/240125_Sfigure2/240125_",layer,".pdf"),width = 6.3/2.54,height = 6.3/2.54)
+  print(p) 
+  #dev.off()
+  
+  #par(mar = c(1, 1, 1, 1))
+  
+  #{plot(pca.soma[,1],pca.soma[,2],cex=0.1)
+   # text(pca.soma[,1],pca.soma[,2],labels=rownames(pca.soma),cex=0.6)}
+  
+  new.soma <- norm.soma[,which(!colnames(norm.soma) %in% outliers)]
+  annot.soma <- annot.soma[which(!annot.soma$FullRunName %in% outliers),]
+  row.names(annot.soma) <- annot.soma$FullRunName
+  
+  batch.corrected.soma <- as.data.frame(removeBatchEffect(new.soma,batch = annot.soma$batch))
+  
+  return(list(abundances = new.soma,
+              abundances.corrected = batch.corrected.soma,
+              annotation = annot.soma))
+}
+
+```
+
+# Positive lipids non-triglycerides
+
+## Pre-processing
+
+```{r}
+met.abundance <- read.xlsx(xlsxFile = paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Positive lipids non TG")
+non.pos.tgs <- met.preprocess(met.abundance = met.abundance, imputation = TRUE,outliers=c("Mslo857","Mvlh924","Mxht359","Msgi590","Mpgh976","M290afj"),layer = "Positive_lipids_non_triglycerides")
+
+saveRDS(object = non.pos.tgs,file = paste0(input_folder,"/rds_data/earlier_non_pos_tgs.rds"))
+
+dim(non.pos.tgs$abundances)
+```
+
+# Proteomics
+
+## pre-processing
+
+```{r}
+soma <- read.xlsx(paste0(input_folder,"raw_data/All_omics_BPD.xlsx"),sheet = "Raw SomaScan")
+proteomics <- prot.preprocess(soma = soma,outliers=c("Mkuh511","Mvsm676","Mksn418","Mygr882"),layer = "Proteomics")
+
+saveRDS(object = proteomics,file = paste0(input_folder,"/rds_data/earlier_proteomics.rds"))
+
+dim(proteomics$abundances.corrected)
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
