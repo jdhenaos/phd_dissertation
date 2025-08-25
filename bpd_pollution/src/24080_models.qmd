@@ -1,0 +1,232 @@
+---
+title: "Prediction of neonatal clinical variables from pollutants and clinical confounders"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(openxlsx)
+library(dplyr)
+library(car)
+library(tidymodels)
+library(MASS)
+
+project.folder <- "/home/rstudio/workspace"
+
+dat <- read.xlsx(paste0(project.folder,"/input_data/new_AIRR pollution Data.xlsx"))
+
+dat$Early.onset.infection <- as.factor(dat$Early.onset.infection)
+dat$sex <- as.factor(dat$sex)
+dat$`Preeclampsia./.HELLP` <- as.factor(dat$`Preeclampsia./.HELLP`)
+#dat$`birth.weight.[g]/percentile` <- as.factor(dat$`birth.weight.[g]/percentile`)
+
+cor(dat[,c(2,3,4,5)])
+```
+
+-   **PM2.5**
+
+```{r}
+summary(dat$g_pm25_ela_g_10)
+```
+
+-   **NO2**
+
+```{r}
+summary(dat$g_no2_ela_g_10)
+```
+
+-   **BC**
+
+```{r}
+summary(dat$g_bc_ela_g_10)
+```
+
+-   **O3**
+
+```{r}
+summary(dat$g_o3_ela_g_10)
+```
+
+# Preeclampsia
+
+## PM2.5
+
+```{r}
+dat <- dat[which(!is.na(dat$Age.of.mother)),]
+
+pm.model <- glm(`Preeclampsia./.HELLP` ~ g_pm25_ela_g_10 + 
+                  `gestational.age.(postmenstrual.age.[weeks])` + 
+                   `birth.weight.[g]` +
+                   Age.of.mother +
+                   Early.onset.infection + 
+                   sex, dat,family="binomial")
+
+summary(pm.model)
+vif(pm.model)
+```
+
+## NO2
+
+```{r}
+no2.model <- glm(`Preeclampsia./.HELLP` ~ g_no2_ela_g_10 + 
+                   `gestational.age.(postmenstrual.age.[weeks])` + 
+                   `birth.weight.[g]` +
+                   Age.of.mother +
+                   Early.onset.infection + 
+                   sex, dat,family="binomial")
+
+summary(no2.model)
+vif(no2.model)
+```
+
+## BC
+
+```{r}
+bc.model <- glm(`Preeclampsia./.HELLP` ~ g_bc_ela_g_10 + 
+                  `gestational.age.(postmenstrual.age.[weeks])` + 
+                   `birth.weight.[g]` +
+                   Age.of.mother +
+                   Early.onset.infection + 
+                   sex, dat,family="binomial")
+
+summary(bc.model)
+vif(bc.model)
+```
+
+## O3
+
+```{r}
+o3.model <- glm(`Preeclampsia./.HELLP` ~ g_o3_ela_g_10 + 
+                  `gestational.age.(postmenstrual.age.[weeks])` + 
+                   `birth.weight.[g]` +
+                   Age.of.mother +
+                   Early.onset.infection + 
+                   sex, dat,family="binomial")
+
+summary(o3.model)
+vif(o3.model)
+```
+
+```{r}
+rmarkdown::paged_table(
+p.adjust(
+c(PM = summary(pm.model)$coefficients[2,4],
+  NO2 = summary(no2.model)$coefficients[2,4],
+  BC = summary(bc.model)$coefficients[2,4],
+  O3 = summary(o3.model)$coefficients[2,4]),
+  "BH"
+) %>% as.data.frame())
+```
+
+```{r}
+all.cis <- rbind(exp(confint.default(pm.model)[2,]),
+exp(confint.default(no2.model)[2,]),
+exp(confint.default(bc.model)[2,]),
+exp(confint.default(o3.model)[2,])) %>% as.data.frame() %>% 
+mutate(coefs = c(exp(summary(pm.model)$coefficients[2,1]),
+exp(summary(no2.model)$coefficients[2,1]),
+exp(summary(bc.model)$coefficients[2,1]),
+exp(summary(o3.model)$coefficients[2,1])),.before="2.5 %") %>% mutate(variable = c("g.pm25.ela.g.10", "g.no2.ela.g.10", "g.bc.ela.g.10","g.o3.ela.g.10"),.before=coefs)
+
+rmarkdown::paged_table(all.cis)
+```
+
+## All models
+
+```{r}
+all.model <- glm(`Preeclampsia./.HELLP` ~ g_pm25_ela_g_10 + 
+                   g_no2_ela_g_10 + 
+                   g_bc_ela_g_10 + 
+                   g_o3_ela_g_10 + 
+                  `gestational.age.(postmenstrual.age.[weeks])` + 
+                   `birth.weight.[g]` +
+                   Age.of.mother +
+                   Early.onset.infection + 
+                   sex, dat,family="binomial")
+
+summary(all.model)
+vif(all.model)
+```
+
+# Birthweight by percentiles
+
+## PM2.5
+
+```{r}
+pm.model <- polr(as.factor(`birth.weight.[g]/percentile`) ~  g_pm25_ela_g_10 + `Preeclampsia./.HELLP` + Early.onset.infection + Age.of.mother + sex, dat,Hess = TRUE)
+
+summary(pm.model)
+tidy(pm.model, p.values = TRUE,)
+vif(pm.model)
+exp(confint.default(pm.model))
+```
+
+## NO2
+
+```{r}
+no2.model <- polr(as.factor(`birth.weight.[g]/percentile`) ~  g_no2_ela_g_10 + `Preeclampsia./.HELLP` + Early.onset.infection + Age.of.mother + sex, dat,Hess = TRUE)
+
+summary(no2.model)
+tidy(no2.model, p.values = TRUE,)
+vif(no2.model)
+exp(confint.default(no2.model))
+```
+
+## BC
+
+```{r}
+bc.model <- polr(as.factor(`birth.weight.[g]/percentile`) ~  g_bc_ela_g_10 + `Preeclampsia./.HELLP` + Early.onset.infection + Age.of.mother + sex, dat,Hess = TRUE)
+
+summary(bc.model)
+tidy(bc.model, p.values = TRUE,)
+vif(bc.model)
+exp(confint.default(bc.model))
+```
+
+## O3
+
+```{r}
+o3.model <- polr(as.factor(`birth.weight.[g]/percentile`) ~  g_o3_ela_g_10 + `Preeclampsia./.HELLP` + Early.onset.infection + Age.of.mother + sex, dat,Hess = TRUE)
+
+summary(o3.model)
+tidy(o3.model, p.values = TRUE,)
+vif(o3.model)
+exp(confint.default(o3.model))
+```
+
+## All models
+
+```{r}
+all.model <- polr(as.factor(`birth.weight.[g]/percentile`) ~  g_pm25_ela_g_10 + 
+                   g_no2_ela_g_10 + 
+                   g_bc_ela_g_10 + 
+                   g_o3_ela_g_10 + `Preeclampsia./.HELLP` + Early.onset.infection + Age.of.mother + sex, dat,Hess = TRUE)
+
+summary(all.model)
+tidy(all.model, p.values = TRUE,)
+vif(all.model)
+exp(confint.default(all.model))
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
