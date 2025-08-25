@@ -1,0 +1,193 @@
+---
+title: "Multi-class random forest using clinical and significant metabolomics data"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(openxlsx)
+library(missRanger)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(ggpubr)
+library(ggrepel)
+library(jsonlite)
+
+json.folder <- "/home/rstudio/project/input_data/random_forest/multiclass/significants/metabolomics_json/"
+
+desc <- fromJSON(paste0(json.folder,"descriptors.json"))
+risk <- fromJSON(paste0(json.folder,"risk_factors.json"))
+risk.omics <- fromJSON(paste0(json.folder,"risk_factors_omics.json"))
+deep <- fromJSON(paste0(json.folder,"deep_phenotyping.json"))
+deep.omics <- fromJSON(paste0(json.folder,"deep_phenotyping_omics.json"))
+omics <- fromJSON(paste0(json.folder,"omics.json"))
+
+stats <- rbind(
+  data.frame(AUC=desc$micro_roc_auc,
+             std=desc$micro_std_auc),
+  data.frame(AUC=omics$micro_roc_auc,
+             std=omics$micro_std_auc),
+  data.frame(AUC=risk$micro_roc_auc,
+             std=risk$micro_std_auc),
+  data.frame(AUC=risk.omics$micro_roc_auc,
+             std=risk.omics$micro_std_auc),
+  data.frame(AUC=deep$micro_roc_auc,
+             std=deep$micro_std_auc),
+  data.frame(AUC=deep.omics$micro_roc_auc,
+             std=deep.omics$micro_std_auc)
+)
+
+rownames(stats) <- c("Descriptors",
+                     "non-triglycerides",
+                     "Risk factors",
+                     "Risk factors + non-triglycerides",
+                     "Deep phenotyping",
+                     "Deep phenotyping + non-triglycerides")
+
+rmarkdown::paged_table(stats)
+
+# create a data frame with the TPR and FPR data
+roc_data <- rbind(
+  data.frame(Factor="A",
+             tpr=desc$micro_tpr,
+             fpr=desc$micro_fpr),
+  data.frame(Factor="C",
+             tpr=risk$micro_tpr,
+             fpr=risk$micro_fpr),
+  data.frame(Factor="D",
+             tpr=risk.omics$micro_tpr,
+             fpr=risk.omics$micro_fpr),
+  data.frame(Factor="E",
+             tpr=deep$micro_tpr,
+             fpr=deep$micro_fpr),
+  data.frame(Factor="F",
+             tpr=deep.omics$micro_tpr,
+             fpr=deep.omics$micro_fpr)
+)
+
+colnames(roc_data) <- c("level","tpr","fpr")
+
+p <- ggplot(roc_data, aes(x = fpr, y = tpr,color=level)) +
+  geom_line(aes(linetype=level)) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  xlab("False Positive Rate") + xlim(c(0,1)) +
+  ylab("True Positive Rate") + ylim(c(0,1)) +
+  scale_color_manual(values = c("#666666","#E6AB02","#66A61E","#E7298A","#7570B3")) +
+  scale_linetype_manual(values=c(rep("solid",6))) +
+  labs(title = "ROC AUC Random forest",
+       subtitle = "No vs Mild vs Moderate/severe") +
+  theme_classic()  + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+
+ggsave(filename = "/home/rstudio/project/results/BPD/random_forest/multiclass/significant/metabolomics/240728_rocauc.pdf",plot = p,
+       width = 6.35,height = 6.35,units = "cm")
+
+p
+```
+
+## BPD main risk variables + non-triglycerides
+
+```{r}
+stats <- rbind(
+  data.frame(AUC=risk.omics$macro_mean_auc[1],
+             std=risk.omics$macro_std_auc[1]),
+  data.frame(AUC=risk.omics$macro_mean_auc[2],
+             std=risk.omics$macro_std_auc[2]),
+  data.frame(AUC=risk.omics$macro_mean_auc[3],
+             std=risk.omics$macro_std_auc[3])
+)
+
+rownames(stats) <- c("No BPD",
+                     "Mild BPD",
+                     "Moderate/severe BPD")
+
+rmarkdown::paged_table(stats)
+
+# create a data frame with the TPR and FPR data
+roc_data <- rbind(
+  data.frame(Factor="Class 0",
+             tpr=risk.omics$macro_tpr[[1]],
+             fpr=risk.omics$macro_fpr[[1]]),
+  data.frame(Factor="Class 1",
+             tpr=risk.omics$macro_tpr[[2]],
+             fpr=risk.omics$macro_fpr[[2]]),
+  data.frame(Factor="CLass 2",
+             tpr=risk.omics$macro_tpr[[3]],
+             fpr=risk.omics$macro_fpr[[3]])
+)
+
+colnames(roc_data) <- c("level","tpr","fpr")
+
+p <- ggplot(roc_data, aes(x = fpr, y = tpr,color=level)) +
+  geom_line(aes(linetype=level)) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  xlab("False Positive Rate") + xlim(c(0,1)) +
+  ylab("True Positive Rate") + ylim(c(0,1)) +
+  scale_color_manual(values = c("#66C2A5","#8DA0CB","#FC8D62")) +
+  scale_linetype_manual(values=c(rep("solid",6))) +
+  labs(title = "ROC AUC Random forest",
+       subtitle = "No vs Mild vs Moderate/severe") +
+  theme_classic()  + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+
+ggsave(filename = "/home/rstudio/project/results/BPD/random_forest/multiclass/significant/metabolomics/240728_macro_rocauc.pdf",plot = p,
+       width = 7.35,height = 6.35,units = "cm")
+
+p
+```
+
+# Explanatory features
+
+```{r}
+explanatory <- data.frame("Feature"=deep.omics$features,
+                          "Importance"=deep.omics$importance)
+
+explanatory <- explanatory[order(explanatory$Importance,decreasing = TRUE),]
+
+rmarkdown::paged_table(explanatory)
+
+explanatory$Feature[1:6] <- c("PC(O-38:5)", 
+                              "NICU [days]",
+                              "PC(O-36:5)",
+                              "Hospitalization [days]",
+                              "Birth weight",
+                              "Gestational age")
+
+explanatory$Importance <- explanatory$Importance * 100
+explanatory$Feature <- factor(explanatory$Feature,levels = explanatory$Feature)
+
+p <- ggplot(explanatory[1:6,],aes(x=Importance,y=Feature,fill=Feature)) +
+  geom_bar(stat="identity") + theme_classic() +
+  scale_fill_manual(values = c("#d73027","#fc8d59","#fee090","#e0f3f8","#91bfdb","#4575b4")) +
+  geom_text(aes(label=round(Importance,2)), hjust=1.6, size=2) +
+  labs(title = "Feature importance (random forest)",
+       subtitle = "Deep clinical phenotyping +\nSignificant Non-triglycerides (multi-class)") +
+  theme(text = element_text(size = 8), plot.title = element_text(size=8)) + theme(legend.position = "none")
+
+ggsave(filename = "/home/rstudio/project/results/BPD/random_forest/multiclass/significant/metabolomics/240728_feature_importance.pdf",plot = p,
+       width = 8.35,height = 6.35,units = "cm")
+
+p
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```

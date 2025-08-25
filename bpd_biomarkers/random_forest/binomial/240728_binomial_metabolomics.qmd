@@ -1,0 +1,139 @@
+---
+title: "Binary random forest using clinical and metabolomics data"
+author: Juan Henao
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+description: ""
+title-block-banner: "black"
+quarto:
+  components:
+    panel-tabset:
+      max_items: 10
+format: 
+  html:
+    embed-resources: true
+    smooth-scroll: true
+    anchor-sections: true
+    number-sections: true
+    toc: true
+    toc-location: left
+    code-fold: true
+    theme: cerulean
+editor: visual
+---
+
+```{r}
+library(openxlsx)
+library(missRanger)
+library(dplyr)
+library(ggplot2)
+library(corrplot)
+library(reshape2)
+library(ggpubr)
+library(ggrepel)
+library(jsonlite)
+
+json.folder <- "/home/rstudio/project/input_data/random_forest/binomial/metabolomics/"
+
+desc <- fromJSON(paste0(json.folder,"descriptors.json"))
+risk <- fromJSON(paste0(json.folder,"risk_factors.json"))
+risk.omics <- fromJSON(paste0(json.folder,"risk_factors_omics.json"))
+deep <- fromJSON(paste0(json.folder,"deep_phenotyping.json"))
+deep.omics <- fromJSON(paste0(json.folder,"deep_phenotyping_omics.json"))
+omics <- fromJSON(paste0(json.folder,"omics.json"))
+
+stats <- rbind(
+  data.frame(AUC=desc$auc,
+             std=desc$std),
+  data.frame(AUC=omics$auc,
+             std=omics$std),
+  data.frame(AUC=risk$auc,
+             std=risk$std),
+  data.frame(AUC=risk.omics$auc,
+             std=risk.omics$std),
+  data.frame(AUC=deep$auc,
+             std=deep$std),
+  data.frame(AUC=deep.omics$auc,
+             std=deep.omics$std)
+)
+
+rownames(stats) <- c("Descriptors",
+                     "Latent factors",
+                     "Risk factors",
+                     "Risk factors + latent factors",
+                     "Deep phenotyping",
+                     "Deep phenotyping + latent factors")
+
+rmarkdown::paged_table(stats)
+
+# create a data frame with the TPR and FPR data
+roc_data <- rbind(
+  data.frame(Factor="A",
+             tpr=desc$tpr,
+             fpr=desc$fpr),
+  data.frame(Factor="C",
+             tpr=risk$tpr,
+             fpr=risk$fpr),
+  data.frame(Factor="D",
+             tpr=risk.omics$tpr,
+             fpr=risk.omics$fpr),
+  data.frame(Factor="E",
+             tpr=deep$tpr,
+             fpr=deep$fpr),
+  data.frame(Factor="F",
+             tpr=deep.omics$tpr,
+             fpr=deep.omics$fpr),
+  data.frame(Factor="B",
+             tpr=omics$tpr,
+             fpr=omics$fpr)
+)
+
+colnames(roc_data) <- c("level","tpr","fpr")
+
+p <- ggplot(roc_data, aes(x = fpr, y = tpr,color=level)) +
+  geom_line(aes(linetype=level)) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  xlab("False Positive Rate") + xlim(c(0,1)) +
+  ylab("True Positive Rate") + ylim(c(0,1)) +
+  scale_color_manual(values = c("#666666","#A6761D","#E6AB02","#66A61E","#E7298A","#7570B3")) +
+  scale_linetype_manual(values=c(rep("solid",6))) +
+  labs(title = "ROC AUC Random forest",
+       subtitle = "No vs Moderate/severe (reclassification)") +
+  theme_classic()  + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+
+ggsave(filename = "/home/rstudio/project/results/BPD/random_forest/binomial/metabolomics/240728_rocauc.pdf",plot = p,
+       width = 6.35,height = 6.35,units = "cm")
+
+p
+```
+
+# Feature importance
+
+```{r}
+explanatory <- data.frame("Feature"=omics$features,
+                          "Importance"=omics$importance)
+
+explanatory <- explanatory[order(explanatory$Importance,decreasing = TRUE),]
+
+
+explanatory$Importance <- explanatory$Importance * 100
+explanatory$Feature <- factor(explanatory$Feature,levels = explanatory$Feature)
+
+p <- ggplot(explanatory[1:6,],aes(x=Importance,y=Feature,fill=Feature)) +
+  geom_bar(stat="identity") + theme_classic() +
+  scale_fill_manual(values = c("#D73027", "#F46D43", "#FEE090","#ABD9E9", "#74ADD1", "#4575B4")) +
+  geom_text(aes(label=round(Importance,2)), hjust=1.6, size=2) +
+  labs(title = "Feature importance (random forest)",
+       subtitle = "Non-triglycerides (reclassification)") +
+  theme(text = element_text(size = 8), plot.title = element_text(size=8)) + theme(legend.position = "none")
+
+ggsave(filename = "/home/rstudio/project/results/BPD/random_forest/binomial/metabolomics/240728_feature_importance.pdf",plot = p,
+       width = 8.35,height = 6.35,units = "cm")
+
+p
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```

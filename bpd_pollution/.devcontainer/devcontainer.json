@@ -1,0 +1,38 @@
+{
+  "name": "R-Quarto Interactive Environment",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "quarto.quarto",           // Essential for Quarto
+        "rstudio.r",               // The key R extension for language support & interactive features
+        "ms-python.python",        // Useful for Python chunks in Quarto
+        "reditorsupport.r-shortcuts" // Optional: Adds RStudio-like keyboard shortcuts (Ctrl+Enter, etc.)
+      ],
+      "settings": {
+        // --- Critical R Settings ---
+        "r.rterm.linux": "/usr/local/bin/R", // Path to R inside the container
+        "r.rpath.linux": "/usr/local/bin/R", // Path to R for linter
+        "r.lsp.path": "/usr/local/bin/R",    // Path to R for the Language Server
+        "r.lsp.debug": true,                 // Useful for troubleshooting
+        "r.sessionWatcher": true,            // Required for interactive features
+        "r.bracketedPaste": true,            // Better console experience
+
+        // --- Use httpgd for plotting (MUCH better than default) ---
+        "r.plot.useHttpgd": true,
+
+        // --- Optional: Make it feel more like RStudio ---
+        "r.alwaysUseActiveTerminal": true,
+        "r.source.focus": "editor"
+      }
+    }
+  },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/rstudio/workspace,type=bind",
+  "workspaceFolder": "/home/rstudio/workspace",
+  
+  // Forward the port for httpgd plots and Quarto preview
+  "forwardPorts": [8080, 4200] 
+}
