@@ -1,0 +1,73 @@
+library(ggplot2)
+library(UpSetR)
+library(ggrepel)
+
+data.folder <- "/workspaces/invitro/invitro/data/"
+
+raw.AT <- read.table(paste0(data.folder,"Hyperoxia_AT.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.EC <- read.table(paste0(data.folder,"Hyperoxia_EC.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.MFB <- read.table(paste0(data.folder,"Hyperoxia_MFB.xls"),sep = "\t",header = T,stringsAsFactors = F)
+
+DEG.AT <- raw.AT[which(raw.AT$padj < 0.05),]
+DEG.EC <- raw.EC[which(raw.EC$padj < 0.05),]
+DEG.MFB <- raw.MFB[which(raw.MFB$padj < 0.05),]
+
+# UpSet plot
+
+frame <- fromList(list(DEG.EC$ensembl_gene_id,
+                       DEG.MFB$ensembl_gene_id,
+                       DEG.AT$ensembl_gene_id))
+
+colnames(frame) <- c(paste0("EC Hyperoxia"," (N = ",nrow(DEG.EC),")"),
+                     paste0("FB Hyperoxia"," (N = ",nrow(DEG.MFB),")"),
+                     paste0("AT Hyperoxia"," (N = ",nrow(DEG.AT),")"))
+
+upset(frame,nsets = 20, nintersects = 15,
+      queries = list(list(query = intersects, 
+                          params = list("AT Hyperoxia (N = 1368)","FB Hyperoxia (N = 1150)"), 
+                          color = "#C6DBEF", active = T),
+                     list(query = intersects, 
+                          params = list("AT Hyperoxia (N = 1368)","FB Hyperoxia (N = 1150)","EC Hyperoxia (N = 69)"), 
+                          color = "#4292C6", active = T)),
+      order.by = c("freq"),empty.intersections = NULL,
+      sets.bar.color = c("#A79AD4","#DF758C","#ACD49F"),
+      sets = colnames(frame),keep.order = TRUE)
+
+# Volcano plot
+
+raw.AT <- raw.AT[order(raw.AT$padj),1:8]
+raw.EC <- raw.EC[order(raw.EC$padj),1:8]
+raw.MFB <- raw.MFB[order(raw.MFB$padj),1:8]
+
+raw.AT$direction <- "No-significant"
+raw.EC$direction <- "No-significant"
+raw.MFB$direction <- "No-significant"
+
+raw.AT$direction[which(raw.AT$padj < 0.05 & raw.AT$log2FoldChange > 0)] <- "AT Up-regulated"
+raw.EC$direction[which(raw.EC$padj < 0.05 & raw.EC$log2FoldChange > 0)] <- "EC Up-regulated"
+raw.MFB$direction[which(raw.MFB$padj < 0.05 & raw.MFB$log2FoldChange > 0)] <- "FB Up-regulated"
+
+raw.AT$direction[which(raw.AT$padj < 0.05 & raw.AT$log2FoldChange < 0)] <- "AT Down-regulated"
+raw.EC$direction[which(raw.EC$padj < 0.05 & raw.EC$log2FoldChange < 0)] <- "EC Down-regulated"
+raw.MFB$direction[which(raw.MFB$padj < 0.05 & raw.MFB$log2FoldChange < 0)] <- "FB Down-regulated"
+
+raw.AT$threshold <- c(rep(TRUE,5),rep(FALSE,nrow(raw.AT) - 5))
+raw.EC$threshold <- c(rep(TRUE,5),rep(FALSE,nrow(raw.EC) - 5))
+raw.MFB$threshold <- c(rep(TRUE,5),rep(FALSE,nrow(raw.MFB) - 5))
+
+all.hyperoxia <- rbind(raw.AT,raw.MFB,raw.EC)
+all.hyperoxia$direction <- as.factor(all.hyperoxia$direction)
+head(all.hyperoxia[order(all.hyperoxia$padj),],10)
+
+result <- all.hyperoxia[which(!is.na(all.hyperoxia$padj)),]
+result <- result[order(result$threshold,decreasing = TRUE),]
+
+ggplot(result) +
+  geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction)) + 
+  scale_color_manual(values=c("#ACD49F","#008F00","#A79AD4","#7030A0","#DF758C","#E7298A","grey")) +
+  geom_text_repel(data =subset(result[1:15,], threshold == TRUE), 
+                  mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[1:15]), size = 3) +
+  xlab("log2 fold change") + 
+  ylab("-log10 adjusted p-value") +
+  geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "red") + theme_classic() + theme(legend.title = element_blank())
+
