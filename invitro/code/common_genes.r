@@ -1,0 +1,169 @@
+library(gprofiler2)
+library(ggplot2)
+library(ggrepel)
+
+set_base_url("https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15")
+
+FCplotter = function(pathways, DEG){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  to.plot <- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,"term_id"], organism = "mmusculus")
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot <- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,"term_name"],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       Type=c("up-regulated","down-regulated"),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),"mean_FC"] <- 0
+  
+  return(to.plot)
+}
+
+# AT vs FB vs EC
+
+raw.AT <- read.table(paste0(data.folder,"Hyperoxia_AT.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.EC <- read.table(paste0(data.folder,"Hyperoxia_EC.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.MFB <- read.table(paste0(data.folder,"Hyperoxia_MFB.xls"),sep = "\t",header = T,stringsAsFactors = F)
+
+DEG.AT <- raw.AT[which(raw.AT$padj < 0.05),]
+DEG.MFB <- raw.MFB[which(raw.MFB$padj < 0.05),]
+DEG.EC <- raw.EC[which(raw.EC$padj < 0.05),]
+
+common.genes <- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.EC$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.gost   <-  gost(common.genes,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+common.BP <- common.gost$result[common.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+
+DEG.AT <- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
+DEG.EC <- DEG.EC[which(DEG.EC$ensembl_gene_id %in% common.genes),]
+DEG.MFB <- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
+
+AT.plot <- FCplotter(pathways = common.BP,DEG = DEG.AT)
+EC.plot <- FCplotter(pathways = common.BP,DEG = DEG.EC)
+MFB.plot <- FCplotter(pathways = common.BP,DEG = DEG.MFB)
+
+to.plot <- rbind(#AT.plot[which(AT.plot$Name == "cellular response to DNA damage stimulus"),],
+  #MFB.plot[which(MFB.plot$Name == "cellular response to DNA damage stimulus"),],
+  #EC.plot[which(EC.plot$Name == "cellular response to DNA damage stimulus"),],
+  
+  AT.plot[which(AT.plot$Name == "cellular response to DNA damage stimulus" | AT.plot$Name == "cell population proliferation" | 
+                  AT.plot$Name == "regulation of cell cycle" | AT.plot$Name == "cellular response to stress" |
+                  AT.plot$Name == "mitotic cell cycle" | AT.plot$Name == "mitotic DNA integrity checkpoint" |
+                  AT.plot$Name == "DNA metabolic process" | AT.plot$Name == "regulation of mitotic cell cycle"),],
+  EC.plot[which(EC.plot$Name == "cellular response to DNA damage stimulus" | EC.plot$Name == "cell population proliferation" | 
+                 EC.plot$Name == "regulation of cell cycle" | EC.plot$Name == "cellular response to stress" |
+                  EC.plot$Name == "mitotic cell cycle" | EC.plot$Name == "mitotic DNA integrity checkpoint" |
+                  EC.plot$Name == "DNA metabolic process" | EC.plot$Name == "regulation of mitotic cell cycle"),],
+  MFB.plot[which(MFB.plot$Name == "cellular response to DNA damage stimulus" | MFB.plot$Name == "cell population proliferation" | 
+                   MFB.plot$Name == "regulation of cell cycle" | MFB.plot$Name == "cellular response to stress" |
+                   MFB.plot$Name == "mitotic cell cycle" | MFB.plot$Name == "mitotic DNA integrity checkpoint" |
+                   MFB.plot$Name == "DNA metabolic process" | MFB.plot$Name == "regulation of mitotic cell cycle"),])
+
+#AT.plot[which(AT.plot$Name == "cellular response to stress"),],
+#EC.plot[which(EC.plot$Name == "cellular response to stress"),])
+
+to.plot$Name <-  factor(to.plot$Name, levels=unique(to.plot$Name))
+
+swr <- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse="\n")
+}
+swr <- Vectorize(swr)
+
+to.plot$Name <- swr(to.plot$Name)
+
+to.plot$Cell <- c(#rep("AT2",2),rep("MFB",2),rep("EC",2),
+  rep("AT",16),rep("EC",16),rep("FB",16))
+# rep("AT2",2),rep("EC",2))
+
+to.plot$Cell <- factor(to.plot$Cell,levels = c("AT","FB","EC"))
+to.plot$Name <- as.factor(to.plot$Name)
+
+ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell) )) + ylab("Cell type") + xlab("Mean logFC") +
+  geom_bar(stat = "identity",size=2) + scale_fill_manual(name = "", labels = c("AT down-regulated", "AT up-regulated",
+                                                                               "FB down-regulated", "FB up-regulated",
+                                                                               "EC down-regulated", "EC up-regulated"),values = c("#ACD49F","#008F00","#DF758C","#E7298A","#A79AD4","#7030A0"),aesthetics = "fill") + 
+  facet_grid(cols = vars(Name)) + theme_bw() + theme(axis.line = element_blank(),
+                                                                                                                       panel.grid.major = element_blank(),
+                                                                                                                       panel.grid.minor = element_blank(),
+                                                                                                                       panel.background = element_blank()) + 
+  theme(legend.position = "left",
+        legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) + 
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 3.5) +
+  geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) )) + 
+  coord_flip()
+
+# AT vs FB
+
+raw.AT <- read.table(paste0(data.folder,"Hyperoxia_AT.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.MFB <- read.table(paste0(data.folder,"Hyperoxia_MFB.xls"),sep = "\t",header = T,stringsAsFactors = F)
+
+DEG.AT <- raw.AT[which(raw.AT$padj < 0.05),]
+DEG.MFB <- raw.MFB[which(raw.MFB$padj < 0.05),]
+
+common.genes <- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.EC$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.AT.MFB <- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.genes <- common.AT.MFB[which(!common.AT.MFB %in% common.genes)]
+common.gost <-  gost(common.genes,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+common.BP <- common.gost$result[common.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+
+DEG.AT <- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
+DEG.MFB <- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
+
+AT.plot <- FCplotter(pathways = common.BP,DEG = DEG.AT)
+MFB.plot <- FCplotter(pathways = common.BP,DEG = DEG.MFB)
+
+to.plot <- rbind(#AT.plot[which(AT.plot$Name == "cellular response to DNA damage stimulus"),],
+  #MFB.plot[which(MFB.plot$Name == "cellular response to DNA damage stimulus"),],
+  #EC.plot[which(EC.plot$Name == "cellular response to DNA damage stimulus"),],
+  
+  AT.plot[which(AT.plot$Name == "cell cycle" | AT.plot$Name == "cell cycle process" | 
+                  AT.plot$Name == "mitotic cell cycle" | AT.plot$Name == "mitotic cell cycle process" |
+                  AT.plot$Name == "DNA replication" | AT.plot$Name == "chromosome segregation" |
+                  AT.plot$Name == "DNA metabolic process" | AT.plot$Name == "chromosome organization"),],
+  MFB.plot[which(MFB.plot$Name == "cell cycle" | MFB.plot$Name == "cell cycle process" | 
+                   MFB.plot$Name == "mitotic cell cycle" | MFB.plot$Name == "mitotic cell cycle process" |
+                   MFB.plot$Name == "DNA replication" | MFB.plot$Name == "chromosome segregation" |
+                   MFB.plot$Name == "DNA metabolic process" | MFB.plot$Name == "chromosome organization"),])
+
+#AT.plot[which(AT.plot$Name == "cellular response to stress"),],
+#EC.plot[which(EC.plot$Name == "cellular response to stress"),])
+
+to.plot$Name <-  factor(to.plot$Name, levels=unique(to.plot$Name))
+
+swr <- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse="\n")
+}
+swr <- Vectorize(swr)
+
+to.plot$Name <- swr(to.plot$Name)
+
+to.plot$Cell <- c(#rep("AT2",2),rep("MFB",2),rep("EC",2),
+  rep("AT2",16),rep("MFB",16))
+# rep("AT2",2),rep("EC",2))
+
+to.plot$Cell <- factor(to.plot$Cell,levels = c("AT2","MFB"))
+to.plot$Name <- as.factor(to.plot$Name)
+
+ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell))) + ylab("Cell type") + xlab("Mean logFC") +
+  geom_bar(stat = "identity",size=2) + scale_fill_manual(values = c("#ACD49F","#008F00","#DF758C","#E7298A"),aesthetics = "fill") + 
+  facet_grid(cols = vars(Name)) + theme_bw() + theme(legend.position = "none",
+    strip.background =element_rect(fill="#C6DBEF")) + 
+  theme(axis.line = element_blank(),
+                                                     panel.grid.major = element_blank(),
+                                                     panel.grid.minor = element_blank(),
+                                                     panel.background = element_blank()) + 
+  theme(legend.position = "left",
+        legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) +
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 3.5) +
+  geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) )) +
+  coord_flip()

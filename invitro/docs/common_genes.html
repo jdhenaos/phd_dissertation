@@ -11,7 +11,7 @@
 
 
 
-<title>DEG analysis: Volcano plot and UpSet plot</title>
+<title>Bioogical processes derived from common genes</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -281,7 +281,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">DEG analysis: Volcano plot and UpSet plot</h1>
+<h1 class="title toc-ignore">Bioogical processes derived from common genes</h1>
 
 </div>
 
@@ -464,7 +464,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/degs.Rmd</code>) and HTML (<code>docs/degs.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/common_genes.Rmd</code>) and HTML (<code>docs/common_genes.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -490,27 +490,10 @@ Message
 <tbody>
 <tr>
 <td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jdhenaos/invitro/bb42f18cc2a7f5be1811be1890a0567220efc35d/docs/degs.html" target="_blank">bb42f18</a>
-</td>
-<td>
-jdhenaos
-</td>
-<td>
-2025-08-27
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
 Rmd
 </td>
 <td>
-<a href="https://github.com/jdhenaos/invitro/blob/31a62a2a8a65822fa868a61c698412ce9d433212/analysis/degs.Rmd" target="_blank">31a62a2</a>
+<a href="https://github.com/jdhenaos/invitro/blob/171fca42011d23df241aad48201e00ee7a96158a/analysis/common_genes.Rmd" target="_blank">171fca4</a>
 </td>
 <td>
 jdhenaos
@@ -519,41 +502,7 @@ jdhenaos
 2025-08-27
 </td>
 <td>
-Add DEGs analysis
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jdhenaos/invitro/7603db9880bd72cb6f605aaf20cb7e600cae662c/docs/degs.html" target="_blank">7603db9</a>
-</td>
-<td>
-jdhenaos
-</td>
-<td>
-2025-08-27
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/jdhenaos/invitro/blob/d65917bc5b9d473c2477ce3f23a5c36125e7c905/analysis/degs.Rmd" target="_blank">d65917b</a>
-</td>
-<td>
-jdhenaos
-</td>
-<td>
-2025-08-27
-</td>
-<td>
-Start my new project
+wflow_publish("analysis/*")
 </td>
 </tr>
 </tbody>
@@ -563,174 +512,183 @@ Start my new project
 </div>
 </div>
 </div>
-<pre class="r"><code>library(ggplot2)
-library(UpSetR)
+<pre class="r"><code>library(gprofiler2)
+library(ggplot2)
 library(ggrepel)
 
 data.folder &lt;- &quot;/workspaces/invitro/invitro/data/&quot;
 
-raw.AT &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_AT.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
+set_base_url(&quot;https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15&quot;)
+
+FCplotter = function(pathways, DEG){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  to.plot &lt;- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,&quot;term_id&quot;], organism = &quot;mmusculus&quot;)
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot &lt;- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,&quot;term_name&quot;],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0])),
+                       Type=c(&quot;up-regulated&quot;,&quot;down-regulated&quot;),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                                 sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),&quot;mean_FC&quot;] &lt;- 0
+  
+  return(to.plot)
+}</code></pre>
+<div id="at-vs-fb-vs-ec" class="section level1">
+<h1>AT vs FB vs EC</h1>
+<pre class="r"><code>raw.AT &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_AT.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
 raw.EC &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_EC.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
 raw.MFB &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_MFB.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
 
 DEG.AT &lt;- raw.AT[which(raw.AT$padj &lt; 0.05),]
+DEG.MFB &lt;- raw.MFB[which(raw.MFB$padj &lt; 0.05),]
 DEG.EC &lt;- raw.EC[which(raw.EC$padj &lt; 0.05),]
-DEG.MFB &lt;- raw.MFB[which(raw.MFB$padj &lt; 0.05),]</code></pre>
-<div id="upset-plot" class="section level1">
-<h1>UpSet plot</h1>
-<pre class="r"><code>frame &lt;- fromList(list(DEG.EC$ensembl_gene_id,
-                       DEG.MFB$ensembl_gene_id,
-                       DEG.AT$ensembl_gene_id))
 
-colnames(frame) &lt;- c(paste0(&quot;EC Hyperoxia&quot;,&quot; (N = &quot;,nrow(DEG.EC),&quot;)&quot;),
-                     paste0(&quot;FB Hyperoxia&quot;,&quot; (N = &quot;,nrow(DEG.MFB),&quot;)&quot;),
-                     paste0(&quot;AT Hyperoxia&quot;,&quot; (N = &quot;,nrow(DEG.AT),&quot;)&quot;))
+common.genes &lt;- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.EC$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.gost   &lt;-  gost(common.genes,organism = &quot;mmusculus&quot;,sources=c(&quot;GO:MF&quot;, &quot;GO:BP&quot;,&quot;GO:CC&quot;, &quot;KEGG&quot;))
+common.BP &lt;- common.gost$result[common.gost$result$source == &quot;GO:BP&quot;,c(&quot;term_id&quot;, &quot;source&quot;, &quot;term_name&quot;, &quot;p_value&quot;, &quot;query_size&quot;, &quot;term_size&quot;, &quot;intersection_size&quot;)]
 
-upset(frame,nsets = 20, nintersects = 15,
-      queries = list(list(query = intersects, 
-                          params = list(&quot;AT Hyperoxia (N = 1368)&quot;,&quot;FB Hyperoxia (N = 1150)&quot;), 
-                          color = &quot;#C6DBEF&quot;, active = T),
-                     list(query = intersects, 
-                          params = list(&quot;AT Hyperoxia (N = 1368)&quot;,&quot;FB Hyperoxia (N = 1150)&quot;,&quot;EC Hyperoxia (N = 69)&quot;), 
-                          color = &quot;#4292C6&quot;, active = T)),
-      order.by = c(&quot;freq&quot;),empty.intersections = NULL,
-      sets.bar.color = c(&quot;#A79AD4&quot;,&quot;#DF758C&quot;,&quot;#ACD49F&quot;),
-      sets = colnames(frame),keep.order = TRUE)</code></pre>
-<p><img src="figure/degs.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
-Past versions of unnamed-chunk-2-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jdhenaos/invitro/blob/7603db9880bd72cb6f605aaf20cb7e600cae662c/docs/figure/degs.Rmd/unnamed-chunk-2-1.png" target="_blank">7603db9</a>
-</td>
-<td>
-jdhenaos
-</td>
-<td>
-2025-08-27
-</td>
-</tr>
-</tbody>
-</table>
+DEG.AT &lt;- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
+DEG.EC &lt;- DEG.EC[which(DEG.EC$ensembl_gene_id %in% common.genes),]
+DEG.MFB &lt;- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
+
+AT.plot &lt;- FCplotter(pathways = common.BP,DEG = DEG.AT)
+EC.plot &lt;- FCplotter(pathways = common.BP,DEG = DEG.EC)
+MFB.plot &lt;- FCplotter(pathways = common.BP,DEG = DEG.MFB)
+
+to.plot &lt;- rbind(#AT.plot[which(AT.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  #MFB.plot[which(MFB.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  #EC.plot[which(EC.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  
+  AT.plot[which(AT.plot$Name == &quot;cellular response to DNA damage stimulus&quot; | AT.plot$Name == &quot;cell population proliferation&quot; | 
+                  AT.plot$Name == &quot;regulation of cell cycle&quot; | AT.plot$Name == &quot;cellular response to stress&quot; |
+                  AT.plot$Name == &quot;mitotic cell cycle&quot; | AT.plot$Name == &quot;mitotic DNA integrity checkpoint&quot; |
+                  AT.plot$Name == &quot;DNA metabolic process&quot; | AT.plot$Name == &quot;regulation of mitotic cell cycle&quot;),],
+  EC.plot[which(EC.plot$Name == &quot;cellular response to DNA damage stimulus&quot; | EC.plot$Name == &quot;cell population proliferation&quot; | 
+                 EC.plot$Name == &quot;regulation of cell cycle&quot; | EC.plot$Name == &quot;cellular response to stress&quot; |
+                  EC.plot$Name == &quot;mitotic cell cycle&quot; | EC.plot$Name == &quot;mitotic DNA integrity checkpoint&quot; |
+                  EC.plot$Name == &quot;DNA metabolic process&quot; | EC.plot$Name == &quot;regulation of mitotic cell cycle&quot;),],
+  MFB.plot[which(MFB.plot$Name == &quot;cellular response to DNA damage stimulus&quot; | MFB.plot$Name == &quot;cell population proliferation&quot; | 
+                   MFB.plot$Name == &quot;regulation of cell cycle&quot; | MFB.plot$Name == &quot;cellular response to stress&quot; |
+                   MFB.plot$Name == &quot;mitotic cell cycle&quot; | MFB.plot$Name == &quot;mitotic DNA integrity checkpoint&quot; |
+                   MFB.plot$Name == &quot;DNA metabolic process&quot; | MFB.plot$Name == &quot;regulation of mitotic cell cycle&quot;),])
+
+
+to.plot$Name &lt;-  factor(to.plot$Name, levels=unique(to.plot$Name))
+
+swr &lt;- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse=&quot;\n&quot;)
+}
+swr &lt;- Vectorize(swr)
+
+to.plot$Name &lt;- swr(to.plot$Name)
+
+to.plot$Cell &lt;- c(#rep(&quot;AT2&quot;,2),rep(&quot;MFB&quot;,2),rep(&quot;EC&quot;,2),
+  rep(&quot;AT&quot;,16),rep(&quot;EC&quot;,16),rep(&quot;FB&quot;,16))
+# rep(&quot;AT2&quot;,2),rep(&quot;EC&quot;,2))
+
+to.plot$Cell &lt;- factor(to.plot$Cell,levels = c(&quot;AT&quot;,&quot;FB&quot;,&quot;EC&quot;))
+to.plot$Name &lt;- as.factor(to.plot$Name)
+
+ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell) )) + ylab(&quot;Cell type&quot;) + xlab(&quot;Mean logFC&quot;) +
+  geom_bar(stat = &quot;identity&quot;,size=2) + scale_fill_manual(name = &quot;&quot;, labels = c(&quot;AT down-regulated&quot;, &quot;AT up-regulated&quot;,
+                                                                               &quot;FB down-regulated&quot;, &quot;FB up-regulated&quot;,
+                                                                               &quot;EC down-regulated&quot;, &quot;EC up-regulated&quot;),values = c(&quot;#ACD49F&quot;,&quot;#008F00&quot;,&quot;#DF758C&quot;,&quot;#E7298A&quot;,&quot;#A79AD4&quot;,&quot;#7030A0&quot;),aesthetics = &quot;fill&quot;) + 
+  facet_grid(cols = vars(Name)) + theme_bw() + theme(axis.line = element_blank(),
+                                                                                                                       panel.grid.major = element_blank(),
+                                                                                                                       panel.grid.minor = element_blank(),
+                                                                                                                       panel.background = element_blank()) + 
+  theme(legend.position = &quot;left&quot;,
+        legend.direction = &quot;vertical&quot;) + theme(strip.background =element_rect(fill=&quot;#4292C6&quot;)) + 
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC &lt; 0,-0.1, 0.1) ),size = 3.5) +
+  geom_linerange(aes(xmin=ifelse(mean_FC &lt; 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC &gt; 0,mean_FC + SD, mean_FC) )) + 
+  coord_flip()</code></pre>
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.
+This warning is displayed once every 8 hours.
+Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+generated.</code></pre>
+<p><img src="figure/common_genes.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-</div>
-<div id="volcano-plot" class="section level1">
-<h1>Volcano plot</h1>
-<pre class="r"><code>raw.AT &lt;- raw.AT[order(raw.AT$padj),1:8]
-raw.EC &lt;- raw.EC[order(raw.EC$padj),1:8]
-raw.MFB &lt;- raw.MFB[order(raw.MFB$padj),1:8]
+<div id="at-vs-fb" class="section level1">
+<h1>AT vs FB</h1>
+<pre class="r"><code>raw.AT &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_AT.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
+raw.EC &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_EC.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
+raw.MFB &lt;- read.table(paste0(data.folder,&quot;Hyperoxia_MFB.xls&quot;),sep = &quot;\t&quot;,header = T,stringsAsFactors = F)
 
-raw.AT$direction &lt;- &quot;No-significant&quot;
-raw.EC$direction &lt;- &quot;No-significant&quot;
-raw.MFB$direction &lt;- &quot;No-significant&quot;
+DEG.AT &lt;- raw.AT[which(raw.AT$padj &lt; 0.05),]
+DEG.MFB &lt;- raw.MFB[which(raw.MFB$padj &lt; 0.05),]
+DEG.EC &lt;- raw.EC[which(raw.EC$padj &lt; 0.05),]
 
-raw.AT$direction[which(raw.AT$padj &lt; 0.05 &amp; raw.AT$log2FoldChange &gt; 0)] &lt;- &quot;AT Up-regulated&quot;
-raw.EC$direction[which(raw.EC$padj &lt; 0.05 &amp; raw.EC$log2FoldChange &gt; 0)] &lt;- &quot;EC Up-regulated&quot;
-raw.MFB$direction[which(raw.MFB$padj &lt; 0.05 &amp; raw.MFB$log2FoldChange &gt; 0)] &lt;- &quot;FB Up-regulated&quot;
+common.genes &lt;- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.EC$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.AT.MFB &lt;- Reduce(intersect,list(DEG.AT$ensembl_gene_id,DEG.MFB$ensembl_gene_id))
+common.genes &lt;- common.AT.MFB[which(!common.AT.MFB %in% common.genes)]
+common.gost &lt;-  gost(common.genes,organism = &quot;mmusculus&quot;,sources=c(&quot;GO:MF&quot;, &quot;GO:BP&quot;,&quot;GO:CC&quot;, &quot;KEGG&quot;))
+common.BP &lt;- common.gost$result[common.gost$result$source == &quot;GO:BP&quot;,c(&quot;term_id&quot;, &quot;source&quot;, &quot;term_name&quot;, &quot;p_value&quot;, &quot;query_size&quot;, &quot;term_size&quot;, &quot;intersection_size&quot;)]
 
-raw.AT$direction[which(raw.AT$padj &lt; 0.05 &amp; raw.AT$log2FoldChange &lt; 0)] &lt;- &quot;AT Down-regulated&quot;
-raw.EC$direction[which(raw.EC$padj &lt; 0.05 &amp; raw.EC$log2FoldChange &lt; 0)] &lt;- &quot;EC Down-regulated&quot;
-raw.MFB$direction[which(raw.MFB$padj &lt; 0.05 &amp; raw.MFB$log2FoldChange &lt; 0)] &lt;- &quot;FB Down-regulated&quot;
+DEG.AT &lt;- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
+DEG.MFB &lt;- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
 
-raw.AT$threshold &lt;- c(rep(TRUE,5),rep(FALSE,nrow(raw.AT) - 5))
-raw.EC$threshold &lt;- c(rep(TRUE,5),rep(FALSE,nrow(raw.EC) - 5))
-raw.MFB$threshold &lt;- c(rep(TRUE,5),rep(FALSE,nrow(raw.MFB) - 5))
+AT.plot &lt;- FCplotter(pathways = common.BP,DEG = DEG.AT)
+MFB.plot &lt;- FCplotter(pathways = common.BP,DEG = DEG.MFB)
 
-all.hyperoxia &lt;- rbind(raw.AT,raw.MFB,raw.EC)
-all.hyperoxia$direction &lt;- as.factor(all.hyperoxia$direction)
-head(all.hyperoxia[order(all.hyperoxia$padj),],10)</code></pre>
-<pre><code>          ensembl_gene_id mgi_symbol  baseMean log2FoldChange      lfcSE
-19009  ENSMUSG00000023015    Racgap1 2126.7225     -1.1347772 0.09047989
-21849  ENSMUSG00000025001      Hells 1218.9385     -0.9741433 0.08294554
-188171 ENSMUSG00000022360      Atad2 2370.5353     -0.8715216 0.07697328
-764    ENSMUSG00000026355       Mcm6 4053.6186     -0.6640666 0.06029915
-2646   ENSMUSG00000027469       Tpx2 2590.7041     -1.0022389 0.09216284
-13727  ENSMUSG00000036777       Anln 6570.4818     -0.6903815 0.06344467
-14488  ENSMUSG00000032555     Topbp1 4023.1976     -0.5929167 0.05434847
-13113  ENSMUSG00000037544     Dlgap5  909.1766     -1.1617465 0.10910280
-160101 ENSMUSG00000069793      Slfn9  988.9436     -1.3188793 0.12277972
-76910  ENSMUSG00000026355       Mcm6 3211.9482     -0.7980071 0.07483324
-            stat       pvalue         padj         direction threshold
-19009  -12.54176 4.410857e-36 5.775577e-32 AT Down-regulated      TRUE
-21849  -11.74437 7.547978e-32 4.941661e-28 AT Down-regulated      TRUE
-188171 -11.32239 1.016601e-29 1.309281e-25 FB Down-regulated      TRUE
-764    -11.01287 3.312903e-28 1.445972e-24 AT Down-regulated      TRUE
-2646   -10.87465 1.522340e-27 3.322254e-24 AT Down-regulated      TRUE
-13727  -10.88163 1.410184e-27 3.322254e-24 AT Down-regulated      TRUE
-14488  -10.90954 1.037828e-27 3.322254e-24 AT Down-regulated     FALSE
-13113  -10.64818 1.778033e-26 3.325938e-23 AT Down-regulated     FALSE
-160101 -10.74183 6.474572e-27 4.169301e-23 FB Down-regulated      TRUE
-76910  -10.66381 1.503173e-26 6.453123e-23 FB Down-regulated      TRUE</code></pre>
-<pre class="r"><code>result &lt;- all.hyperoxia[which(!is.na(all.hyperoxia$padj)),]
-result &lt;- result[order(result$threshold,decreasing = TRUE),]
+to.plot &lt;- rbind(#AT.plot[which(AT.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  #MFB.plot[which(MFB.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  #EC.plot[which(EC.plot$Name == &quot;cellular response to DNA damage stimulus&quot;),],
+  
+  AT.plot[which(AT.plot$Name == &quot;cell cycle&quot; | AT.plot$Name == &quot;cell cycle process&quot; | 
+                  AT.plot$Name == &quot;mitotic cell cycle&quot; | AT.plot$Name == &quot;mitotic cell cycle process&quot; |
+                  AT.plot$Name == &quot;DNA replication&quot; | AT.plot$Name == &quot;chromosome segregation&quot; |
+                  AT.plot$Name == &quot;DNA metabolic process&quot; | AT.plot$Name == &quot;chromosome organization&quot;),],
+  MFB.plot[which(MFB.plot$Name == &quot;cell cycle&quot; | MFB.plot$Name == &quot;cell cycle process&quot; | 
+                   MFB.plot$Name == &quot;mitotic cell cycle&quot; | MFB.plot$Name == &quot;mitotic cell cycle process&quot; |
+                   MFB.plot$Name == &quot;DNA replication&quot; | MFB.plot$Name == &quot;chromosome segregation&quot; |
+                   MFB.plot$Name == &quot;DNA metabolic process&quot; | MFB.plot$Name == &quot;chromosome organization&quot;),])
 
-ggplot(result) +
-  geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction)) + 
-  scale_color_manual(values=c(&quot;#ACD49F&quot;,&quot;#008F00&quot;,&quot;#A79AD4&quot;,&quot;#7030A0&quot;,&quot;#DF758C&quot;,&quot;#E7298A&quot;,&quot;grey&quot;)) +
-  geom_text_repel(data =subset(result[1:15,], threshold == TRUE), 
-                  mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[1:15]), size = 3) +
-  xlab(&quot;log2 fold change&quot;) + 
-  ylab(&quot;-log10 adjusted p-value&quot;) +
-  geom_hline(yintercept=-log10(0.05), linetype=&quot;dashed&quot;, color = &quot;red&quot;) + theme_classic() + theme(legend.title = element_blank())</code></pre>
-<p><img src="figure/degs.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
-Past versions of unnamed-chunk-3-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-3-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jdhenaos/invitro/blob/7603db9880bd72cb6f605aaf20cb7e600cae662c/docs/figure/degs.Rmd/unnamed-chunk-3-1.png" target="_blank">7603db9</a>
-</td>
-<td>
-jdhenaos
-</td>
-<td>
-2025-08-27
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+#AT.plot[which(AT.plot$Name == &quot;cellular response to stress&quot;),],
+#EC.plot[which(EC.plot$Name == &quot;cellular response to stress&quot;),])
+
+to.plot$Name &lt;-  factor(to.plot$Name, levels=unique(to.plot$Name))
+
+swr &lt;- function(string, nwrap=20) {
+  paste(strwrap(string, width=nwrap), collapse=&quot;\n&quot;)
+}
+swr &lt;- Vectorize(swr)
+
+to.plot$Name &lt;- swr(to.plot$Name)
+
+to.plot$Cell &lt;- c(#rep(&quot;AT2&quot;,2),rep(&quot;MFB&quot;,2),rep(&quot;EC&quot;,2),
+  rep(&quot;AT2&quot;,16),rep(&quot;MFB&quot;,16))
+# rep(&quot;AT2&quot;,2),rep(&quot;EC&quot;,2))
+
+to.plot$Cell &lt;- factor(to.plot$Cell,levels = c(&quot;AT2&quot;,&quot;MFB&quot;))
+to.plot$Name &lt;- as.factor(to.plot$Name)
+
+ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell))) + ylab(&quot;Cell type&quot;) + xlab(&quot;Mean logFC&quot;) +
+  geom_bar(stat = &quot;identity&quot;,size=2) + scale_fill_manual(values = c(&quot;#ACD49F&quot;,&quot;#008F00&quot;,&quot;#DF758C&quot;,&quot;#E7298A&quot;),aesthetics = &quot;fill&quot;) + 
+  facet_grid(cols = vars(Name)) + theme_bw() + theme(legend.position = &quot;none&quot;,
+    strip.background =element_rect(fill=&quot;#C6DBEF&quot;)) + 
+  theme(axis.line = element_blank(),
+                                                     panel.grid.major = element_blank(),
+                                                     panel.grid.minor = element_blank(),
+                                                     panel.background = element_blank()) + 
+  theme(legend.position = &quot;left&quot;,
+        legend.direction = &quot;vertical&quot;) + theme(strip.background =element_rect(fill=&quot;#4292C6&quot;)) +
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC &lt; 0,-0.1, 0.1) ),size = 3.5) +
+  geom_linerange(aes(xmin=ifelse(mean_FC &lt; 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC &gt; 0,mean_FC + SD, mean_FC) )) +
+  coord_flip()</code></pre>
+<p><img src="figure/common_genes.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="session-info" class="section level1">
 <h1>Session info</h1>
@@ -758,23 +716,25 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggrepel_0.9.6   UpSetR_1.4.0    ggplot2_3.5.2   workflowr_1.7.1
+[1] ggrepel_0.9.6    ggplot2_3.5.2    gprofiler2_0.2.3 workflowr_1.7.1 
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4        compiler_4.4.0    
- [5] promises_1.3.3     tidyselect_1.2.1   Rcpp_1.1.0         stringr_1.5.1     
- [9] git2r_0.33.0       gridExtra_2.3      callr_3.7.6        later_1.4.4       
-[13] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
-[17] plyr_1.8.9         R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-[21] knitr_1.50         tibble_3.3.0       rprojroot_2.1.1    RColorBrewer_1.1-3
-[25] bslib_0.9.0        pillar_1.11.0      rlang_1.1.6        cachem_1.1.0      
-[29] stringi_1.8.7      httpuv_1.6.16      xfun_0.53          getPass_0.2-4     
-[33] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       
-[37] magrittr_2.0.3     ps_1.9.1           digest_0.6.37      grid_4.4.0        
-[41] processx_3.8.6     rstudioapi_0.17.1  lifecycle_1.0.4    vctrs_0.6.5       
-[45] evaluate_1.0.4     glue_1.8.0         farver_2.1.2       whisker_0.4.1     
-[49] rmarkdown_2.29     httr_1.4.7         tools_4.4.0        pkgconfig_2.0.3   
-[53] htmltools_0.5.8.1 </code></pre>
+ [1] plotly_4.11.0      sass_0.4.10        generics_0.1.4     tidyr_1.3.1       
+ [5] bitops_1.0-9       stringi_1.8.7      digest_0.6.37      magrittr_2.0.3    
+ [9] evaluate_1.0.4     grid_4.4.0         RColorBrewer_1.1-3 fastmap_1.2.0     
+[13] rprojroot_2.1.1    jsonlite_2.0.0     processx_3.8.6     whisker_0.4.1     
+[17] ps_1.9.1           promises_1.3.3     httr_1.4.7         purrr_1.1.0       
+[21] viridisLite_0.4.2  scales_1.4.0       lazyeval_0.2.2     jquerylib_0.1.4   
+[25] cli_3.6.5          crayon_1.5.3       rlang_1.1.6        withr_3.0.2       
+[29] cachem_1.1.0       yaml_2.3.10        tools_4.4.0        dplyr_1.1.4       
+[33] httpuv_1.6.16      vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4   
+[37] git2r_0.33.0       stringr_1.5.1      fs_1.6.6           htmlwidgets_1.6.4 
+[41] pkgconfig_2.0.3    callr_3.7.6        pillar_1.11.0      bslib_0.9.0       
+[45] later_1.4.4        gtable_0.3.6       glue_1.8.0         data.table_1.17.8 
+[49] Rcpp_1.1.0         xfun_0.53          tibble_3.3.0       tidyselect_1.2.1  
+[53] rstudioapi_0.17.1  knitr_1.50         farver_2.1.2       htmltools_0.5.8.1 
+[57] labeling_0.4.3     rmarkdown_2.29     compiler_4.4.0     getPass_0.2-4     
+[61] RCurl_1.98-1.14   </code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -806,23 +766,25 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggrepel_0.9.6   UpSetR_1.4.0    ggplot2_3.5.2   workflowr_1.7.1
+[1] ggrepel_0.9.6    ggplot2_3.5.2    gprofiler2_0.2.3 workflowr_1.7.1 
 
 loaded via a namespace (and not attached):
- [1] gtable_0.3.6       jsonlite_2.0.0     dplyr_1.1.4        compiler_4.4.0    
- [5] promises_1.3.3     tidyselect_1.2.1   Rcpp_1.1.0         stringr_1.5.1     
- [9] git2r_0.33.0       gridExtra_2.3      callr_3.7.6        later_1.4.4       
-[13] jquerylib_0.1.4    scales_1.4.0       yaml_2.3.10        fastmap_1.2.0     
-[17] plyr_1.8.9         R6_2.6.1           labeling_0.4.3     generics_0.1.4    
-[21] knitr_1.50         tibble_3.3.0       rprojroot_2.1.1    RColorBrewer_1.1-3
-[25] bslib_0.9.0        pillar_1.11.0      rlang_1.1.6        cachem_1.1.0      
-[29] stringi_1.8.7      httpuv_1.6.16      xfun_0.53          getPass_0.2-4     
-[33] fs_1.6.6           sass_0.4.10        cli_3.6.5          withr_3.0.2       
-[37] magrittr_2.0.3     ps_1.9.1           digest_0.6.37      grid_4.4.0        
-[41] processx_3.8.6     rstudioapi_0.17.1  lifecycle_1.0.4    vctrs_0.6.5       
-[45] evaluate_1.0.4     glue_1.8.0         farver_2.1.2       whisker_0.4.1     
-[49] rmarkdown_2.29     httr_1.4.7         tools_4.4.0        pkgconfig_2.0.3   
-[53] htmltools_0.5.8.1 </code></pre>
+ [1] plotly_4.11.0      sass_0.4.10        generics_0.1.4     tidyr_1.3.1       
+ [5] bitops_1.0-9       stringi_1.8.7      digest_0.6.37      magrittr_2.0.3    
+ [9] evaluate_1.0.4     grid_4.4.0         RColorBrewer_1.1-3 fastmap_1.2.0     
+[13] rprojroot_2.1.1    jsonlite_2.0.0     processx_3.8.6     whisker_0.4.1     
+[17] ps_1.9.1           promises_1.3.3     httr_1.4.7         purrr_1.1.0       
+[21] viridisLite_0.4.2  scales_1.4.0       lazyeval_0.2.2     jquerylib_0.1.4   
+[25] cli_3.6.5          crayon_1.5.3       rlang_1.1.6        withr_3.0.2       
+[29] cachem_1.1.0       yaml_2.3.10        tools_4.4.0        dplyr_1.1.4       
+[33] httpuv_1.6.16      vctrs_0.6.5        R6_2.6.1           lifecycle_1.0.4   
+[37] git2r_0.33.0       stringr_1.5.1      fs_1.6.6           htmlwidgets_1.6.4 
+[41] pkgconfig_2.0.3    callr_3.7.6        pillar_1.11.0      bslib_0.9.0       
+[45] later_1.4.4        gtable_0.3.6       glue_1.8.0         data.table_1.17.8 
+[49] Rcpp_1.1.0         xfun_0.53          tibble_3.3.0       tidyselect_1.2.1  
+[53] rstudioapi_0.17.1  knitr_1.50         farver_2.1.2       htmltools_0.5.8.1 
+[57] labeling_0.4.3     rmarkdown_2.29     compiler_4.4.0     getPass_0.2-4     
+[61] RCurl_1.98-1.14   </code></pre>
 </div>
 </div>
 
