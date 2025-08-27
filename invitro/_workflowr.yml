@@ -1,6 +1,8 @@
 # workflowr options
 # Version 1.7.1
 
+site.url: https://jdhenaos.github.io/phd_dissertation/invitro/
+
 # The seed to use for random number generation. See ?set.seed for details.
 seed: 20250827
 # The working directory to build the R Markdown files. The path is relative to
