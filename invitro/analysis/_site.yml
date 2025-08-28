@@ -9,6 +9,12 @@ navbar:
     href: about.html
   - text: License
     href: license.html
+  - text: DEGs
+    href: degs.html
+  - text: Common genes
+    href: common_genes.html
+  - text: Unique genes
+    href: unique_genes.html
   right:
   - icon: fab fa-github
     text: Source code
