@@ -1,0 +1,64 @@
+---
+title: "Single cell"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+
+data.folder <- "/workspaces/invitro/invitro/data/"
+```
+
+# AT
+
+```{r}
+seurat <- readRDS(paste0(data.folder,"220427_ATII_embedding.rds"))
+
+sub.seurat <- subset(x = seurat, subset = CellType %in% c("AT2 1","AT1","AT_B"))
+reference <- subset(x = seurat, subset = CellType %in% c("AT_B"))
+
+reference@meta.data$IDs <- rownames(reference@meta.data)
+DimPlot(reference,group.by="IDs",label = T)
+
+DimPlot(sub.seurat,group.by="CellType") +
+ scale_color_manual(labels = c("AT in vitro","AT1","AT2"), 
+                    values = c("#F4B183","#DF758C","#C5E0B4"))
+```
+
+# FB
+
+```{r}
+seurat <- readRDS(paste0(data.folder,"220427_MFB_embedding.rds"))
+
+sub.seurat <- subset(x = seurat, subset = CellType %in% c("Col13a1+ fibroblast","Myofibroblast","SMC","MFB_B"))
+reference <- subset(x = seurat, subset = CellType %in% c("MFB_B"))
+
+reference@meta.data$IDs <- rownames(reference@meta.data)
+DimPlot(reference,group.by="IDs",label = T)
+
+DimPlot(sub.seurat,group.by="CellType") +
+    scale_color_manual(labels = c("Col13a1+ fibroblast","FB in vitro", "Myofibroblast", "SMC"), 
+                    values = c("#F4B183","#DF758C","#C5E0B4","#BDD7EE"))
+```
+
+# EC
+
+```{r}
+seurat <- readRDS(paste0(data.folder,"220427_EC_embedding.rds"))
+
+sub.seurat <- subset(x = seurat, subset = CellType %in% c("Cap","EC_B"))
+reference <- subset(x = seurat, subset = CellType %in% c("EC_B"))
+
+reference@meta.data$IDs <- rownames(reference@meta.data)
+DimPlot(reference,group.by="IDs",label = T)
+
+DimPlot(sub.seurat,group.by="CellType") +
+    scale_color_manual(labels = c("Cap","EC in vitro"), 
+                    values = c("#F4B183","#DF758C"))
+```

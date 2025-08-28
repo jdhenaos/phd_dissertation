@@ -1,0 +1,160 @@
+library(Seurat)
+library(ggplot2)
+library(reshape2)
+
+data.folder <- "/workspaces/invitro/invitro/data/"
+
+raw.AT <- read.table(paste0(data.folder,"Hyperoxia_AT.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.EC <- read.table(paste0(data.folder,"Hyperoxia_EC.xls"),sep = "\t",header = T,stringsAsFactors = F)
+raw.MFB <- read.table(paste0(data.folder,"Hyperoxia_MFB.xls"),sep = "\t",header = T,stringsAsFactors = F)
+
+DEG.AT <- raw.AT[which(raw.AT$padj < 0.05),]
+DEG.EC <- raw.EC[which(raw.EC$padj < 0.05),]
+DEG.MFB <- raw.MFB[which(raw.MFB$padj < 0.05),]
+
+g1s <- read.table(paste0(data.folder,"G1S.txt"),header = TRUE)
+g2m <- read.table(paste0(data.folder,"G2M.txt"),header = TRUE)
+
+# S-scores
+
+## AT
+
+AT <- raw.AT[,9:16]
+rownames(AT) <- make.unique(toupper(ifelse(is.na(raw.AT$mgi_symbol)|raw.AT$mgi_symbol == "","NA",raw.AT$mgi_symbol)))
+
+seurat.AT <- CreateSeuratObject(counts = AT, project = "AT")
+DefaultAssay(seurat.AT) <- "RNA"
+seurat.AT[["RNA"]]["data"] <- seurat.AT[["RNA"]]["counts"]
+AT.scores <- CellCycleScoring(object = seurat.AT,s.features = as.vector(g1s)$G1.S,
+    g2m.features = as.vector(g2m)$G2.M,set.ident = TRUE, nbin=25, bin.size=50)
+
+S.AT.df <- data.frame(
+    S.score = AT.scores@meta.data$S.Score,
+    Type = ifelse(AT.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "AT"
+)
+
+G2M.AT.df <- data.frame(
+    G2M.score = AT.scores@meta.data$G2M.Score,
+    Type = ifelse(AT.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "AT"
+)
+
+## EC
+
+EC <- raw.EC[,9:14]
+rownames(EC) <- make.unique(toupper(ifelse(is.na(raw.EC$mgi_symbol)|raw.EC$mgi_symbol == "","NA",raw.EC$mgi_symbol)))
+
+seurat.EC <- CreateSeuratObject(counts = EC, project = "EC")
+DefaultAssay(seurat.EC) <- "RNA"
+seurat.EC[["RNA"]]["data"] <- seurat.EC[["RNA"]]["counts"]
+EC.scores <- CellCycleScoring(object = seurat.EC,s.features = as.vector(g1s)$G1.S,
+    g2m.features = as.vector(g2m)$G2.M,set.ident = TRUE, nbin=25, bin.size=50)
+
+S.EC.df <- data.frame(
+    S.score = EC.scores@meta.data$S.Score,
+    Type = ifelse(EC.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "EC"
+)
+
+G2M.EC.df <- data.frame(
+    G2M.score = EC.scores@meta.data$G2M.Score,
+    Type = ifelse(EC.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "EC"
+)
+
+## FB
+
+FB <- raw.MFB[,9:16]
+rownames(FB) <- make.unique(toupper(ifelse(is.na(raw.MFB$mgi_symbol)|raw.MFB$mgi_symbol == "","NA",raw.MFB$mgi_symbol)))
+
+seurat.FB <- CreateSeuratObject(counts = FB, project = "FB")
+DefaultAssay(seurat.FB) <- "RNA"
+seurat.FB[["RNA"]]["data"] <- seurat.FB[["RNA"]]["counts"]
+FB.scores <- CellCycleScoring(object = seurat.FB,s.features = as.vector(g1s)$G1.S,
+    g2m.features = as.vector(g2m)$G2.M,set.ident = TRUE, nbin=25, bin.size=50)
+
+S.FB.df <- data.frame(
+    S.score = FB.scores@meta.data$S.Score,
+    Type = ifelse(FB.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "FB"
+)
+
+G2M.FB.df <- data.frame(
+    G2M.score = FB.scores@meta.data$G2M.Score,
+    Type = ifelse(FB.scores@meta.data$orig.ident == "N","Normoxia","Hyperoxia"),
+    Cell = "FB"
+)
+
+# Plot
+
+S.df <- rbind(
+    S.AT.df,
+    S.EC.df,
+    S.FB.df
+)
+
+G2M.df <- rbind(
+    G2M.AT.df,
+    G2M.EC.df,
+    G2M.FB.df
+)
+
+GeomSplitViolin <- ggproto("GeomSplitViolin", GeomViolin, 
+                           draw_group = function(self, data, ..., draw_quantiles = NULL) {
+  data <- transform(data, xminv = x - violinwidth * (x - xmin), xmaxv = x + violinwidth * (xmax - x))
+  grp <- data[1, "group"]
+  newdata <- plyr::arrange(transform(data, x = if (grp %% 2 == 1) xminv else xmaxv), if (grp %% 2 == 1) y else -y)
+  newdata <- rbind(newdata[1, ], newdata, newdata[nrow(newdata), ], newdata[1, ])
+  newdata[c(1, nrow(newdata) - 1, nrow(newdata)), "x"] <- round(newdata[1, "x"])
+
+  if (length(draw_quantiles) > 0 & !scales::zero_range(range(data$y))) {
+    stopifnot(all(draw_quantiles >= 0), all(draw_quantiles <=
+      1))
+    quantiles <- ggplot2:::create_quantile_segment_frame(data, draw_quantiles)
+    aesthetics <- data[rep(1, nrow(quantiles)), setdiff(names(data), c("x", "y")), drop = FALSE]
+    aesthetics$alpha <- rep(1, nrow(quantiles))
+    both <- cbind(quantiles, aesthetics)
+    quantile_grob <- GeomPath$draw_panel(both, ...)
+    ggplot2:::ggname("geom_split_violin", grid::grobTree(GeomPolygon$draw_panel(newdata, ...), quantile_grob))
+  }
+  else {
+    ggplot2:::ggname("geom_split_violin", GeomPolygon$draw_panel(newdata, ...))
+  }
+})
+
+geom_split_violin <- function(mapping = NULL, data = NULL, stat = "ydensity", position = "identity", ..., 
+                              draw_quantiles = NULL, trim = TRUE, scale = "area", na.rm = FALSE, 
+                              show.legend = NA, inherit.aes = TRUE) {
+  layer(data = data, mapping = mapping, stat = stat, geom = GeomSplitViolin, 
+        position = position, show.legend = show.legend, inherit.aes = inherit.aes, 
+        params = list(trim = trim, scale = scale, draw_quantiles = draw_quantiles, na.rm = na.rm, ...))
+}
+
+ggplot(S.df, aes(x = Cell, y = S.score, fill = Type)) +
+  geom_split_violin(trim = FALSE) +
+  xlab("") +
+  ylab("S Score")  +
+  scale_fill_manual(values = c("#66c2a5","#fc8d62")) +
+  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+
+ggplot(G2M.df, aes(x = Cell, y = G2M.score, fill = Type)) +
+  geom_split_violin(trim = FALSE) +
+  xlab("") +
+  ylab("G2M Score")  +
+  scale_fill_manual(values = c("#66c2a5","#fc8d62")) +
+  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+
+# Wilcoxon test
+
+W.AT <- wilcox.test(S.AT.df$S.score[which(S.AT.df$Type == "Normoxia")],
+    S.AT.df$S.score[which(S.AT.df$Type == "Hyperoxia")],alternative="two.sided")
+
+W.EC <- wilcox.test(S.EC.df$S.score[which(S.EC.df$Type == "Normoxia")],
+    S.EC.df$S.score[which(S.EC.df$Type == "Hyperoxia")],alternative="two.sided")
+
+W.FB <- wilcox.test(S.FB.df$S.score[which(S.FB.df$Type == "Normoxia")],
+    S.FB.df$S.score[which(S.FB.df$Type == "Hyperoxia")],alternative="two.sided")
+
+
+p.adjust(c(W.AT$p.value,W.EC$p.value,W.FB$p.value))

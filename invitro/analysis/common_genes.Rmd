@@ -1,5 +1,5 @@
 ---
-title: "Bioogical processes derived from common genes"
+title: "Common genes"
 output:
   workflowr::wflow_html:
     toc: false

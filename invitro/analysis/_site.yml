@@ -15,6 +15,10 @@ navbar:
     href: common_genes.html
   - text: Unique genes
     href: unique_genes.html
+  - text: Single cell
+    href: single_cell.html
+  - text: Cell cycle
+    href: cell_cycle.html
   right:
   - icon: fab fa-github
     text: Source code

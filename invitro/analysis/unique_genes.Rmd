@@ -1,5 +1,5 @@
 ---
-title: "Unique genes - Biological processes"
+title: "Unique genes"
 output:
   workflowr::wflow_html:
     toc: false

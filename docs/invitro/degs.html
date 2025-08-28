@@ -11,7 +11,7 @@
 
 
 
-<title>DEG analysis: Volcano plot and UpSet plot</title>
+<title>DEGs</title>
 
 <script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -263,6 +263,21 @@ $(document).ready(function () {
 <li>
   <a href="license.html">License</a>
 </li>
+<li>
+  <a href="degs.html">DEGs</a>
+</li>
+<li>
+  <a href="common_genes.html">Common genes</a>
+</li>
+<li>
+  <a href="unique_genes.html">Unique genes</a>
+</li>
+<li>
+  <a href="single_cell.html">Single cell</a>
+</li>
+<li>
+  <a href="cell_cycle.html">Cell cycle</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -281,7 +296,7 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">DEG analysis: Volcano plot and UpSet plot</h1>
+<h1 class="title toc-ignore">DEGs</h1>
 
 </div>
 
@@ -306,7 +321,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-08-27
+<strong>Last updated:</strong> 2025-08-28
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
@@ -421,27 +436,38 @@ data
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree171fca42011d23df241aad48201e00ee7a96158atargetblank171fca4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/171fca42011d23df241aad48201e00ee7a96158a" target="_blank">171fca4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree39f50392e3e8ae70eb6323c5c34137738eaba12dtargetblank39f5039a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/39f50392e3e8ae70eb6323c5c34137738eaba12d" target="_blank">39f5039</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree171fca42011d23df241aad48201e00ee7a96158atargetblank171fca4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree39f50392e3e8ae70eb6323c5c34137738eaba12dtargetblank39f5039a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/171fca42011d23df241aad48201e00ee7a96158a" target="_blank">171fca4</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/39f50392e3e8ae70eb6323c5c34137738eaba12d" target="_blank">39f5039</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Untracked files:
+    Untracked:  code/cell_cycle.r
     Untracked:  code/common_genes.r
     Untracked:  code/deg_plots.r
+    Untracked:  code/single_cell.r
+    Untracked:  code/unique_genes.r
+    Untracked:  data/220427_ATII_embedding.rds
+    Untracked:  data/220427_EC_embedding.rds
+    Untracked:  data/220427_MFB_embedding.rds
+    Untracked:  data/G1S.txt
+    Untracked:  data/G2M.txt
     Untracked:  data/Hyperoxia_AT.xls
     Untracked:  data/Hyperoxia_EC.xls
     Untracked:  data/Hyperoxia_MFB.xls
+    Untracked:  data/bulk_seurat_endothelial.rds
+    Untracked:  data/bulk_seurat_epithelial.rds
+    Untracked:  data/bulk_seurat_stroma.rds
     Untracked:  data/inVivo_hyperoxia.xlsx
     Untracked:  et(frame,nsets = 20, nintersects = 15,
 
@@ -488,6 +514,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/39f50392e3e8ae70eb6323c5c34137738eaba12d/analysis/degs.Rmd" target="_blank">39f5039</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-08-28
+</td>
+<td>
+workflowr::wflow_publish("analysis/*")
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jdhenaos/invitro/5d60f00e8080c600f25738917a124a2550b243b7/docs/degs.html" target="_blank">5d60f00</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-08-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
