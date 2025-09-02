@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>AT1 vs AT2</title>
+
+<script src="site_libs/header-attrs-2.29/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-6.5.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">invitro</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+<li>
+  <a href="degs.html">DEGs</a>
+</li>
+<li>
+  <a href="common_genes.html">Common genes</a>
+</li>
+<li>
+  <a href="unique_genes.html">Unique genes</a>
+</li>
+<li>
+  <a href="single_cell.html">Single cell</a>
+</li>
+<li>
+  <a href="cell_cycle.html">Cell cycle</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jdhenaos/invitro">
+    <span class="fab fa-github"></span>
+     
+    Source code
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">AT1 vs AT2</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2025-09-02
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 2
+</p>
+<p>
+<strong>Knit directory:</strong> <code>invitro/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.1). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The R Markdown is untracked by Git. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20250827code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20250827)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20250827code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20250827)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongabsolute"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>File paths:</strong> absolute </a>
+</p>
+</div>
+<div id="strongFilepathsstrongabsolute" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Using absolute paths to the files within your workflowr project makes it difficult for you and others to run your code on a different machine. Change the absolute path(s) below to the suggested relative path(s) to make your code more reproducible.
+</p>
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th style="text-align:left;">
+absolute
+</th>
+<th style="text-align:left;">
+relative
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+/workspaces/invitro/invitro/data/
+</td>
+<td style="text-align:left;">
+data
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotreef813be898357676fa5a36827b07f684efd8e416etargetblankf813be8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/f813be898357676fa5a36827b07f684efd8e416e" target="_blank">f813be8</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotreef813be898357676fa5a36827b07f684efd8e416etargetblankf813be8a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/f813be898357676fa5a36827b07f684efd8e416e" target="_blank">f813be8</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Untracked files:
+    Untracked:  analysis/at1_at2.rmd
+    Untracked:  code/cell_cycle.r
+    Untracked:  code/common_genes.r
+    Untracked:  code/deg_plots.r
+    Untracked:  code/single_cell.r
+    Untracked:  code/unique_genes.r
+    Untracked:  data/220427_ATII_embedding.rds
+    Untracked:  data/220427_EC_embedding.rds
+    Untracked:  data/220427_MFB_embedding.rds
+    Untracked:  data/Count.matrix.xls
+    Untracked:  data/G1S.txt
+    Untracked:  data/G2M.txt
+    Untracked:  data/Hyperoxia_AT.xls
+    Untracked:  data/Hyperoxia_EC.xls
+    Untracked:  data/Hyperoxia_MFB.xls
+    Untracked:  data/bulk_seurat_endothelial.rds
+    Untracked:  data/bulk_seurat_epithelial.rds
+    Untracked:  data/bulk_seurat_stroma.rds
+    Untracked:  data/inVivo_hyperoxia.xlsx
+    Untracked:  data/samplesheet.txt
+    Untracked:  et(frame,nsets = 20, nintersects = 15,
+
+Unstaged changes:
+    Modified:   README.md
+    Modified:   _workflowr.yml
+    Modified:   data/README.md
+    Modified:   invitro.Rproj
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+<p>
+There are no past versions. Publish this analysis with <code>wflow_publish()</code> to start tracking its development.
+</p>
+<hr>
+</div>
+</div>
+</div>
+<div id="pre-process-meta-table" class="section level2">
+<h2>Pre-process (meta table)</h2>
+<div id="code" class="section level3">
+<h3>Code</h3>
+<pre class="r"><code>data.folder &lt;- &quot;/workspaces/invitro/invitro/data/&quot;
+
+meta &lt;- read.delim(paste0(data.folder,&quot;samplesheet.txt&quot;), sep = &quot;\t&quot;, stringsAsFactors = F, header = T, check.names=F)
+meta$SampleName &lt;- gsub(&#39;-&#39;, &#39;_&#39;, meta$SampleName)
+rownames(meta) &lt;- meta$SampleName
+meta$Experiment = &#39;Lung&#39;
+meta$Experiment[meta$Treatment %in% c(&#39;C&#39;, &#39;S&#39;)] = &#39;Stretch&#39;
+meta$Experiment[meta$Treatment %in% c(&#39;N&#39;, &#39;H&#39;)] = &#39;Hyperoxia&#39;
+meta$Experiment[meta$Organism == &quot;inVivo&quot;] = &#39;inVivo&#39;
+meta = meta[order(meta$Organism, meta$Experiment, meta$Sample, meta$Treatment),]
+meta$Batch = factor(meta$Batch)
+meta$Organism[meta$Organism == &quot;AT&quot;] &lt;- &#39;ATll&#39;
+
+meta$Organism[meta$SampleName == &quot;N_AT_07&quot;] &lt;- &quot;ATl&quot;
+meta$Organism[meta$SampleName == &quot;H_AT_07&quot;] &lt;- &quot;ATl&quot;
+meta$Organism[meta$SampleName == &quot;N_AT_13&quot;] &lt;- &quot;ATl&quot;
+meta$Organism[meta$SampleName == &quot;H_AT_13&quot;] &lt;- &quot;ATl&quot;
+
+meta$Organism = factor(meta$Organism)
+meta$Sample = factor(meta$Sample)
+meta$Sample.n = factor((do.call(c, sapply(rle(meta$Experiment)$lengths, seq)) + 1) %/% 2)
+meta$Treatment &lt;- factor(meta$Treatment)
+levels(meta$Treatment) &lt;- list(Control=&#39;C&#39;, Stretch=&#39;S&#39;, Normoxia=&#39;N&#39;, Hyperoxia=&#39;H&#39;, Ventilation=&#39;V&#39;)
+
+count &lt;- read.table(paste0(data.folder,&quot;Count.matrix.xls&quot;), sep = &quot;\t&quot;, header = T, stringsAsFactors = F, row.names = 1)
+colnames(count) &lt;- gsub(&#39;\\.&#39;, &#39;_&#39;, colnames(count))</code></pre>
+</div>
+<div id="table" class="section level3">
+<h3>Table</h3>
+<pre class="r"><code>knitr::kable(meta[,c(&#39;Sample&#39;, &#39;Organism&#39;, &#39;Treatment&#39;, &#39;Experiment&#39;, &#39;Sample.n&#39;)])</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">Sample</th>
+<th align="left">Organism</th>
+<th align="left">Treatment</th>
+<th align="left">Experiment</th>
+<th align="left">Sample.n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">H_AT_07</td>
+<td align="left">7</td>
+<td align="left">ATl</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">N_AT_07</td>
+<td align="left">7</td>
+<td align="left">ATl</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">H_AT_12</td>
+<td align="left">12</td>
+<td align="left">ATll</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">N_AT_12</td>
+<td align="left">12</td>
+<td align="left">ATll</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">H_AT_13</td>
+<td align="left">13</td>
+<td align="left">ATl</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">N_AT_13</td>
+<td align="left">13</td>
+<td align="left">ATl</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">H_AT_17</td>
+<td align="left">17</td>
+<td align="left">ATll</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">N_AT_17</td>
+<td align="left">17</td>
+<td align="left">ATll</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">C_AT_05</td>
+<td align="left">5</td>
+<td align="left">ATll</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">S_AT_05</td>
+<td align="left">5</td>
+<td align="left">ATll</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">C_AT_07</td>
+<td align="left">7</td>
+<td align="left">ATll</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">S_AT_07</td>
+<td align="left">7</td>
+<td align="left">ATll</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">C_AT_12</td>
+<td align="left">12</td>
+<td align="left">ATll</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">S_AT_12</td>
+<td align="left">12</td>
+<td align="left">ATll</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">C_AT_21</td>
+<td align="left">21</td>
+<td align="left">ATll</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">S_AT_21</td>
+<td align="left">21</td>
+<td align="left">ATll</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">H_EC_04</td>
+<td align="left">4</td>
+<td align="left">EC</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">N_EC_04</td>
+<td align="left">4</td>
+<td align="left">EC</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">H_EC_23</td>
+<td align="left">23</td>
+<td align="left">EC</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">N_EC_23</td>
+<td align="left">23</td>
+<td align="left">EC</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">H_EC_24</td>
+<td align="left">24</td>
+<td align="left">EC</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">N_EC_24</td>
+<td align="left">24</td>
+<td align="left">EC</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">C_EC_20</td>
+<td align="left">20</td>
+<td align="left">EC</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">S_EC_20</td>
+<td align="left">20</td>
+<td align="left">EC</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">C_EC_24</td>
+<td align="left">24</td>
+<td align="left">EC</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">S_EC_24</td>
+<td align="left">24</td>
+<td align="left">EC</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">C_EC_28</td>
+<td align="left">28</td>
+<td align="left">EC</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">S_EC_28</td>
+<td align="left">28</td>
+<td align="left">EC</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">L_13_279</td>
+<td align="left">279</td>
+<td align="left">inVivo</td>
+<td align="left">Ventilation</td>
+<td align="left">inVivo</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">L_13_283</td>
+<td align="left">283</td>
+<td align="left">inVivo</td>
+<td align="left">Ventilation</td>
+<td align="left">inVivo</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">L_13_287</td>
+<td align="left">287</td>
+<td align="left">inVivo</td>
+<td align="left">Control</td>
+<td align="left">inVivo</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">L_13_289</td>
+<td align="left">289</td>
+<td align="left">inVivo</td>
+<td align="left">Control</td>
+<td align="left">inVivo</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">L_13_298</td>
+<td align="left">298</td>
+<td align="left">inVivo</td>
+<td align="left">Hyperoxia</td>
+<td align="left">inVivo</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">L_14_315</td>
+<td align="left">315</td>
+<td align="left">inVivo</td>
+<td align="left">Ventilation</td>
+<td align="left">inVivo</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">L_14_319</td>
+<td align="left">319</td>
+<td align="left">inVivo</td>
+<td align="left">Control</td>
+<td align="left">inVivo</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">L_14_428</td>
+<td align="left">428</td>
+<td align="left">inVivo</td>
+<td align="left">Hyperoxia</td>
+<td align="left">inVivo</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">L_14_431</td>
+<td align="left">431</td>
+<td align="left">inVivo</td>
+<td align="left">Hyperoxia</td>
+<td align="left">inVivo</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">H_MFB_04</td>
+<td align="left">4</td>
+<td align="left">MFB</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">N_MFB_04</td>
+<td align="left">4</td>
+<td align="left">MFB</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">H_MFB_20</td>
+<td align="left">20</td>
+<td align="left">MFB</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">N_MFB_20</td>
+<td align="left">20</td>
+<td align="left">MFB</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">H_MFB_24</td>
+<td align="left">24</td>
+<td align="left">MFB</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">N_MFB_24</td>
+<td align="left">24</td>
+<td align="left">MFB</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">H_MFB_27</td>
+<td align="left">27</td>
+<td align="left">MFB</td>
+<td align="left">Hyperoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">N_MFB_27</td>
+<td align="left">27</td>
+<td align="left">MFB</td>
+<td align="left">Normoxia</td>
+<td align="left">Hyperoxia</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">C_MFB_01</td>
+<td align="left">1</td>
+<td align="left">MFB</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">S_MFB_01</td>
+<td align="left">1</td>
+<td align="left">MFB</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">C_MFB_04</td>
+<td align="left">4</td>
+<td align="left">MFB</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">S_MFB_04</td>
+<td align="left">4</td>
+<td align="left">MFB</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">2</td>
+</tr>
+<tr class="even">
+<td align="left">C_MFB_05</td>
+<td align="left">5</td>
+<td align="left">MFB</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="odd">
+<td align="left">S_MFB_05</td>
+<td align="left">5</td>
+<td align="left">MFB</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">C_MFB_20</td>
+<td align="left">20</td>
+<td align="left">MFB</td>
+<td align="left">Control</td>
+<td align="left">Stretch</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">S_MFB_20</td>
+<td align="left">20</td>
+<td align="left">MFB</td>
+<td align="left">Stretch</td>
+<td align="left">Stretch</td>
+<td align="left">4</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="pre-processing" class="section level2">
+<h2>pre-processing</h2>
+<ol style="list-style-type: decimal">
+<li>Ensembl to Gene symbol</li>
+<li>Functions to run DEG</li>
+</ol>
+<div id="gene-symbol-dictionary" class="section level3">
+<h3>Gene symbol dictionary</h3>
+<pre class="r"><code>library(biomaRt)
+ensembl &lt;- useMart(&#39;ENSEMBL_MART_ENSEMBL&#39;, dataset=&#39;mmusculus_gene_ensembl&#39;)
+ensg2symbol &lt;- getBM(filters=&#39;ensembl_gene_id&#39;, attributes=c(&#39;ensembl_gene_id&#39;, &#39;mgi_symbol&#39;), values=rownames(count), mart=ensembl)
+ensg_symbol_table &lt;- aggregate(ensg2symbol$mgi_symbol, list(ensemb_gene_id=ensg2symbol$ensembl_gene_id), paste, collapse=&quot;,&quot;)
+colnames(ensg_symbol_table) &lt;- colnames(ensg2symbol)
+rownames(ensg_symbol_table) &lt;- ensg_symbol_table$ensembl_gene_id</code></pre>
+</div>
+<div id="functions-deg-runner" class="section level3">
+<h3>Functions (DEG runner)</h3>
+<pre class="r"><code>prepare_dds &lt;- function(conditions, design=NULL, reduced=NULL)
+{
+  # Choose samples belonging to groups of interest
+  selection = rep(TRUE, nrow(meta))
+  cols = names(conditions)
+  for (condition in cols) {
+    selection = selection &amp; meta[,condition] %in% conditions[[condition]]
+  }
+  submeta = meta[selection, cols, drop=F]
+  # Remove conditions with only one group
+  selCols = NULL       
+  for (cname in colnames(submeta)) {
+    fcname = droplevels(submeta[,cname])
+    if (length(levels(fcname)) &gt; 1) selCols = c(selCols, cname)
+    submeta[,cname] = fcname
+  }
+  if (!is.null(length(selCols))) submeta = submeta[,selCols,drop=F]
+  count_filtd = subset(count[,rownames(submeta)], rowSums(count[,rownames(submeta)], na.rm=TRUE) &gt;= 10)
+  
+  # Differential expression analysis
+  suppressPackageStartupMessages(library(DESeq2))
+  if (is.null(design)) {
+    factors = colnames(submeta)
+    factors = factors[!factors %in% &#39;sizeFactor&#39;]
+    design &lt;- paste(factors, collapse=&#39;+&#39;)
+    design &lt;- as.formula(paste(&#39;~&#39;, design))
+  }
+  cat(&quot;Design :&quot;, as.character(design),&quot;\n&quot;)
+  print(ftable(submeta))
+  modelMatrix = stats::model.matrix.default(design, data=submeta)
+  modelMatrix = modelMatrix[,!apply(modelMatrix == 0, 2, all),drop=F]
+  dds &lt;- suppressMessages(DESeqDataSetFromMatrix(countData = count_filtd,
+                                                 colData = submeta,
+                                                 design = modelMatrix))
+  if (&#39;sizeFactor&#39; %in% colnames(meta))
+    sizeFactors(dds) = meta[colnames(dds), &#39;sizeFactor&#39;]
+  deseq_args = list(object=dds,
+                    fitType = &quot;parametric&quot;,
+                    betaPrior = FALSE)
+  if (is.null(reduced)) {
+    deseq_args$test = &#39;Wald&#39;
+  } else {
+    deseq_args$test = &#39;LRT&#39;
+    cat(&quot;Reduced :&quot;, as.character(reduced), &quot;\n&quot;)
+    reduced = stats::model.matrix.default(reduced, data=submeta)
+    reduced = reduced[,!apply(reduced == 0, 2, all),drop=F]
+    deseq_args$reduced = reduced
+  }
+  dds &lt;- suppressMessages(do.call(DESeq, deseq_args))
+  return(dds)
+}
+
+report_DE &lt;- function(dds, contrast=NULL, coef=NULL)
+{
+  fdr.cutoff = 0.05
+  lfc.cutoff = 0.5
+  res_args = list(object=dds) #, alpha=fdr.cutoff, lfcThreshold=lfc.cutoff)
+  shrink_args = list(dds=dds, lfcThreshold=lfc.cutoff)
+  ggmain = NULL
+  if (!is.null(contrast)) {
+    res_args$contrast = shrink_args$contrast = ggmain = contrast
+  } else {
+    if (is.null(coef)) {
+      coef = resultsNames(dds)
+      coef = coef[length(coef)]
+    }
+    res_args$name = shrink_args$coef = ggmain = coef
+  }
+  if (attr(dds, &#39;test&#39;) == &#39;LRT&#39;)
+    ggmain = gsub(&#39;.*\\.&#39;, &#39;&#39;, ggmain)
+  
+  if (is(design(dds), &#39;formula&#39;)) {
+    if (any(attr(terms.formula(design(dds)), &#39;order&#39;) &gt; 1)) {
+      # res_args$type = ifelse (is.null(coef), &#39;ashr&#39;, &#39;apeglm&#39;)
+      shrink_args$type = &#39;ashr&#39;
+    }
+  } else if (is(design(dds), &quot;matrix&quot;)) {
+    shrink_args$type = &#39;ashr&#39;
+  }
+  
+  # res = suppressMessages(do.call(lfcShrink, shrink_args))
+  res = suppressMessages(do.call(results, res_args))
+  summary(res, alpha = fdr.cutoff)
+  sig = res$padj &lt;= fdr.cutoff &amp; !is.na(res$padj)
+  sig_det = sig &amp; (abs(res$log2FoldChange) &gt;= lfc.cutoff)
+  
+  message(paste0(&#39;There are &#39;, sum(sig), &#39; significantly differentially expressed genes (adjusted p-value &lt;= &#39;, fdr.cutoff, &#39;), from which &#39;, sum(sig_det), &#39; have an absolute log2 Fold Change above or equal to &#39;, lfc.cutoff, &#39;.&#39;))
+  
+  # Get results as df
+  resdf = data.frame(res)
+  
+  # Add the normalized counts
+  normcountmat = counts(dds, normalized = TRUE)
+  vsd = vst(dds, blind = FALSE)
+  logCounts = assay(vsd)
+  out = cbind(ensg_symbol_table[rownames(dds),], resdf[rownames(dds),],
+              logCounts[,colnames(dds)])
+  rownames(out) = out$ensembl_gene_id = rownames(dds)
+  
+  # Save the table
+  # Create a file prefix
+  prefix = coef
+  #fullfn = file.path(resfolder, prefix)
+  
+  # Create table for plotting
+  #mafn &lt;- paste0(fullfn, &quot;_maplot.pdf&quot;)
+  plot.data &lt;- out[!is.na(out$pvalue),]
+  cap &lt;- quantile(plot.data$baseMean, p=0.99)
+  plot.data$baseMean[plot.data$baseMean &gt; cap] &lt;- cap
+  
+  # Write file
+  #write.table(out, file=paste0(fullfn, &#39;.xls&#39;), sep=&quot;\t&quot;, row.names = F, col.names = T, dec=&quot;,&quot;)
+  
+  return(out)
+}</code></pre>
+</div>
+</div>
+<div id="pre-processing-1" class="section level2">
+<h2>Pre-processing</h2>
+<ul>
+<li>Functions to produce volcano plot and pathway plot (barplot)</li>
+</ul>
+<pre class="r"><code>library(ggplot2)
+library(ggrepel)
+volcano_plot &lt;- function(exp, down_color, up_color, title){
+  colnames(exp)[grep(pattern = &quot;log2FoldChange&quot;,x = colnames(exp))] &lt;- &quot;log2FoldChange&quot;
+  colnames(exp)[grep(pattern = &quot;padj&quot;,x = colnames(exp))] &lt;- &quot;padj&quot;
+  
+  exp$direction &lt;- &quot;No-significant&quot;
+  
+  exp$direction[which(exp$padj &lt; 0.05 &amp; exp$log2FoldChange &gt; 0)] &lt;- &quot;Up-regulated&quot;
+  exp$direction[which(exp$padj &lt; 0.05 &amp; exp$log2FoldChange &lt; 0)] &lt;- &quot;Down-regulated&quot;
+  
+  exp &lt;- exp[order(exp$padj),]
+  
+  exp$threshold &lt;- c(rep(TRUE,10),rep(FALSE,nrow(exp) - 10))
+  exp$direction &lt;- as.factor(exp$direction)
+  result &lt;- exp[which(!is.na(exp$padj)),]
+  result &lt;- result[order(result$threshold,decreasing = TRUE),]
+  
+  p &lt;- ggplot(result) +
+    geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction))  +
+    scale_color_manual(values=c(down_color,&quot;grey&quot;,up_color)) + ggtitle(title) +
+    geom_text_repel(data =result[c(1:10),], 
+                    mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[c(1:10)]  ), size = 2.5) +
+    xlab(&quot;log2 fold-change&quot;) + 
+    ylab(&quot;-log10 adj. p-value&quot;) +
+    geom_hline(yintercept=-log10(0.05), linetype=&quot;dashed&quot;, color = &quot;red&quot;) + theme_classic() + theme(legend.position = &quot;none&quot;, 
+                                                                                                    text = element_text(size = 9),
+                                                                                                    plot.title = element_text(size=7)) 
+
+  return(p)
+}
+loc_val &lt;- function(mean_FC,SD){
+  result &lt;- c()
+  for(i in seq(length(mean_FC))){
+    if(SD[i] == 0){SD[i] &lt;- min(SD[which(SD != 0)])}
+    
+    if(mean_FC[i] &lt; 0){
+      result &lt;- c(result,mean_FC[i]-SD[i]-(min(SD[i])/2))
+    }
+    if(mean_FC[i] &gt; 0){
+      result &lt;- c(result,mean_FC[i]+SD[i]+(min(SD[i])/2))
+    }
+    if(mean_FC[i] == 0){
+      result &lt;- c(result,NA)
+    }
+  }
+  return(result)
+}
+enrichment_profile = function(pathways, DEG, color_down, color_up, category){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  
+  DEG$name &lt;- rownames(DEG)
+  
+  colnames(DEG)[grep(pattern = &quot;log2fc&quot;,x = colnames(DEG))] &lt;- &quot;log2FoldChange&quot;
+  colnames(DEG)[grep(pattern = &quot;pvalue&quot;,x = colnames(DEG))] &lt;- &quot;padj&quot;
+  colnames(DEG)[grep(pattern = &quot;name&quot;,x = colnames(DEG))] &lt;- &quot;ensembl_gene_id&quot;
+  
+  to.plot &lt;- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,&quot;term_id&quot;], organism = &quot;mmusculus&quot;)
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot &lt;- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,&quot;term_name&quot;],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0])),
+                       Type=c(&quot;up-regulated&quot;,&quot;down-regulated&quot;),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &gt; 0]),
+                            sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange &lt; 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),&quot;mean_FC&quot;] &lt;- 0
+  to.plot[is.na(to.plot$SD),&quot;SD&quot;] &lt;- 0
+  
+  p &lt;- ggplot(to.plot, aes(x = mean_FC, y = reorder(Name, abs(mean_FC)), fill = Type, label = Set_size)) + 
+    scale_fill_manual(name = &quot;&quot;, values = c(&quot;down-regulated&quot; = color_down, &quot;up-regulated&quot; = color_up)) + 
+    ylab(category) + xlab(&quot;Mean logFC&quot;) + 
+    theme(axis.line = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+    theme(legend.position = &quot;none&quot;) +
+    geom_bar(stat = &quot;identity&quot;) + geom_text(aes(label = Set_size, x =  loc_val(mean_FC,SD) ),size = 2.5) +
+    geom_linerange(aes(xmin=ifelse(mean_FC &lt; 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC &gt; 0,mean_FC + SD, mean_FC) ))
+  
+  return(p)
+}</code></pre>
+</div>
+<div id="at1" class="section level1">
+<h1>AT1</h1>
+<div id="degs" class="section level2">
+<h2>DEGs</h2>
+<pre class="r"><code>conditions &lt;- list(Sample = levels(meta$Sample), Treatment = c(&#39;Normoxia&#39;, &#39;Hyperoxia&#39;), Organism = &#39;ATl&#39;)
+dds = prepare_dds(conditions)</code></pre>
+<pre><code>Design : ~ Sample + Treatment 
+       Treatment Normoxia Hyperoxia
+Sample                             
+7                       1         1
+13                      1         1</code></pre>
+<pre class="r"><code>res = report_DE(dds)</code></pre>
+<pre><code>
+out of 20164 with nonzero total read count
+adjusted p-value &lt; 0.05
+LFC &gt; 0 (up)       : 23, 0.11%
+LFC &lt; 0 (down)     : 184, 0.91%
+outliers [1]       : 0, 0%
+low counts [2]     : 5473, 27%
+(mean count &lt; 23)
+[1] see &#39;cooksCutoff&#39; argument of ?results
+[2] see &#39;independentFiltering&#39; argument of ?results</code></pre>
+<pre><code>There are 207 significantly differentially expressed genes (adjusted p-value &lt;= 0.05), from which 162 have an absolute log2 Fold Change above or equal to 0.5.</code></pre>
+</div>
+<div id="volcano-plot" class="section level2">
+<h2>Volcano plot</h2>
+<pre class="r"><code>p &lt;- volcano_plot(exp = res,down_color = &quot;#bdc9e1&quot;,up_color = &quot;#0570b0&quot;, title=&quot;&quot;)
+p</code></pre>
+<p><img src="figure/at1_at2.rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="biological-process-go" class="section level2">
+<h2>Biological Process (GO)</h2>
+<div id="code-1" class="section level3">
+<h3>Code</h3>
+<pre class="r"><code>library(gprofiler2)
+set_base_url(&quot;https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15&quot;)
+
+DEG.AT &lt;- res[which(res$padj &lt; 0.05),]
+AT.gost &lt;- gost(DEG.AT$ensembl_gene_id,organism = &quot;mmusculus&quot;,sources=c(&quot;GO:MF&quot;, &quot;GO:BP&quot;,&quot;GO:CC&quot;, &quot;KEGG&quot;))
+AT.BP &lt;- AT.gost$result[AT.gost$result$source == &quot;GO:BP&quot;,c(&quot;term_id&quot;, &quot;source&quot;, &quot;term_name&quot;, &quot;p_value&quot;, &quot;query_size&quot;, &quot;term_size&quot;, &quot;intersection_size&quot;)]
+
+cat(&quot;Number of hit: &quot;,nrow(AT.BP))</code></pre>
+<pre><code>Number of hit:  244</code></pre>
+</div>
+<div id="table-1" class="section level3">
+<h3>Table</h3>
+<ul>
+<li>Top 5 Biological processes</li>
+</ul>
+<pre class="r"><code>rmarkdown::paged_table(AT.BP)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["term_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["source"],"name":[2],"type":["chr"],"align":["left"]},{"label":["term_name"],"name":[3],"type":["chr"],"align":["left"]},{"label":["p_value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["query_size"],"name":[5],"type":["int"],"align":["right"]},{"label":["term_size"],"name":[6],"type":["int"],"align":["right"]},{"label":["intersection_size"],"name":[7],"type":["int"],"align":["right"]}],"data":[{"1":"GO:0007049","2":"GO:BP","3":"cell cycle","4":"2.967835e-64","5":"206","6":"1718","7":"112","_rn_":"1"},{"1":"GO:0022402","2":"GO:BP","3":"cell cycle process","4":"3.348459e-60","5":"206","6":"1154","7":"94","_rn_":"2"},{"1":"GO:0000278","2":"GO:BP","3":"mitotic cell cycle","4":"3.498364e-60","5":"206","6":"834","7":"84","_rn_":"3"},{"1":"GO:1903047","2":"GO:BP","3":"mitotic cell cycle process","4":"3.593169e-57","5":"206","6":"676","7":"76","_rn_":"4"},{"1":"GO:0051301","2":"GO:BP","3":"cell division","4":"1.807488e-41","5":"206","6":"581","7":"60","_rn_":"5"},{"1":"GO:0051276","2":"GO:BP","3":"chromosome organization","4":"3.791891e-39","5":"206","6":"1187","7":"76","_rn_":"6"},{"1":"GO:0098813","2":"GO:BP","3":"nuclear chromosome segregation","4":"3.485466e-38","5":"206","6":"268","7":"44","_rn_":"7"},{"1":"GO:0007059","2":"GO:BP","3":"chromosome segregation","4":"4.063415e-38","5":"206","6":"329","7":"47","_rn_":"8"},{"1":"GO:0000280","2":"GO:BP","3":"nuclear division","4":"5.762587e-38","5":"206","6":"422","7":"51","_rn_":"9"},{"1":"GO:0000070","2":"GO:BP","3":"mitotic sister chromatid segregation","4":"6.740426e-38","5":"206","6":"156","7":"37","_rn_":"10"},{"1":"GO:0006260","2":"GO:BP","3":"DNA replication","4":"4.995299e-37","5":"206","6":"246","7":"42","_rn_":"11"},{"1":"GO:0048285","2":"GO:BP","3":"organelle fission","4":"2.617229e-35","5":"206","6":"476","7":"51","_rn_":"12"},{"1":"GO:0000819","2":"GO:BP","3":"sister chromatid segregation","4":"5.216930e-35","5":"206","6":"184","7":"37","_rn_":"13"},{"1":"GO:0140014","2":"GO:BP","3":"mitotic nuclear division","4":"9.366001e-34","5":"206","6":"272","7":"41","_rn_":"14"},{"1":"GO:0006261","2":"GO:BP","3":"DNA-dependent DNA replication","4":"8.603020e-31","5":"206","6":"135","7":"31","_rn_":"15"},{"1":"GO:0006259","2":"GO:BP","3":"DNA metabolic process","4":"8.644828e-31","5":"206","6":"854","7":"59","_rn_":"16"},{"1":"GO:0006974","2":"GO:BP","3":"cellular response to DNA damage stimulus","4":"3.137664e-29","5":"206","6":"766","7":"55","_rn_":"17"},{"1":"GO:0010564","2":"GO:BP","3":"regulation of cell cycle process","4":"3.752218e-28","5":"206","6":"600","7":"49","_rn_":"18"},{"1":"GO:0051726","2":"GO:BP","3":"regulation of cell cycle","4":"2.999101e-27","5":"206","6":"992","7":"59","_rn_":"19"},{"1":"GO:0006281","2":"GO:BP","3":"DNA repair","4":"2.409946e-25","5":"206","6":"495","7":"43","_rn_":"20"},{"1":"GO:0006996","2":"GO:BP","3":"organelle organization","4":"3.237993e-24","5":"206","6":"3801","7":"105","_rn_":"21"},{"1":"GO:0044770","2":"GO:BP","3":"cell cycle phase transition","4":"1.167749e-22","5":"206","6":"420","7":"38","_rn_":"22"},{"1":"GO:0044772","2":"GO:BP","3":"mitotic cell cycle phase transition","4":"4.341227e-21","5":"206","6":"375","7":"35","_rn_":"23"},{"1":"GO:0071103","2":"GO:BP","3":"DNA conformation change","4":"7.617046e-21","5":"206","6":"300","7":"32","_rn_":"24"},{"1":"GO:0033554","2":"GO:BP","3":"cellular response to stress","4":"3.458649e-20","5":"206","6":"1822","7":"68","_rn_":"25"},{"1":"GO:0006270","2":"GO:BP","3":"DNA replication initiation","4":"9.506026e-20","5":"206","6":"30","7":"15","_rn_":"26"},{"1":"GO:0016043","2":"GO:BP","3":"cellular component organization","4":"2.936604e-19","5":"206","6":"6100","7":"126","_rn_":"27"},{"1":"GO:0090068","2":"GO:BP","3":"positive regulation of cell cycle process","4":"3.629042e-18","5":"206","6":"257","7":"28","_rn_":"28"},{"1":"GO:0071840","2":"GO:BP","3":"cellular component organization or biogenesis","4":"4.870594e-18","5":"206","6":"6283","7":"126","_rn_":"29"},{"1":"GO:1901990","2":"GO:BP","3":"regulation of mitotic cell cycle phase transition","4":"4.991477e-18","5":"206","6":"260","7":"28","_rn_":"30"},{"1":"GO:0010948","2":"GO:BP","3":"negative regulation of cell cycle process","4":"1.502754e-17","5":"206","6":"221","7":"26","_rn_":"31"},{"1":"GO:1901987","2":"GO:BP","3":"regulation of cell cycle phase transition","4":"1.609463e-17","5":"206","6":"298","7":"29","_rn_":"32"},{"1":"GO:1903046","2":"GO:BP","3":"meiotic cell cycle process","4":"1.714387e-17","5":"206","6":"199","7":"25","_rn_":"33"},{"1":"GO:0007051","2":"GO:BP","3":"spindle organization","4":"3.787560e-17","5":"206","6":"183","7":"24","_rn_":"34"},{"1":"GO:0140013","2":"GO:BP","3":"meiotic nuclear division","4":"3.787560e-17","5":"206","6":"183","7":"24","_rn_":"35"},{"1":"GO:1901988","2":"GO:BP","3":"negative regulation of cell cycle phase transition","4":"4.177369e-16","5":"206","6":"158","7":"22","_rn_":"36"},{"1":"GO:1901991","2":"GO:BP","3":"negative regulation of mitotic cell cycle phase transition","4":"4.972532e-16","5":"206","6":"139","7":"21","_rn_":"37"},{"1":"GO:0007093","2":"GO:BP","3":"mitotic cell cycle checkpoint","4":"6.830932e-16","5":"206","6":"122","7":"20","_rn_":"38"},{"1":"GO:0000226","2":"GO:BP","3":"microtubule cytoskeleton organization","4":"1.324358e-15","5":"206","6":"627","7":"37","_rn_":"39"},{"1":"GO:0044786","2":"GO:BP","3":"cell cycle DNA replication","4":"1.440525e-15","5":"206","6":"40","7":"14","_rn_":"40"},{"1":"GO:0045786","2":"GO:BP","3":"negative regulation of cell cycle","4":"1.652641e-15","5":"206","6":"449","7":"32","_rn_":"41"},{"1":"GO:0000075","2":"GO:BP","3":"cell cycle checkpoint","4":"3.116185e-15","5":"206","6":"173","7":"22","_rn_":"42"},{"1":"GO:0045787","2":"GO:BP","3":"positive regulation of cell cycle","4":"3.481292e-15","5":"206","6":"362","7":"29","_rn_":"43"},{"1":"GO:0007346","2":"GO:BP","3":"regulation of mitotic cell cycle","4":"1.094685e-14","5":"206","6":"444","7":"31","_rn_":"44"},{"1":"GO:0051321","2":"GO:BP","3":"meiotic cell cycle","4":"1.361321e-14","5":"206","6":"349","7":"28","_rn_":"45"},{"1":"GO:0006310","2":"GO:BP","3":"DNA recombination","4":"1.092132e-13","5":"206","6":"285","7":"25","_rn_":"46"},{"1":"GO:0007017","2":"GO:BP","3":"microtubule-based process","4":"1.379095e-13","5":"206","6":"900","7":"41","_rn_":"47"},{"1":"GO:0065004","2":"GO:BP","3":"protein-DNA complex assembly","4":"1.850160e-13","5":"206","6":"184","7":"21","_rn_":"48"},{"1":"GO:1902850","2":"GO:BP","3":"microtubule cytoskeleton organization involved in mitosis","4":"2.817497e-13","5":"206","6":"142","7":"19","_rn_":"49"},{"1":"GO:0051304","2":"GO:BP","3":"chromosome separation","4":"8.621381e-13","5":"206","6":"91","7":"16","_rn_":"50"},{"1":"GO:0008608","2":"GO:BP","3":"attachment of spindle microtubules to kinetochore","4":"9.613785e-13","5":"206","6":"36","7":"12","_rn_":"51"},{"1":"GO:0045930","2":"GO:BP","3":"negative regulation of mitotic cell cycle","4":"1.005049e-12","5":"206","6":"226","7":"22","_rn_":"52"},{"1":"GO:0000725","2":"GO:BP","3":"recombinational repair","4":"1.127868e-12","5":"206","6":"131","7":"18","_rn_":"53"},{"1":"GO:0051310","2":"GO:BP","3":"metaphase plate congression","4":"1.499323e-12","5":"206","6":"62","7":"14","_rn_":"54"},{"1":"GO:0000910","2":"GO:BP","3":"cytokinesis","4":"1.682662e-12","5":"206","6":"156","7":"19","_rn_":"55"},{"1":"GO:0006302","2":"GO:BP","3":"double-strand break repair","4":"1.916601e-12","5":"206","6":"233","7":"22","_rn_":"56"},{"1":"GO:0050000","2":"GO:BP","3":"chromosome localization","4":"3.940345e-12","5":"206","6":"82","7":"15","_rn_":"57"},{"1":"GO:0051303","2":"GO:BP","3":"establishment of chromosome localization","4":"3.940345e-12","5":"206","6":"82","7":"15","_rn_":"58"},{"1":"GO:0071824","2":"GO:BP","3":"protein-DNA complex subunit organization","4":"7.819293e-12","5":"206","6":"221","7":"21","_rn_":"59"},{"1":"GO:0030071","2":"GO:BP","3":"regulation of mitotic metaphase/anaphase transition","4":"1.123947e-11","5":"206","6":"56","7":"13","_rn_":"60"},{"1":"GO:0007091","2":"GO:BP","3":"metaphase/anaphase transition of mitotic cell cycle","4":"1.443795e-11","5":"206","6":"57","7":"13","_rn_":"61"},{"1":"GO:0030261","2":"GO:BP","3":"chromosome condensation","4":"1.514339e-11","5":"206","6":"44","7":"12","_rn_":"62"},{"1":"GO:0000724","2":"GO:BP","3":"double-strand break repair via homologous recombination","4":"1.530713e-11","5":"206","6":"129","7":"17","_rn_":"63"},{"1":"GO:0010965","2":"GO:BP","3":"regulation of mitotic sister chromatid separation","4":"1.845265e-11","5":"206","6":"58","7":"13","_rn_":"64"},{"1":"GO:1902099","2":"GO:BP","3":"regulation of metaphase/anaphase transition of cell cycle","4":"1.845265e-11","5":"206","6":"58","7":"13","_rn_":"65"},{"1":"GO:0044784","2":"GO:BP","3":"metaphase/anaphase transition of cell cycle","4":"2.346879e-11","5":"206","6":"59","7":"13","_rn_":"66"},{"1":"GO:0006323","2":"GO:BP","3":"DNA packaging","4":"2.640051e-11","5":"206","6":"207","7":"20","_rn_":"67"},{"1":"GO:0033260","2":"GO:BP","3":"nuclear DNA replication","4":"3.508878e-11","5":"206","6":"35","7":"11","_rn_":"68"},{"1":"GO:0051306","2":"GO:BP","3":"mitotic sister chromatid separation","4":"3.743760e-11","5":"206","6":"61","7":"13","_rn_":"69"},{"1":"GO:0051225","2":"GO:BP","3":"spindle assembly","4":"4.659324e-11","5":"206","6":"116","7":"16","_rn_":"70"},{"1":"GO:0000727","2":"GO:BP","3":"double-strand break repair via break-induced replication","4":"6.268554e-11","5":"206","6":"12","7":"8","_rn_":"71"},{"1":"GO:1905818","2":"GO:BP","3":"regulation of chromosome separation","4":"7.302930e-11","5":"206","6":"64","7":"13","_rn_":"72"},{"1":"GO:0044839","2":"GO:BP","3":"cell cycle G2/M phase transition","4":"7.796857e-11","5":"206","6":"142","7":"17","_rn_":"73"},{"1":"GO:0033045","2":"GO:BP","3":"regulation of sister chromatid segregation","4":"9.052007e-11","5":"206","6":"65","7":"13","_rn_":"74"},{"1":"GO:0000086","2":"GO:BP","3":"G2/M transition of mitotic cell cycle","4":"9.196511e-11","5":"206","6":"121","7":"16","_rn_":"75"},{"1":"GO:0045841","2":"GO:BP","3":"negative regulation of mitotic metaphase/anaphase transition","4":"1.362955e-10","5":"206","6":"39","7":"11","_rn_":"76"},{"1":"GO:0033048","2":"GO:BP","3":"negative regulation of mitotic sister chromatid segregation","4":"1.864201e-10","5":"206","6":"40","7":"11","_rn_":"77"},{"1":"GO:1902100","2":"GO:BP","3":"negative regulation of metaphase/anaphase transition of cell cycle","4":"1.864201e-10","5":"206","6":"40","7":"11","_rn_":"78"},{"1":"GO:2000816","2":"GO:BP","3":"negative regulation of mitotic sister chromatid separation","4":"1.864201e-10","5":"206","6":"40","7":"11","_rn_":"79"},{"1":"GO:0033046","2":"GO:BP","3":"negative regulation of sister chromatid segregation","4":"1.864201e-10","5":"206","6":"40","7":"11","_rn_":"80"},{"1":"GO:1905819","2":"GO:BP","3":"negative regulation of chromosome separation","4":"2.526414e-10","5":"206","6":"41","7":"11","_rn_":"81"},{"1":"GO:0051985","2":"GO:BP","3":"negative regulation of chromosome segregation","4":"2.526414e-10","5":"206","6":"41","7":"11","_rn_":"82"},{"1":"GO:0007076","2":"GO:BP","3":"mitotic chromosome condensation","4":"3.740488e-10","5":"206","6":"14","7":"8","_rn_":"83"},{"1":"GO:0070192","2":"GO:BP","3":"chromosome organization involved in meiotic cell cycle","4":"5.347475e-10","5":"206","6":"74","7":"13","_rn_":"84"},{"1":"GO:0033047","2":"GO:BP","3":"regulation of mitotic sister chromatid segregation","4":"5.979948e-10","5":"206","6":"44","7":"11","_rn_":"85"},{"1":"GO:0007052","2":"GO:BP","3":"mitotic spindle organization","4":"6.290619e-10","5":"206","6":"114","7":"15","_rn_":"86"},{"1":"GO:0033044","2":"GO:BP","3":"regulation of chromosome organization","4":"8.493284e-10","5":"206","6":"280","7":"21","_rn_":"87"},{"1":"GO:0007010","2":"GO:BP","3":"cytoskeleton organization","4":"1.319844e-09","5":"206","6":"1406","7":"45","_rn_":"88"},{"1":"GO:0045839","2":"GO:BP","3":"negative regulation of mitotic nuclear division","4":"1.324234e-09","5":"206","6":"47","7":"11","_rn_":"89"},{"1":"GO:0071459","2":"GO:BP","3":"protein localization to chromosome, centromeric region","4":"1.400922e-09","5":"206","6":"24","7":"9","_rn_":"90"},{"1":"GO:0032465","2":"GO:BP","3":"regulation of cytokinesis","4":"2.130716e-09","5":"206","6":"82","7":"13","_rn_":"91"},{"1":"GO:0010389","2":"GO:BP","3":"regulation of G2/M transition of mitotic cell cycle","4":"2.130716e-09","5":"206","6":"82","7":"13","_rn_":"92"},{"1":"GO:0051983","2":"GO:BP","3":"regulation of chromosome segregation","4":"2.130716e-09","5":"206","6":"82","7":"13","_rn_":"93"},{"1":"GO:0000281","2":"GO:BP","3":"mitotic cytokinesis","4":"2.423144e-09","5":"206","6":"65","7":"12","_rn_":"94"},{"1":"GO:0000076","2":"GO:BP","3":"DNA replication checkpoint","4":"2.953763e-09","5":"206","6":"17","7":"8","_rn_":"95"},{"1":"GO:0071174","2":"GO:BP","3":"mitotic spindle checkpoint","4":"3.113070e-09","5":"206","6":"37","7":"10","_rn_":"96"},{"1":"GO:0007094","2":"GO:BP","3":"mitotic spindle assembly checkpoint","4":"3.113070e-09","5":"206","6":"37","7":"10","_rn_":"97"},{"1":"GO:0031577","2":"GO:BP","3":"spindle checkpoint","4":"3.113070e-09","5":"206","6":"37","7":"10","_rn_":"98"},{"1":"GO:0071173","2":"GO:BP","3":"spindle assembly checkpoint","4":"3.113070e-09","5":"206","6":"37","7":"10","_rn_":"99"},{"1":"GO:0051783","2":"GO:BP","3":"regulation of nuclear division","4":"6.970628e-09","5":"206","6":"134","7":"15","_rn_":"100"},{"1":"GO:0061640","2":"GO:BP","3":"cytoskeleton-dependent cytokinesis","4":"8.488172e-09","5":"206","6":"91","7":"13","_rn_":"101"},{"1":"GO:0051784","2":"GO:BP","3":"negative regulation of nuclear division","4":"1.049636e-08","5":"206","6":"56","7":"11","_rn_":"102"},{"1":"GO:0045132","2":"GO:BP","3":"meiotic chromosome segregation","4":"2.242744e-08","5":"206","6":"98","7":"13","_rn_":"103"},{"1":"GO:1902749","2":"GO:BP","3":"regulation of cell cycle G2/M phase transition","4":"2.917921e-08","5":"206","6":"100","7":"13","_rn_":"104"},{"1":"GO:0007080","2":"GO:BP","3":"mitotic metaphase plate congression","4":"3.378562e-08","5":"206","6":"46","7":"10","_rn_":"105"},{"1":"GO:0007088","2":"GO:BP","3":"regulation of mitotic nuclear division","4":"3.773972e-08","5":"206","6":"102","7":"13","_rn_":"106"},{"1":"GO:0006267","2":"GO:BP","3":"pre-replicative complex assembly involved in nuclear cell cycle DNA replication","4":"4.129617e-08","5":"206","6":"8","7":"6","_rn_":"107"},{"1":"GO:0036388","2":"GO:BP","3":"pre-replicative complex assembly","4":"4.129617e-08","5":"206","6":"8","7":"6","_rn_":"108"},{"1":"GO:1902299","2":"GO:BP","3":"pre-replicative complex assembly involved in cell cycle DNA replication","4":"4.129617e-08","5":"206","6":"8","7":"6","_rn_":"109"},{"1":"GO:0032508","2":"GO:BP","3":"DNA duplex unwinding","4":"5.792549e-08","5":"206","6":"84","7":"12","_rn_":"110"},{"1":"GO:2001251","2":"GO:BP","3":"negative regulation of chromosome organization","4":"5.792549e-08","5":"206","6":"84","7":"12","_rn_":"111"},{"1":"GO:0006950","2":"GO:BP","3":"response to stress","4":"7.794159e-08","5":"206","6":"3858","7":"77","_rn_":"112"},{"1":"GO:0034502","2":"GO:BP","3":"protein localization to chromosome","4":"1.017962e-07","5":"206","6":"88","7":"12","_rn_":"113"},{"1":"GO:0032392","2":"GO:BP","3":"DNA geometric change","4":"1.334950e-07","5":"206","6":"90","7":"12","_rn_":"114"},{"1":"GO:0051302","2":"GO:BP","3":"regulation of cell division","4":"1.425046e-07","5":"206","6":"165","7":"15","_rn_":"115"},{"1":"GO:0031570","2":"GO:BP","3":"DNA integrity checkpoint","4":"1.973052e-07","5":"206","6":"116","7":"13","_rn_":"116"},{"1":"GO:0007127","2":"GO:BP","3":"meiosis I","4":"2.452791e-07","5":"206","6":"118","7":"13","_rn_":"117"},{"1":"GO:0006139","2":"GO:BP","3":"nucleobase-containing compound metabolic process","4":"2.775338e-07","5":"206","6":"5468","7":"95","_rn_":"118"},{"1":"GO:0046483","2":"GO:BP","3":"heterocycle metabolic process","4":"3.857006e-07","5":"206","6":"5587","7":"96","_rn_":"119"},{"1":"GO:0034501","2":"GO:BP","3":"protein localization to kinetochore","4":"4.083874e-07","5":"206","6":"18","7":"7","_rn_":"120"},{"1":"GO:0061982","2":"GO:BP","3":"meiosis I cell cycle process","4":"4.151444e-07","5":"206","6":"123","7":"13","_rn_":"121"},{"1":"GO:0022607","2":"GO:BP","3":"cellular component assembly","4":"7.272516e-07","5":"206","6":"2729","7":"60","_rn_":"122"},{"1":"GO:0006725","2":"GO:BP","3":"cellular aromatic compound metabolic process","4":"8.915122e-07","5":"206","6":"5668","7":"96","_rn_":"123"},{"1":"GO:0010032","2":"GO:BP","3":"meiotic chromosome condensation","4":"9.476900e-07","5":"206","6":"6","7":"5","_rn_":"124"},{"1":"GO:0051383","2":"GO:BP","3":"kinetochore organization","4":"9.786440e-07","5":"206","6":"20","7":"7","_rn_":"125"},{"1":"GO:0090329","2":"GO:BP","3":"regulation of DNA-dependent DNA replication","4":"9.827322e-07","5":"206","6":"46","7":"9","_rn_":"126"},{"1":"GO:0044774","2":"GO:BP","3":"mitotic DNA integrity checkpoint","4":"1.479060e-06","5":"206","6":"66","7":"10","_rn_":"127"},{"1":"GO:0071478","2":"GO:BP","3":"cellular response to radiation","4":"1.827884e-06","5":"206","6":"167","7":"14","_rn_":"128"},{"1":"GO:1901360","2":"GO:BP","3":"organic cyclic compound metabolic process","4":"2.854902e-06","5":"206","6":"5874","7":"97","_rn_":"129"},{"1":"GO:0009411","2":"GO:BP","3":"response to UV","4":"2.979470e-06","5":"206","6":"144","7":"13","_rn_":"130"},{"1":"GO:0051656","2":"GO:BP","3":"establishment of organelle localization","4":"3.533789e-06","5":"206","6":"395","7":"20","_rn_":"131"},{"1":"GO:0009987","2":"GO:BP","3":"cellular process","4":"3.984923e-06","5":"206","6":"17988","7":"200","_rn_":"132"},{"1":"GO:1902969","2":"GO:BP","3":"mitotic DNA replication","4":"4.219976e-06","5":"206","6":"14","7":"6","_rn_":"133"},{"1":"GO:0032506","2":"GO:BP","3":"cytokinetic process","4":"4.994744e-06","5":"206","6":"38","7":"8","_rn_":"134"},{"1":"GO:0007143","2":"GO:BP","3":"female meiotic nuclear division","4":"4.994744e-06","5":"206","6":"38","7":"8","_rn_":"135"},{"1":"GO:0009314","2":"GO:BP","3":"response to radiation","4":"6.552540e-06","5":"206","6":"453","7":"21","_rn_":"136"},{"1":"GO:0006268","2":"GO:BP","3":"DNA unwinding involved in DNA replication","4":"6.976872e-06","5":"206","6":"15","7":"6","_rn_":"137"},{"1":"GO:0051988","2":"GO:BP","3":"regulation of attachment of spindle microtubules to kinetochore","4":"6.976872e-06","5":"206","6":"15","7":"6","_rn_":"138"},{"1":"GO:1902750","2":"GO:BP","3":"negative regulation of cell cycle G2/M phase transition","4":"7.322591e-06","5":"206","6":"57","7":"9","_rn_":"139"},{"1":"GO:0044260","2":"GO:BP","3":"cellular macromolecule metabolic process","4":"7.481678e-06","5":"206","6":"7957","7":"118","_rn_":"140"},{"1":"GO:0006284","2":"GO:BP","3":"base-excision repair","4":"7.725899e-06","5":"206","6":"40","7":"8","_rn_":"141"},{"1":"GO:0051052","2":"GO:BP","3":"regulation of DNA metabolic process","4":"8.328991e-06","5":"206","6":"373","7":"19","_rn_":"142"},{"1":"GO:2001020","2":"GO:BP","3":"regulation of response to DNA damage stimulus","4":"9.535885e-06","5":"206","6":"223","7":"15","_rn_":"143"},{"1":"GO:0006282","2":"GO:BP","3":"regulation of DNA repair","4":"1.094969e-05","5":"206","6":"131","7":"12","_rn_":"144"},{"1":"GO:0045005","2":"GO:BP","3":"DNA-dependent DNA replication maintenance of fidelity","4":"1.421104e-05","5":"206","6":"43","7":"8","_rn_":"145"},{"1":"GO:2000779","2":"GO:BP","3":"regulation of double-strand break repair","4":"1.664981e-05","5":"206","6":"84","7":"10","_rn_":"146"},{"1":"GO:0090304","2":"GO:BP","3":"nucleic acid metabolic process","4":"1.797528e-05","5":"206","6":"5003","7":"85","_rn_":"147"},{"1":"GO:0044085","2":"GO:BP","3":"cellular component biogenesis","4":"1.807998e-05","5":"206","6":"2965","7":"60","_rn_":"148"},{"1":"GO:0010972","2":"GO:BP","3":"negative regulation of G2/M transition of mitotic cell cycle","4":"2.077840e-05","5":"206","6":"45","7":"8","_rn_":"149"},{"1":"GO:0051640","2":"GO:BP","3":"organelle localization","4":"2.574880e-05","5":"206","6":"537","7":"22","_rn_":"150"},{"1":"GO:0034641","2":"GO:BP","3":"cellular nitrogen compound metabolic process","4":"3.638129e-05","5":"206","6":"6239","7":"98","_rn_":"151"},{"1":"GO:0006271","2":"GO:BP","3":"DNA strand elongation involved in DNA replication","4":"3.856903e-05","5":"206","6":"10","7":"5","_rn_":"152"},{"1":"GO:0033314","2":"GO:BP","3":"mitotic DNA replication checkpoint","4":"3.856903e-05","5":"206","6":"10","7":"5","_rn_":"153"},{"1":"GO:0071897","2":"GO:BP","3":"DNA biosynthetic process","4":"4.197101e-05","5":"206","6":"179","7":"13","_rn_":"154"},{"1":"GO:0044818","2":"GO:BP","3":"mitotic G2/M transition checkpoint","4":"4.849378e-05","5":"206","6":"33","7":"7","_rn_":"155"},{"1":"GO:0032467","2":"GO:BP","3":"positive regulation of cytokinesis","4":"6.056932e-05","5":"206","6":"34","7":"7","_rn_":"156"},{"1":"GO:1901989","2":"GO:BP","3":"positive regulation of cell cycle phase transition","4":"6.802775e-05","5":"206","6":"97","7":"10","_rn_":"157"},{"1":"GO:0051255","2":"GO:BP","3":"spindle midzone assembly","4":"7.015562e-05","5":"206","6":"11","7":"5","_rn_":"158"},{"1":"GO:0022414","2":"GO:BP","3":"reproductive process","4":"7.750315e-05","5":"206","6":"1769","7":"42","_rn_":"159"},{"1":"GO:0000003","2":"GO:BP","3":"reproduction","4":"7.874658e-05","5":"206","6":"1770","7":"42","_rn_":"160"},{"1":"GO:0033043","2":"GO:BP","3":"regulation of organelle organization","4":"7.979398e-05","5":"206","6":"1188","7":"33","_rn_":"161"},{"1":"GO:0065003","2":"GO:BP","3":"protein-containing complex assembly","4":"1.246543e-04","5":"206","6":"1465","7":"37","_rn_":"162"},{"1":"GO:0006275","2":"GO:BP","3":"regulation of DNA replication","4":"1.459513e-04","5":"206","6":"105","7":"10","_rn_":"163"},{"1":"GO:1901992","2":"GO:BP","3":"positive regulation of mitotic cell cycle phase transition","4":"1.739181e-04","5":"206","6":"81","7":"9","_rn_":"164"},{"1":"GO:0033365","2":"GO:BP","3":"protein localization to organelle","4":"1.773689e-04","5":"206","6":"870","7":"27","_rn_":"165"},{"1":"GO:0044773","2":"GO:BP","3":"mitotic DNA damage checkpoint","4":"2.179136e-04","5":"206","6":"60","7":"8","_rn_":"166"},{"1":"GO:0034644","2":"GO:BP","3":"cellular response to UV","4":"2.393701e-04","5":"206","6":"84","7":"9","_rn_":"167"},{"1":"GO:0000912","2":"GO:BP","3":"assembly of actomyosin apparatus involved in cytokinesis","4":"2.485851e-04","5":"206","6":"6","7":"4","_rn_":"168"},{"1":"GO:0044837","2":"GO:BP","3":"actomyosin contractile ring organization","4":"2.485851e-04","5":"206","6":"6","7":"4","_rn_":"169"},{"1":"GO:0000915","2":"GO:BP","3":"actomyosin contractile ring assembly","4":"2.485851e-04","5":"206","6":"6","7":"4","_rn_":"170"},{"1":"GO:0051256","2":"GO:BP","3":"mitotic spindle midzone assembly","4":"2.485851e-04","5":"206","6":"6","7":"4","_rn_":"171"},{"1":"GO:0044249","2":"GO:BP","3":"cellular biosynthetic process","4":"3.953442e-04","5":"206","6":"5695","7":"89","_rn_":"172"},{"1":"GO:0009059","2":"GO:BP","3":"macromolecule biosynthetic process","4":"3.972557e-04","5":"206","6":"4809","7":"79","_rn_":"173"},{"1":"GO:0034645","2":"GO:BP","3":"cellular macromolecule biosynthetic process","4":"4.072158e-04","5":"206","6":"4725","7":"78","_rn_":"174"},{"1":"GO:0051315","2":"GO:BP","3":"attachment of mitotic spindle microtubules to kinetochore","4":"4.418876e-04","5":"206","6":"15","7":"5","_rn_":"175"},{"1":"GO:0090307","2":"GO:BP","3":"mitotic spindle assembly","4":"5.243314e-04","5":"206","6":"67","7":"8","_rn_":"176"},{"1":"GO:0000022","2":"GO:BP","3":"mitotic spindle elongation","4":"5.756441e-04","5":"206","6":"7","7":"4","_rn_":"177"},{"1":"GO:0022616","2":"GO:BP","3":"DNA strand elongation","4":"6.377122e-04","5":"206","6":"16","7":"5","_rn_":"178"},{"1":"GO:0043933","2":"GO:BP","3":"protein-containing complex subunit organization","4":"6.821818e-04","5":"206","6":"1636","7":"38","_rn_":"179"},{"1":"GO:0010212","2":"GO:BP","3":"response to ionizing radiation","4":"7.081300e-04","5":"206","6":"156","7":"11","_rn_":"180"},{"1":"GO:0009058","2":"GO:BP","3":"biosynthetic process","4":"8.342982e-04","5":"206","6":"5876","7":"90","_rn_":"181"},{"1":"GO:0000212","2":"GO:BP","3":"meiotic spindle organization","4":"8.963522e-04","5":"206","6":"17","7":"5","_rn_":"182"},{"1":"GO:0006807","2":"GO:BP","3":"nitrogen compound metabolic process","4":"8.968514e-04","5":"206","6":"9696","7":"129","_rn_":"183"},{"1":"GO:0051231","2":"GO:BP","3":"spindle elongation","4":"1.142581e-03","5":"206","6":"8","7":"4","_rn_":"184"},{"1":"GO:0000731","2":"GO:BP","3":"DNA synthesis involved in DNA repair","4":"1.335807e-03","5":"206","6":"33","7":"6","_rn_":"185"},{"1":"GO:0071482","2":"GO:BP","3":"cellular response to light stimulus","4":"1.393580e-03","5":"206","6":"103","7":"9","_rn_":"186"},{"1":"GO:1901576","2":"GO:BP","3":"organic substance biosynthetic process","4":"1.580353e-03","5":"206","6":"5773","7":"88","_rn_":"187"},{"1":"GO:0071163","2":"GO:BP","3":"DNA replication preinitiation complex assembly","4":"1.769720e-03","5":"206","6":"3","7":"3","_rn_":"188"},{"1":"GO:0090306","2":"GO:BP","3":"spindle assembly involved in meiosis","4":"2.041097e-03","5":"206","6":"9","7":"4","_rn_":"189"},{"1":"GO:0000077","2":"GO:BP","3":"DNA damage checkpoint","4":"2.083587e-03","5":"206","6":"108","7":"9","_rn_":"190"},{"1":"GO:0051653","2":"GO:BP","3":"spindle localization","4":"2.181998e-03","5":"206","6":"56","7":"7","_rn_":"191"},{"1":"GO:0034622","2":"GO:BP","3":"cellular protein-containing complex assembly","4":"2.560019e-03","5":"206","6":"997","7":"27","_rn_":"192"},{"1":"GO:0008283","2":"GO:BP","3":"cell population proliferation","4":"2.567251e-03","5":"206","6":"2086","7":"43","_rn_":"193"},{"1":"GO:0031572","2":"GO:BP","3":"G2 DNA damage checkpoint","4":"2.715204e-03","5":"206","6":"37","7":"6","_rn_":"194"},{"1":"GO:0045931","2":"GO:BP","3":"positive regulation of mitotic cell cycle","4":"3.285082e-03","5":"206","6":"114","7":"9","_rn_":"195"},{"1":"GO:0007144","2":"GO:BP","3":"female meiosis I","4":"3.376115e-03","5":"206","6":"10","7":"4","_rn_":"196"},{"1":"GO:0104004","2":"GO:BP","3":"cellular response to environmental stimulus","4":"4.260233e-03","5":"206","6":"311","7":"14","_rn_":"197"},{"1":"GO:0071214","2":"GO:BP","3":"cellular response to abiotic stimulus","4":"4.260233e-03","5":"206","6":"311","7":"14","_rn_":"198"},{"1":"GO:0043170","2":"GO:BP","3":"macromolecule metabolic process","4":"5.067118e-03","5":"206","6":"9642","7":"126","_rn_":"199"},{"1":"GO:0007292","2":"GO:BP","3":"female gamete generation","4":"6.133325e-03","5":"206","6":"157","7":"10","_rn_":"200"},{"1":"GO:0006297","2":"GO:BP","3":"nucleotide-excision repair, DNA gap filling","4":"7.028402e-03","5":"206","6":"4","7":"3","_rn_":"201"},{"1":"GO:0007057","2":"GO:BP","3":"spindle assembly involved in female meiosis I","4":"7.028402e-03","5":"206","6":"4","7":"3","_rn_":"202"},{"1":"GO:0032875","2":"GO:BP","3":"regulation of DNA endoreduplication","4":"7.028402e-03","5":"206","6":"4","7":"3","_rn_":"203"},{"1":"GO:0007095","2":"GO:BP","3":"mitotic G2 DNA damage checkpoint","4":"7.227399e-03","5":"206","6":"25","7":"5","_rn_":"204"},{"1":"GO:0072331","2":"GO:BP","3":"signal transduction by p53 class mediator","4":"8.063794e-03","5":"206","6":"127","7":"9","_rn_":"205"},{"1":"GO:0045143","2":"GO:BP","3":"homologous chromosome segregation","4":"8.271434e-03","5":"206","6":"68","7":"7","_rn_":"206"},{"1":"GO:0044843","2":"GO:BP","3":"cell cycle G1/S phase transition","4":"9.421292e-03","5":"206","6":"203","7":"11","_rn_":"207"},{"1":"GO:0044237","2":"GO:BP","3":"cellular metabolic process","4":"9.635931e-03","5":"206","6":"10372","7":"132","_rn_":"208"},{"1":"GO:0010569","2":"GO:BP","3":"regulation of double-strand break repair via homologous recombination","4":"1.017759e-02","5":"206","6":"46","7":"6","_rn_":"209"},{"1":"GO:0048523","2":"GO:BP","3":"negative regulation of cellular process","4":"1.078401e-02","5":"206","6":"5115","7":"78","_rn_":"210"},{"1":"GO:0034508","2":"GO:BP","3":"centromere complex assembly","4":"1.081091e-02","5":"206","6":"27","7":"5","_rn_":"211"},{"1":"GO:0009263","2":"GO:BP","3":"deoxyribonucleotide biosynthetic process","4":"1.123633e-02","5":"206","6":"13","7":"4","_rn_":"212"},{"1":"GO:2000104","2":"GO:BP","3":"negative regulation of DNA-dependent DNA replication","4":"1.123633e-02","5":"206","6":"13","7":"4","_rn_":"213"},{"1":"GO:0072332","2":"GO:BP","3":"intrinsic apoptotic signaling pathway by p53 class mediator","4":"1.216608e-02","5":"206","6":"72","7":"7","_rn_":"214"},{"1":"GO:0071479","2":"GO:BP","3":"cellular response to ionizing radiation","4":"1.216608e-02","5":"206","6":"72","7":"7","_rn_":"215"},{"1":"GO:0072719","2":"GO:BP","3":"cellular response to cisplatin","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"216"},{"1":"GO:1902292","2":"GO:BP","3":"cell cycle DNA replication initiation","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"217"},{"1":"GO:0042023","2":"GO:BP","3":"DNA endoreduplication","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"218"},{"1":"GO:1902975","2":"GO:BP","3":"mitotic DNA replication initiation","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"219"},{"1":"GO:0007056","2":"GO:BP","3":"spindle assembly involved in female meiosis","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"220"},{"1":"GO:1902315","2":"GO:BP","3":"nuclear cell cycle DNA replication initiation","4":"1.744576e-02","5":"206","6":"5","7":"3","_rn_":"221"},{"1":"GO:0006325","2":"GO:BP","3":"chromatin organization","4":"1.754628e-02","5":"206","6":"791","7":"22","_rn_":"222"},{"1":"GO:0051293","2":"GO:BP","3":"establishment of spindle localization","4":"1.879942e-02","5":"206","6":"51","7":"6","_rn_":"223"},{"1":"GO:0044238","2":"GO:BP","3":"primary metabolic process","4":"2.003924e-02","5":"206","6":"10280","7":"130","_rn_":"224"},{"1":"GO:0000082","2":"GO:BP","3":"G1/S transition of mitotic cell cycle","4":"2.063907e-02","5":"206","6":"180","7":"10","_rn_":"225"},{"1":"GO:0061983","2":"GO:BP","3":"meiosis II cell cycle process","4":"2.112853e-02","5":"206","6":"15","7":"4","_rn_":"226"},{"1":"GO:0007135","2":"GO:BP","3":"meiosis II","4":"2.112853e-02","5":"206","6":"15","7":"4","_rn_":"227"},{"1":"GO:0010639","2":"GO:BP","3":"negative regulation of organelle organization","4":"2.139211e-02","5":"206","6":"358","7":"14","_rn_":"228"},{"1":"GO:0051781","2":"GO:BP","3":"positive regulation of cell division","4":"2.261472e-02","5":"206","6":"79","7":"7","_rn_":"229"},{"1":"GO:0009416","2":"GO:BP","3":"response to light stimulus","4":"2.436257e-02","5":"206","6":"314","7":"13","_rn_":"230"},{"1":"GO:0051129","2":"GO:BP","3":"negative regulation of cellular component organization","4":"2.469425e-02","5":"206","6":"748","7":"21","_rn_":"231"},{"1":"GO:0051445","2":"GO:BP","3":"regulation of meiotic cell cycle","4":"2.631971e-02","5":"206","6":"54","7":"6","_rn_":"232"},{"1":"GO:0072698","2":"GO:BP","3":"protein localization to microtubule cytoskeleton","4":"2.930683e-02","5":"206","6":"55","7":"6","_rn_":"233"},{"1":"GO:0007062","2":"GO:BP","3":"sister chromatid cohesion","4":"2.930683e-02","5":"206","6":"55","7":"6","_rn_":"234"},{"1":"GO:0006335","2":"GO:BP","3":"DNA replication-dependent nucleosome assembly","4":"3.032230e-02","5":"206","6":"33","7":"5","_rn_":"235"},{"1":"GO:0034723","2":"GO:BP","3":"DNA replication-dependent nucleosome organization","4":"3.032230e-02","5":"206","6":"33","7":"5","_rn_":"236"},{"1":"GO:0080135","2":"GO:BP","3":"regulation of cellular response to stress","4":"3.311964e-02","5":"206","6":"644","7":"19","_rn_":"237"},{"1":"GO:0070925","2":"GO:BP","3":"organelle assembly","4":"3.365357e-02","5":"206","6":"825","7":"22","_rn_":"238"},{"1":"GO:0006287","2":"GO:BP","3":"base-excision repair, gap-filling","4":"3.464294e-02","5":"206","6":"6","7":"3","_rn_":"239"},{"1":"GO:0051782","2":"GO:BP","3":"negative regulation of cell division","4":"3.628571e-02","5":"206","6":"17","7":"4","_rn_":"240"},{"1":"GO:0044380","2":"GO:BP","3":"protein localization to cytoskeleton","4":"4.411457e-02","5":"206","6":"59","7":"6","_rn_":"241"},{"1":"GO:0031497","2":"GO:BP","3":"chromatin assembly","4":"4.487238e-02","5":"206","6":"157","7":"9","_rn_":"242"},{"1":"GO:0019985","2":"GO:BP","3":"translesion synthesis","4":"4.630123e-02","5":"206","6":"18","7":"4","_rn_":"243"},{"1":"GO:0040001","2":"GO:BP","3":"establishment of mitotic spindle localization","4":"4.704630e-02","5":"206","6":"36","7":"5","_rn_":"244"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="figure" class="section level3">
+<h3>Figure</h3>
+<pre class="r"><code>q &lt;- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj &lt; 0.05),],
+                   color_down = &quot;#bdc9e1&quot;,color_up = &quot;#0570b0&quot;,category = &quot;&quot;)
+q</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_text()`).</code></pre>
+<p><img src="figure/at1_at2.rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="at2" class="section level2">
+<h2>AT2</h2>
+<pre class="r"><code>conditions &lt;- list(Sample = levels(meta$Sample), Treatment = c(&#39;Normoxia&#39;, &#39;Hyperoxia&#39;), Organism = &#39;ATll&#39;)
+dds = prepare_dds(conditions)</code></pre>
+<pre><code>Design : ~ Sample + Treatment 
+       Treatment Normoxia Hyperoxia
+Sample                             
+12                      1         1
+17                      1         1</code></pre>
+<pre class="r"><code>res = report_DE(dds)</code></pre>
+<pre><code>
+out of 19622 with nonzero total read count
+adjusted p-value &lt; 0.05
+LFC &gt; 0 (up)       : 39, 0.2%
+LFC &lt; 0 (down)     : 382, 1.9%
+outliers [1]       : 0, 0%
+low counts [2]     : 7228, 37%
+(mean count &lt; 64)
+[1] see &#39;cooksCutoff&#39; argument of ?results
+[2] see &#39;independentFiltering&#39; argument of ?results</code></pre>
+<pre><code>There are 421 significantly differentially expressed genes (adjusted p-value &lt;= 0.05), from which 300 have an absolute log2 Fold Change above or equal to 0.5.</code></pre>
+</div>
+<div id="volcano-plot-1" class="section level2">
+<h2>Volcano plot</h2>
+<pre class="r"><code>p &lt;- volcano_plot(exp = res,down_color = &quot;#fed98e&quot;,up_color = &quot;#cc4c02&quot;, title=&quot;&quot;)
+p</code></pre>
+<p><img src="figure/at1_at2.rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="biological-process-go-1" class="section level2">
+<h2>Biological Process (GO)</h2>
+<p>::: {.panel-tabset}</p>
+<div id="code-2" class="section level3">
+<h3>Code</h3>
+<pre class="r"><code>DEG.AT &lt;- res[which(res$padj &lt; 0.05),]
+AT.gost &lt;- gost(DEG.AT$ensembl_gene_id,organism = &quot;mmusculus&quot;,sources=c(&quot;GO:MF&quot;, &quot;GO:BP&quot;,&quot;GO:CC&quot;, &quot;KEGG&quot;))
+AT.BP &lt;- AT.gost$result[AT.gost$result$source == &quot;GO:BP&quot;,c(&quot;term_id&quot;, &quot;source&quot;, &quot;term_name&quot;, &quot;p_value&quot;, &quot;query_size&quot;, &quot;term_size&quot;, &quot;intersection_size&quot;)]
+
+cat(&quot;Number of hit: &quot;,nrow(AT.BP))</code></pre>
+<pre><code>Number of hit:  333</code></pre>
+</div>
+<div id="table-2" class="section level3">
+<h3>Table</h3>
+<ul>
+<li>Top 5 Biological processes</li>
+</ul>
+<pre class="r"><code>rmarkdown::paged_table(AT.BP)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["term_id"],"name":[1],"type":["chr"],"align":["left"]},{"label":["source"],"name":[2],"type":["chr"],"align":["left"]},{"label":["term_name"],"name":[3],"type":["chr"],"align":["left"]},{"label":["p_value"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["query_size"],"name":[5],"type":["int"],"align":["right"]},{"label":["term_size"],"name":[6],"type":["int"],"align":["right"]},{"label":["intersection_size"],"name":[7],"type":["int"],"align":["right"]}],"data":[{"1":"GO:0007049","2":"GO:BP","3":"cell cycle","4":"1.921207e-111","5":"410","6":"1718","7":"205","_rn_":"1"},{"1":"GO:0022402","2":"GO:BP","3":"cell cycle process","4":"8.786345e-104","5":"410","6":"1154","7":"170","_rn_":"2"},{"1":"GO:1903047","2":"GO:BP","3":"mitotic cell cycle process","4":"1.201466e-102","5":"410","6":"676","7":"139","_rn_":"3"},{"1":"GO:0000278","2":"GO:BP","3":"mitotic cell cycle","4":"1.495490e-101","5":"410","6":"834","7":"149","_rn_":"4"},{"1":"GO:0007059","2":"GO:BP","3":"chromosome segregation","4":"2.736588e-63","5":"410","6":"329","7":"81","_rn_":"5"},{"1":"GO:0051301","2":"GO:BP","3":"cell division","4":"2.924145e-63","5":"410","6":"581","7":"100","_rn_":"6"},{"1":"GO:0006260","2":"GO:BP","3":"DNA replication","4":"4.098596e-63","5":"410","6":"246","7":"73","_rn_":"7"},{"1":"GO:0051276","2":"GO:BP","3":"chromosome organization","4":"8.854035e-63","5":"410","6":"1187","7":"133","_rn_":"8"},{"1":"GO:0000280","2":"GO:BP","3":"nuclear division","4":"1.817014e-62","5":"410","6":"422","7":"88","_rn_":"9"},{"1":"GO:0048285","2":"GO:BP","3":"organelle fission","4":"7.093752e-59","5":"410","6":"476","7":"89","_rn_":"10"},{"1":"GO:0006259","2":"GO:BP","3":"DNA metabolic process","4":"1.089199e-56","5":"410","6":"854","7":"110","_rn_":"11"},{"1":"GO:0051726","2":"GO:BP","3":"regulation of cell cycle","4":"1.363016e-55","5":"410","6":"992","7":"116","_rn_":"12"},{"1":"GO:0098813","2":"GO:BP","3":"nuclear chromosome segregation","4":"1.071480e-54","5":"410","6":"268","7":"69","_rn_":"13"},{"1":"GO:0006261","2":"GO:BP","3":"DNA-dependent DNA replication","4":"6.028909e-54","5":"410","6":"135","7":"54","_rn_":"14"},{"1":"GO:0140014","2":"GO:BP","3":"mitotic nuclear division","4":"6.701663e-53","5":"410","6":"272","7":"68","_rn_":"15"},{"1":"GO:0006281","2":"GO:BP","3":"DNA repair","4":"1.110115e-51","5":"410","6":"495","7":"84","_rn_":"16"},{"1":"GO:0006974","2":"GO:BP","3":"cellular response to DNA damage stimulus","4":"1.846481e-51","5":"410","6":"766","7":"100","_rn_":"17"},{"1":"GO:0000819","2":"GO:BP","3":"sister chromatid segregation","4":"3.141835e-48","5":"410","6":"184","7":"56","_rn_":"18"},{"1":"GO:0010564","2":"GO:BP","3":"regulation of cell cycle process","4":"7.667285e-48","5":"410","6":"600","7":"87","_rn_":"19"},{"1":"GO:0000070","2":"GO:BP","3":"mitotic sister chromatid segregation","4":"6.480863e-47","5":"410","6":"156","7":"52","_rn_":"20"},{"1":"GO:0044772","2":"GO:BP","3":"mitotic cell cycle phase transition","4":"9.915790e-41","5":"410","6":"375","7":"66","_rn_":"21"},{"1":"GO:0044770","2":"GO:BP","3":"cell cycle phase transition","4":"1.082727e-40","5":"410","6":"420","7":"69","_rn_":"22"},{"1":"GO:0006996","2":"GO:BP","3":"organelle organization","4":"9.658609e-40","5":"410","6":"3801","7":"193","_rn_":"23"},{"1":"GO:0007346","2":"GO:BP","3":"regulation of mitotic cell cycle","4":"4.765339e-39","5":"410","6":"444","7":"69","_rn_":"24"},{"1":"GO:0033554","2":"GO:BP","3":"cellular response to stress","4":"6.440994e-35","5":"410","6":"1822","7":"125","_rn_":"25"},{"1":"GO:0006310","2":"GO:BP","3":"DNA recombination","4":"2.456747e-33","5":"410","6":"285","7":"53","_rn_":"26"},{"1":"GO:1901990","2":"GO:BP","3":"regulation of mitotic cell cycle phase transition","4":"5.027631e-32","5":"410","6":"260","7":"50","_rn_":"27"},{"1":"GO:0090068","2":"GO:BP","3":"positive regulation of cell cycle process","4":"3.845050e-31","5":"410","6":"257","7":"49","_rn_":"28"},{"1":"GO:0007051","2":"GO:BP","3":"spindle organization","4":"4.635815e-31","5":"410","6":"183","7":"43","_rn_":"29"},{"1":"GO:0071103","2":"GO:BP","3":"DNA conformation change","4":"4.723509e-31","5":"410","6":"300","7":"52","_rn_":"30"},{"1":"GO:0016043","2":"GO:BP","3":"cellular component organization","4":"3.170181e-30","5":"410","6":"6100","7":"233","_rn_":"31"},{"1":"GO:1901987","2":"GO:BP","3":"regulation of cell cycle phase transition","4":"4.058238e-30","5":"410","6":"298","7":"51","_rn_":"32"},{"1":"GO:1903046","2":"GO:BP","3":"meiotic cell cycle process","4":"2.069934e-29","5":"410","6":"199","7":"43","_rn_":"33"},{"1":"GO:0045787","2":"GO:BP","3":"positive regulation of cell cycle","4":"6.785321e-29","5":"410","6":"362","7":"54","_rn_":"34"},{"1":"GO:0006302","2":"GO:BP","3":"double-strand break repair","4":"1.235803e-28","5":"410","6":"233","7":"45","_rn_":"35"},{"1":"GO:0071840","2":"GO:BP","3":"cellular component organization or biogenesis","4":"1.288011e-28","5":"410","6":"6283","7":"234","_rn_":"36"},{"1":"GO:0000226","2":"GO:BP","3":"microtubule cytoskeleton organization","4":"2.149927e-28","5":"410","6":"627","7":"68","_rn_":"37"},{"1":"GO:1902850","2":"GO:BP","3":"microtubule cytoskeleton organization involved in mitosis","4":"7.077936e-27","5":"410","6":"142","7":"36","_rn_":"38"},{"1":"GO:0051321","2":"GO:BP","3":"meiotic cell cycle","4":"1.091620e-26","5":"410","6":"349","7":"51","_rn_":"39"},{"1":"GO:0000725","2":"GO:BP","3":"recombinational repair","4":"1.250274e-25","5":"410","6":"131","7":"34","_rn_":"40"},{"1":"GO:0007052","2":"GO:BP","3":"mitotic spindle organization","4":"3.509087e-25","5":"410","6":"114","7":"32","_rn_":"41"},{"1":"GO:0140013","2":"GO:BP","3":"meiotic nuclear division","4":"5.087225e-25","5":"410","6":"183","7":"38","_rn_":"42"},{"1":"GO:0000724","2":"GO:BP","3":"double-strand break repair via homologous recombination","4":"1.389305e-24","5":"410","6":"129","7":"33","_rn_":"43"},{"1":"GO:0045786","2":"GO:BP","3":"negative regulation of cell cycle","4":"4.112362e-24","5":"410","6":"449","7":"54","_rn_":"44"},{"1":"GO:0000075","2":"GO:BP","3":"cell cycle checkpoint","4":"1.297584e-23","5":"410","6":"173","7":"36","_rn_":"45"},{"1":"GO:0007093","2":"GO:BP","3":"mitotic cell cycle checkpoint","4":"7.356446e-23","5":"410","6":"122","7":"31","_rn_":"46"},{"1":"GO:0044786","2":"GO:BP","3":"cell cycle DNA replication","4":"1.045894e-22","5":"410","6":"40","7":"21","_rn_":"47"},{"1":"GO:0006270","2":"GO:BP","3":"DNA replication initiation","4":"1.494889e-22","5":"410","6":"30","7":"19","_rn_":"48"},{"1":"GO:0007017","2":"GO:BP","3":"microtubule-based process","4":"5.731582e-22","5":"410","6":"900","7":"72","_rn_":"49"},{"1":"GO:0045005","2":"GO:BP","3":"DNA-dependent DNA replication maintenance of fidelity","4":"7.951266e-22","5":"410","6":"43","7":"21","_rn_":"50"},{"1":"GO:0045930","2":"GO:BP","3":"negative regulation of mitotic cell cycle","4":"1.700190e-21","5":"410","6":"226","7":"38","_rn_":"51"},{"1":"GO:0007088","2":"GO:BP","3":"regulation of mitotic nuclear division","4":"1.850898e-21","5":"410","6":"102","7":"28","_rn_":"52"},{"1":"GO:1901991","2":"GO:BP","3":"negative regulation of mitotic cell cycle phase transition","4":"5.437572e-21","5":"410","6":"139","7":"31","_rn_":"53"},{"1":"GO:0010948","2":"GO:BP","3":"negative regulation of cell cycle process","4":"8.436418e-21","5":"410","6":"221","7":"37","_rn_":"54"},{"1":"GO:0044839","2":"GO:BP","3":"cell cycle G2/M phase transition","4":"1.086928e-20","5":"410","6":"142","7":"31","_rn_":"55"},{"1":"GO:1901988","2":"GO:BP","3":"negative regulation of cell cycle phase transition","4":"2.383562e-20","5":"410","6":"158","7":"32","_rn_":"56"},{"1":"GO:0051783","2":"GO:BP","3":"regulation of nuclear division","4":"2.696204e-20","5":"410","6":"134","7":"30","_rn_":"57"},{"1":"GO:0051304","2":"GO:BP","3":"chromosome separation","4":"2.848726e-20","5":"410","6":"91","7":"26","_rn_":"58"},{"1":"GO:0051225","2":"GO:BP","3":"spindle assembly","4":"9.120682e-20","5":"410","6":"116","7":"28","_rn_":"59"},{"1":"GO:0000086","2":"GO:BP","3":"G2/M transition of mitotic cell cycle","4":"3.196691e-19","5":"410","6":"121","7":"28","_rn_":"60"},{"1":"GO:0061982","2":"GO:BP","3":"meiosis I cell cycle process","4":"5.187136e-19","5":"410","6":"123","7":"28","_rn_":"61"},{"1":"GO:0033260","2":"GO:BP","3":"nuclear DNA replication","4":"6.083067e-19","5":"410","6":"35","7":"18","_rn_":"62"},{"1":"GO:0032392","2":"GO:BP","3":"DNA geometric change","4":"9.254140e-18","5":"410","6":"90","7":"24","_rn_":"63"},{"1":"GO:0051983","2":"GO:BP","3":"regulation of chromosome segregation","4":"1.736957e-17","5":"410","6":"82","7":"23","_rn_":"64"},{"1":"GO:0030071","2":"GO:BP","3":"regulation of mitotic metaphase/anaphase transition","4":"2.539698e-17","5":"410","6":"56","7":"20","_rn_":"65"},{"1":"GO:0032508","2":"GO:BP","3":"DNA duplex unwinding","4":"3.194619e-17","5":"410","6":"84","7":"23","_rn_":"66"},{"1":"GO:0007091","2":"GO:BP","3":"metaphase/anaphase transition of mitotic cell cycle","4":"3.844382e-17","5":"410","6":"57","7":"20","_rn_":"67"},{"1":"GO:1902099","2":"GO:BP","3":"regulation of metaphase/anaphase transition of cell cycle","4":"5.765570e-17","5":"410","6":"58","7":"20","_rn_":"68"},{"1":"GO:0010965","2":"GO:BP","3":"regulation of mitotic sister chromatid separation","4":"5.765570e-17","5":"410","6":"58","7":"20","_rn_":"69"},{"1":"GO:0031297","2":"GO:BP","3":"replication fork processing","4":"6.043050e-17","5":"410","6":"36","7":"17","_rn_":"70"},{"1":"GO:0044784","2":"GO:BP","3":"metaphase/anaphase transition of cell cycle","4":"8.570397e-17","5":"410","6":"59","7":"20","_rn_":"71"},{"1":"GO:1902749","2":"GO:BP","3":"regulation of cell cycle G2/M phase transition","4":"1.408180e-16","5":"410","6":"100","7":"24","_rn_":"72"},{"1":"GO:0051306","2":"GO:BP","3":"mitotic sister chromatid separation","4":"1.846634e-16","5":"410","6":"61","7":"20","_rn_":"73"},{"1":"GO:0010389","2":"GO:BP","3":"regulation of G2/M transition of mitotic cell cycle","4":"3.594899e-16","5":"410","6":"82","7":"22","_rn_":"74"},{"1":"GO:0006275","2":"GO:BP","3":"regulation of DNA replication","4":"4.861284e-16","5":"410","6":"105","7":"24","_rn_":"75"},{"1":"GO:0045839","2":"GO:BP","3":"negative regulation of mitotic nuclear division","4":"4.961235e-16","5":"410","6":"47","7":"18","_rn_":"76"},{"1":"GO:1905818","2":"GO:BP","3":"regulation of chromosome separation","4":"5.511077e-16","5":"410","6":"64","7":"20","_rn_":"77"},{"1":"GO:0007127","2":"GO:BP","3":"meiosis I","4":"6.197222e-16","5":"410","6":"118","7":"25","_rn_":"78"},{"1":"GO:0033045","2":"GO:BP","3":"regulation of sister chromatid segregation","4":"7.821833e-16","5":"410","6":"65","7":"20","_rn_":"79"},{"1":"GO:1901989","2":"GO:BP","3":"positive regulation of cell cycle phase transition","4":"1.132456e-15","5":"410","6":"97","7":"23","_rn_":"80"},{"1":"GO:0034502","2":"GO:BP","3":"protein localization to chromosome","4":"1.929755e-15","5":"410","6":"88","7":"22","_rn_":"81"},{"1":"GO:0006950","2":"GO:BP","3":"response to stress","4":"3.564302e-15","5":"410","6":"3858","7":"148","_rn_":"82"},{"1":"GO:0051310","2":"GO:BP","3":"metaphase plate congression","4":"6.679902e-15","5":"410","6":"62","7":"19","_rn_":"83"},{"1":"GO:0071824","2":"GO:BP","3":"protein-DNA complex subunit organization","4":"9.346864e-15","5":"410","6":"221","7":"31","_rn_":"84"},{"1":"GO:0006323","2":"GO:BP","3":"DNA packaging","4":"1.289072e-14","5":"410","6":"207","7":"30","_rn_":"85"},{"1":"GO:0045841","2":"GO:BP","3":"negative regulation of mitotic metaphase/anaphase transition","4":"1.338813e-14","5":"410","6":"39","7":"16","_rn_":"86"},{"1":"GO:0051784","2":"GO:BP","3":"negative regulation of nuclear division","4":"1.968754e-14","5":"410","6":"56","7":"18","_rn_":"87"},{"1":"GO:0033044","2":"GO:BP","3":"regulation of chromosome organization","4":"2.110851e-14","5":"410","6":"280","7":"34","_rn_":"88"},{"1":"GO:2000816","2":"GO:BP","3":"negative regulation of mitotic sister chromatid separation","4":"2.192595e-14","5":"410","6":"40","7":"16","_rn_":"89"},{"1":"GO:1902100","2":"GO:BP","3":"negative regulation of metaphase/anaphase transition of cell cycle","4":"2.192595e-14","5":"410","6":"40","7":"16","_rn_":"90"},{"1":"GO:0033046","2":"GO:BP","3":"negative regulation of sister chromatid segregation","4":"2.192595e-14","5":"410","6":"40","7":"16","_rn_":"91"},{"1":"GO:0033048","2":"GO:BP","3":"negative regulation of mitotic sister chromatid segregation","4":"2.192595e-14","5":"410","6":"40","7":"16","_rn_":"92"},{"1":"GO:1905819","2":"GO:BP","3":"negative regulation of chromosome separation","4":"3.533392e-14","5":"410","6":"41","7":"16","_rn_":"93"},{"1":"GO:0051985","2":"GO:BP","3":"negative regulation of chromosome segregation","4":"3.533392e-14","5":"410","6":"41","7":"16","_rn_":"94"},{"1":"GO:0065004","2":"GO:BP","3":"protein-DNA complex assembly","4":"4.525742e-14","5":"410","6":"184","7":"28","_rn_":"95"},{"1":"GO:0000910","2":"GO:BP","3":"cytokinesis","4":"6.427470e-14","5":"410","6":"156","7":"26","_rn_":"96"},{"1":"GO:0007010","2":"GO:BP","3":"cytoskeleton organization","4":"8.632362e-14","5":"410","6":"1406","7":"77","_rn_":"97"},{"1":"GO:0051052","2":"GO:BP","3":"regulation of DNA metabolic process","4":"9.550018e-14","5":"410","6":"373","7":"38","_rn_":"98"},{"1":"GO:1901992","2":"GO:BP","3":"positive regulation of mitotic cell cycle phase transition","4":"9.782214e-14","5":"410","6":"81","7":"20","_rn_":"99"},{"1":"GO:0008608","2":"GO:BP","3":"attachment of spindle microtubules to kinetochore","4":"1.106578e-13","5":"410","6":"36","7":"15","_rn_":"100"},{"1":"GO:0051303","2":"GO:BP","3":"establishment of chromosome localization","4":"1.271249e-13","5":"410","6":"82","7":"20","_rn_":"101"},{"1":"GO:0050000","2":"GO:BP","3":"chromosome localization","4":"1.271249e-13","5":"410","6":"82","7":"20","_rn_":"102"},{"1":"GO:0033047","2":"GO:BP","3":"regulation of mitotic sister chromatid segregation","4":"1.355305e-13","5":"410","6":"44","7":"16","_rn_":"103"},{"1":"GO:2001251","2":"GO:BP","3":"negative regulation of chromosome organization","4":"2.122314e-13","5":"410","6":"84","7":"20","_rn_":"104"},{"1":"GO:0045132","2":"GO:BP","3":"meiotic chromosome segregation","4":"3.655556e-13","5":"410","6":"98","7":"21","_rn_":"105"},{"1":"GO:0090307","2":"GO:BP","3":"mitotic spindle assembly","4":"7.158599e-13","5":"410","6":"67","7":"18","_rn_":"106"},{"1":"GO:0045931","2":"GO:BP","3":"positive regulation of mitotic cell cycle","4":"7.335423e-13","5":"410","6":"114","7":"22","_rn_":"107"},{"1":"GO:1901360","2":"GO:BP","3":"organic cyclic compound metabolic process","4":"8.385818e-13","5":"410","6":"5874","7":"189","_rn_":"108"},{"1":"GO:0031570","2":"GO:BP","3":"DNA integrity checkpoint","4":"1.080719e-12","5":"410","6":"116","7":"22","_rn_":"109"},{"1":"GO:0046483","2":"GO:BP","3":"heterocycle metabolic process","4":"1.421070e-12","5":"410","6":"5587","7":"182","_rn_":"110"},{"1":"GO:0007098","2":"GO:BP","3":"centrosome cycle","4":"2.722800e-12","5":"410","6":"135","7":"23","_rn_":"111"},{"1":"GO:0044260","2":"GO:BP","3":"cellular macromolecule metabolic process","4":"4.128079e-12","5":"410","6":"7957","7":"231","_rn_":"112"},{"1":"GO:0007094","2":"GO:BP","3":"mitotic spindle assembly checkpoint","4":"6.321110e-12","5":"410","6":"37","7":"14","_rn_":"113"},{"1":"GO:0031577","2":"GO:BP","3":"spindle checkpoint","4":"6.321110e-12","5":"410","6":"37","7":"14","_rn_":"114"},{"1":"GO:0071173","2":"GO:BP","3":"spindle assembly checkpoint","4":"6.321110e-12","5":"410","6":"37","7":"14","_rn_":"115"},{"1":"GO:0071174","2":"GO:BP","3":"mitotic spindle checkpoint","4":"6.321110e-12","5":"410","6":"37","7":"14","_rn_":"116"},{"1":"GO:0006271","2":"GO:BP","3":"DNA strand elongation involved in DNA replication","4":"6.659281e-12","5":"410","6":"10","7":"9","_rn_":"117"},{"1":"GO:0000281","2":"GO:BP","3":"mitotic cytokinesis","4":"7.894261e-12","5":"410","6":"65","7":"17","_rn_":"118"},{"1":"GO:0090329","2":"GO:BP","3":"regulation of DNA-dependent DNA replication","4":"8.538139e-12","5":"410","6":"46","7":"15","_rn_":"119"},{"1":"GO:0071459","2":"GO:BP","3":"protein localization to chromosome, centromeric region","4":"9.789316e-12","5":"410","6":"24","7":"12","_rn_":"120"},{"1":"GO:0006139","2":"GO:BP","3":"nucleobase-containing compound metabolic process","4":"9.861865e-12","5":"410","6":"5468","7":"177","_rn_":"121"},{"1":"GO:0006725","2":"GO:BP","3":"cellular aromatic compound metabolic process","4":"1.430189e-11","5":"410","6":"5668","7":"181","_rn_":"122"},{"1":"GO:0031023","2":"GO:BP","3":"microtubule organizing center organization","4":"1.856104e-11","5":"410","6":"147","7":"23","_rn_":"123"},{"1":"GO:0032465","2":"GO:BP","3":"regulation of cytokinesis","4":"3.437588e-11","5":"410","6":"82","7":"18","_rn_":"124"},{"1":"GO:0044843","2":"GO:BP","3":"cell cycle G1/S phase transition","4":"4.527404e-11","5":"410","6":"203","7":"26","_rn_":"125"},{"1":"GO:2001020","2":"GO:BP","3":"regulation of response to DNA damage stimulus","4":"5.753035e-11","5":"410","6":"223","7":"27","_rn_":"126"},{"1":"GO:0090304","2":"GO:BP","3":"nucleic acid metabolic process","4":"7.463129e-11","5":"410","6":"5003","7":"164","_rn_":"127"},{"1":"GO:0022616","2":"GO:BP","3":"DNA strand elongation","4":"9.192637e-11","5":"410","6":"16","7":"10","_rn_":"128"},{"1":"GO:0030261","2":"GO:BP","3":"chromosome condensation","4":"1.052998e-10","5":"410","6":"44","7":"14","_rn_":"129"},{"1":"GO:0000727","2":"GO:BP","3":"double-strand break repair via break-induced replication","4":"1.415929e-10","5":"410","6":"12","7":"9","_rn_":"130"},{"1":"GO:0000082","2":"GO:BP","3":"G1/S transition of mitotic cell cycle","4":"1.878314e-10","5":"410","6":"180","7":"24","_rn_":"131"},{"1":"GO:0061640","2":"GO:BP","3":"cytoskeleton-dependent cytokinesis","4":"2.369777e-10","5":"410","6":"91","7":"18","_rn_":"132"},{"1":"GO:0051302","2":"GO:BP","3":"regulation of cell division","4":"2.374078e-10","5":"410","6":"165","7":"23","_rn_":"133"},{"1":"GO:0009058","2":"GO:BP","3":"biosynthetic process","4":"2.412543e-10","5":"410","6":"5876","7":"182","_rn_":"134"},{"1":"GO:0009314","2":"GO:BP","3":"response to radiation","4":"2.768610e-10","5":"410","6":"453","7":"37","_rn_":"135"},{"1":"GO:0007143","2":"GO:BP","3":"female meiotic nuclear division","4":"2.913046e-10","5":"410","6":"38","7":"13","_rn_":"136"},{"1":"GO:0033043","2":"GO:BP","3":"regulation of organelle organization","4":"4.183299e-10","5":"410","6":"1188","7":"63","_rn_":"137"},{"1":"GO:0034501","2":"GO:BP","3":"protein localization to kinetochore","4":"4.853533e-10","5":"410","6":"18","7":"10","_rn_":"138"},{"1":"GO:1901576","2":"GO:BP","3":"organic substance biosynthetic process","4":"9.097152e-10","5":"410","6":"5773","7":"178","_rn_":"139"},{"1":"GO:0044249","2":"GO:BP","3":"cellular biosynthetic process","4":"1.129257e-09","5":"410","6":"5695","7":"176","_rn_":"140"},{"1":"GO:0009411","2":"GO:BP","3":"response to UV","4":"1.146590e-09","5":"410","6":"144","7":"21","_rn_":"141"},{"1":"GO:1902969","2":"GO:BP","3":"mitotic DNA replication","4":"1.245311e-09","5":"410","6":"14","7":"9","_rn_":"142"},{"1":"GO:0070192","2":"GO:BP","3":"chromosome organization involved in meiotic cell cycle","4":"1.293419e-09","5":"410","6":"74","7":"16","_rn_":"143"},{"1":"GO:0036297","2":"GO:BP","3":"interstrand cross-link repair","4":"1.668973e-09","5":"410","6":"34","7":"12","_rn_":"144"},{"1":"GO:0006282","2":"GO:BP","3":"regulation of DNA repair","4":"1.710095e-09","5":"410","6":"131","7":"20","_rn_":"145"},{"1":"GO:0022414","2":"GO:BP","3":"reproductive process","4":"2.077730e-09","5":"410","6":"1769","7":"79","_rn_":"146"},{"1":"GO:0022607","2":"GO:BP","3":"cellular component assembly","4":"2.129856e-09","5":"410","6":"2729","7":"105","_rn_":"147"},{"1":"GO:0000003","2":"GO:BP","3":"reproduction","4":"2.138806e-09","5":"410","6":"1770","7":"79","_rn_":"148"},{"1":"GO:0044237","2":"GO:BP","3":"cellular metabolic process","4":"3.453330e-09","5":"410","6":"10372","7":"269","_rn_":"149"},{"1":"GO:0006807","2":"GO:BP","3":"nitrogen compound metabolic process","4":"4.103712e-09","5":"410","6":"9696","7":"256","_rn_":"150"},{"1":"GO:0007080","2":"GO:BP","3":"mitotic metaphase plate congression","4":"4.763238e-09","5":"410","6":"46","7":"13","_rn_":"151"},{"1":"GO:0034641","2":"GO:BP","3":"cellular nitrogen compound metabolic process","4":"8.878154e-09","5":"410","6":"6239","7":"185","_rn_":"152"},{"1":"GO:0033365","2":"GO:BP","3":"protein localization to organelle","4":"9.567972e-09","5":"410","6":"870","7":"50","_rn_":"153"},{"1":"GO:0071897","2":"GO:BP","3":"DNA biosynthetic process","4":"1.089501e-08","5":"410","6":"179","7":"22","_rn_":"154"},{"1":"GO:0006325","2":"GO:BP","3":"chromatin organization","4":"1.410117e-08","5":"410","6":"791","7":"47","_rn_":"155"},{"1":"GO:0044238","2":"GO:BP","3":"primary metabolic process","4":"1.748606e-08","5":"410","6":"10280","7":"265","_rn_":"156"},{"1":"GO:0000018","2":"GO:BP","3":"regulation of DNA recombination","4":"2.930356e-08","5":"410","6":"104","7":"17","_rn_":"157"},{"1":"GO:0044774","2":"GO:BP","3":"mitotic DNA integrity checkpoint","4":"4.831101e-08","5":"410","6":"66","7":"14","_rn_":"158"},{"1":"GO:0000077","2":"GO:BP","3":"DNA damage checkpoint","4":"5.478013e-08","5":"410","6":"108","7":"17","_rn_":"159"},{"1":"GO:0007062","2":"GO:BP","3":"sister chromatid cohesion","4":"5.808189e-08","5":"410","6":"55","7":"13","_rn_":"160"},{"1":"GO:0009987","2":"GO:BP","3":"cellular process","4":"8.993933e-08","5":"410","6":"17988","7":"388","_rn_":"161"},{"1":"GO:0051383","2":"GO:BP","3":"kinetochore organization","4":"9.432560e-08","5":"410","6":"20","7":"9","_rn_":"162"},{"1":"GO:1902750","2":"GO:BP","3":"negative regulation of cell cycle G2/M phase transition","4":"9.464123e-08","5":"410","6":"57","7":"13","_rn_":"163"},{"1":"GO:0007076","2":"GO:BP","3":"mitotic chromosome condensation","4":"9.761308e-08","5":"410","6":"14","7":"8","_rn_":"164"},{"1":"GO:2000779","2":"GO:BP","3":"regulation of double-strand break repair","4":"1.271753e-07","5":"410","6":"84","7":"15","_rn_":"165"},{"1":"GO:0044085","2":"GO:BP","3":"cellular component biogenesis","4":"1.457855e-07","5":"410","6":"2965","7":"106","_rn_":"166"},{"1":"GO:0009059","2":"GO:BP","3":"macromolecule biosynthetic process","4":"2.216329e-07","5":"410","6":"4809","7":"149","_rn_":"167"},{"1":"GO:0034645","2":"GO:BP","3":"cellular macromolecule biosynthetic process","4":"2.382366e-07","5":"410","6":"4725","7":"147","_rn_":"168"},{"1":"GO:1902751","2":"GO:BP","3":"positive regulation of cell cycle G2/M phase transition","4":"2.712353e-07","5":"410","6":"30","7":"10","_rn_":"169"},{"1":"GO:0010212","2":"GO:BP","3":"response to ionizing radiation","4":"3.668959e-07","5":"410","6":"156","7":"19","_rn_":"170"},{"1":"GO:0007292","2":"GO:BP","3":"female gamete generation","4":"4.101488e-07","5":"410","6":"157","7":"19","_rn_":"171"},{"1":"GO:0000076","2":"GO:BP","3":"DNA replication checkpoint","4":"7.512241e-07","5":"410","6":"17","7":"8","_rn_":"172"},{"1":"GO:0010639","2":"GO:BP","3":"negative regulation of organelle organization","4":"7.834652e-07","5":"410","6":"358","7":"28","_rn_":"173"},{"1":"GO:0045740","2":"GO:BP","3":"positive regulation of DNA replication","4":"1.034720e-06","5":"410","6":"44","7":"11","_rn_":"174"},{"1":"GO:0071478","2":"GO:BP","3":"cellular response to radiation","4":"1.193803e-06","5":"410","6":"167","7":"19","_rn_":"175"},{"1":"GO:0071704","2":"GO:BP","3":"organic substance metabolic process","4":"1.247082e-06","5":"410","6":"11161","7":"275","_rn_":"176"},{"1":"GO:0010972","2":"GO:BP","3":"negative regulation of G2/M transition of mitotic cell cycle","4":"1.346079e-06","5":"410","6":"45","7":"11","_rn_":"177"},{"1":"GO:0043170","2":"GO:BP","3":"macromolecule metabolic process","4":"1.640104e-06","5":"410","6":"9642","7":"246","_rn_":"178"},{"1":"GO:0010569","2":"GO:BP","3":"regulation of double-strand break repair via homologous recombination","4":"1.738902e-06","5":"410","6":"46","7":"11","_rn_":"179"},{"1":"GO:0034508","2":"GO:BP","3":"centromere complex assembly","4":"2.336470e-06","5":"410","6":"27","7":"9","_rn_":"180"},{"1":"GO:0010971","2":"GO:BP","3":"positive regulation of G2/M transition of mitotic cell cycle","4":"2.336470e-06","5":"410","6":"27","7":"9","_rn_":"181"},{"1":"GO:0044773","2":"GO:BP","3":"mitotic DNA damage checkpoint","4":"2.714525e-06","5":"410","6":"60","7":"12","_rn_":"182"},{"1":"GO:0036388","2":"GO:BP","3":"pre-replicative complex assembly","4":"2.728265e-06","5":"410","6":"8","7":"6","_rn_":"183"},{"1":"GO:0006267","2":"GO:BP","3":"pre-replicative complex assembly involved in nuclear cell cycle DNA replication","4":"2.728265e-06","5":"410","6":"8","7":"6","_rn_":"184"},{"1":"GO:1902299","2":"GO:BP","3":"pre-replicative complex assembly involved in cell cycle DNA replication","4":"2.728265e-06","5":"410","6":"8","7":"6","_rn_":"185"},{"1":"GO:0031572","2":"GO:BP","3":"G2 DNA damage checkpoint","4":"2.789032e-06","5":"410","6":"37","7":"10","_rn_":"186"},{"1":"GO:0051298","2":"GO:BP","3":"centrosome duplication","4":"3.579406e-06","5":"410","6":"75","7":"13","_rn_":"187"},{"1":"GO:0008315","2":"GO:BP","3":"G2/MI transition of meiotic cell cycle","4":"5.307057e-06","5":"410","6":"5","7":"5","_rn_":"188"},{"1":"GO:0016572","2":"GO:BP","3":"histone phosphorylation","4":"6.447088e-06","5":"410","6":"40","7":"10","_rn_":"189"},{"1":"GO:0006284","2":"GO:BP","3":"base-excision repair","4":"6.447088e-06","5":"410","6":"40","7":"10","_rn_":"190"},{"1":"GO:0070925","2":"GO:BP","3":"organelle assembly","4":"6.704721e-06","5":"410","6":"825","7":"43","_rn_":"191"},{"1":"GO:0006268","2":"GO:BP","3":"DNA unwinding involved in DNA replication","4":"1.073196e-05","5":"410","6":"15","7":"7","_rn_":"192"},{"1":"GO:0051988","2":"GO:BP","3":"regulation of attachment of spindle microtubules to kinetochore","4":"1.073196e-05","5":"410","6":"15","7":"7","_rn_":"193"},{"1":"GO:0045143","2":"GO:BP","3":"homologous chromosome segregation","4":"1.229983e-05","5":"410","6":"68","7":"12","_rn_":"194"},{"1":"GO:0043933","2":"GO:BP","3":"protein-containing complex subunit organization","4":"1.382781e-05","5":"410","6":"1636","7":"66","_rn_":"195"},{"1":"GO:0034644","2":"GO:BP","3":"cellular response to UV","4":"1.513389e-05","5":"410","6":"84","7":"13","_rn_":"196"},{"1":"GO:0008152","2":"GO:BP","3":"metabolic process","4":"1.861935e-05","5":"410","6":"11726","7":"281","_rn_":"197"},{"1":"GO:0044771","2":"GO:BP","3":"meiotic cell cycle phase transition","4":"1.980404e-05","5":"410","6":"10","7":"6","_rn_":"198"},{"1":"GO:0007144","2":"GO:BP","3":"female meiosis I","4":"1.980404e-05","5":"410","6":"10","7":"6","_rn_":"199"},{"1":"GO:0032467","2":"GO:BP","3":"positive regulation of cytokinesis","4":"2.321379e-05","5":"410","6":"34","7":"9","_rn_":"200"},{"1":"GO:0008283","2":"GO:BP","3":"cell population proliferation","4":"3.046810e-05","5":"410","6":"2086","7":"77","_rn_":"201"},{"1":"GO:0000723","2":"GO:BP","3":"telomere maintenance","4":"3.047907e-05","5":"410","6":"123","7":"15","_rn_":"202"},{"1":"GO:0000079","2":"GO:BP","3":"regulation of cyclin-dependent protein serine/threonine kinase activity","4":"3.117536e-05","5":"410","6":"89","7":"13","_rn_":"203"},{"1":"GO:0010032","2":"GO:BP","3":"meiotic chromosome condensation","4":"3.133895e-05","5":"410","6":"6","7":"5","_rn_":"204"},{"1":"GO:0051256","2":"GO:BP","3":"mitotic spindle midzone assembly","4":"3.133895e-05","5":"410","6":"6","7":"5","_rn_":"205"},{"1":"GO:0000212","2":"GO:BP","3":"meiotic spindle organization","4":"3.137371e-05","5":"410","6":"17","7":"7","_rn_":"206"},{"1":"GO:0140527","2":"GO:BP","3":"reciprocal homologous recombination","4":"3.493471e-05","5":"410","6":"47","7":"10","_rn_":"207"},{"1":"GO:0007131","2":"GO:BP","3":"reciprocal meiotic recombination","4":"3.493471e-05","5":"410","6":"47","7":"10","_rn_":"208"},{"1":"GO:0031323","2":"GO:BP","3":"regulation of cellular metabolic process","4":"3.776119e-05","5":"410","6":"6090","7":"169","_rn_":"209"},{"1":"GO:0032200","2":"GO:BP","3":"telomere organization","4":"3.805085e-05","5":"410","6":"125","7":"15","_rn_":"210"},{"1":"GO:0009628","2":"GO:BP","3":"response to abiotic stimulus","4":"4.175723e-05","5":"410","6":"1180","7":"52","_rn_":"211"},{"1":"GO:0051255","2":"GO:BP","3":"spindle midzone assembly","4":"4.286301e-05","5":"410","6":"11","7":"6","_rn_":"212"},{"1":"GO:0035825","2":"GO:BP","3":"homologous recombination","4":"4.337927e-05","5":"410","6":"48","7":"10","_rn_":"213"},{"1":"GO:0051128","2":"GO:BP","3":"regulation of cellular component organization","4":"5.224855e-05","5":"410","6":"2428","7":"85","_rn_":"214"},{"1":"GO:1904029","2":"GO:BP","3":"regulation of cyclin-dependent protein kinase activity","4":"5.369368e-05","5":"410","6":"93","7":"13","_rn_":"215"},{"1":"GO:0051338","2":"GO:BP","3":"regulation of transferase activity","4":"5.959933e-05","5":"410","6":"955","7":"45","_rn_":"216"},{"1":"GO:0080135","2":"GO:BP","3":"regulation of cellular response to stress","4":"7.641655e-05","5":"410","6":"644","7":"35","_rn_":"217"},{"1":"GO:2000105","2":"GO:BP","3":"positive regulation of DNA-dependent DNA replication","4":"8.433759e-05","5":"410","6":"12","7":"6","_rn_":"218"},{"1":"GO:0019222","2":"GO:BP","3":"regulation of metabolic process","4":"1.030079e-04","5":"410","6":"6841","7":"183","_rn_":"219"},{"1":"GO:0000022","2":"GO:BP","3":"mitotic spindle elongation","4":"1.079531e-04","5":"410","6":"7","7":"5","_rn_":"220"},{"1":"GO:0051656","2":"GO:BP","3":"establishment of organelle localization","4":"1.172094e-04","5":"410","6":"395","7":"26","_rn_":"221"},{"1":"GO:0031497","2":"GO:BP","3":"chromatin assembly","4":"1.330098e-04","5":"410","6":"157","7":"16","_rn_":"222"},{"1":"GO:0006333","2":"GO:BP","3":"chromatin assembly or disassembly","4":"1.463912e-04","5":"410","6":"179","7":"17","_rn_":"223"},{"1":"GO:0071482","2":"GO:BP","3":"cellular response to light stimulus","4":"1.861713e-04","5":"410","6":"103","7":"13","_rn_":"224"},{"1":"GO:0034728","2":"GO:BP","3":"nucleosome organization","4":"2.135275e-04","5":"410","6":"142","7":"15","_rn_":"225"},{"1":"GO:1901976","2":"GO:BP","3":"regulation of cell cycle checkpoint","4":"2.525034e-04","5":"410","6":"32","7":"8","_rn_":"226"},{"1":"GO:0050790","2":"GO:BP","3":"regulation of catalytic activity","4":"2.694299e-04","5":"410","6":"2277","7":"79","_rn_":"227"},{"1":"GO:0007057","2":"GO:BP","3":"spindle assembly involved in female meiosis I","4":"2.790780e-04","5":"410","6":"4","7":"4","_rn_":"228"},{"1":"GO:0051231","2":"GO:BP","3":"spindle elongation","4":"2.833277e-04","5":"410","6":"8","7":"5","_rn_":"229"},{"1":"GO:0000731","2":"GO:BP","3":"DNA synthesis involved in DNA repair","4":"3.277488e-04","5":"410","6":"33","7":"8","_rn_":"230"},{"1":"GO:0044818","2":"GO:BP","3":"mitotic G2/M transition checkpoint","4":"3.277488e-04","5":"410","6":"33","7":"8","_rn_":"231"},{"1":"GO:0009416","2":"GO:BP","3":"response to light stimulus","4":"4.306915e-04","5":"410","6":"314","7":"22","_rn_":"232"},{"1":"GO:0051315","2":"GO:BP","3":"attachment of mitotic spindle microtubules to kinetochore","4":"4.350027e-04","5":"410","6":"15","7":"6","_rn_":"233"},{"1":"GO:2000045","2":"GO:BP","3":"regulation of G1/S transition of mitotic cell cycle","4":"4.547172e-04","5":"410","6":"111","7":"13","_rn_":"234"},{"1":"GO:0048522","2":"GO:BP","3":"positive regulation of cellular process","4":"4.999754e-04","5":"410","6":"5833","7":"159","_rn_":"235"},{"1":"GO:0090306","2":"GO:BP","3":"spindle assembly involved in meiosis","4":"6.274223e-04","5":"410","6":"9","7":"5","_rn_":"236"},{"1":"GO:1902806","2":"GO:BP","3":"regulation of cell cycle G1/S phase transition","4":"6.529305e-04","5":"410","6":"134","7":"14","_rn_":"237"},{"1":"GO:0006301","2":"GO:BP","3":"postreplication repair","4":"9.138855e-04","5":"410","6":"26","7":"7","_rn_":"238"},{"1":"GO:0060255","2":"GO:BP","3":"regulation of macromolecule metabolic process","4":"9.154193e-04","5":"410","6":"6361","7":"169","_rn_":"239"},{"1":"GO:0051129","2":"GO:BP","3":"negative regulation of cellular component organization","4":"9.577617e-04","5":"410","6":"748","7":"36","_rn_":"240"},{"1":"GO:0032506","2":"GO:BP","3":"cytokinetic process","4":"1.061407e-03","5":"410","6":"38","7":"8","_rn_":"241"},{"1":"GO:0007056","2":"GO:BP","3":"spindle assembly involved in female meiosis","4":"1.374162e-03","5":"410","6":"5","7":"4","_rn_":"242"},{"1":"GO:1902292","2":"GO:BP","3":"cell cycle DNA replication initiation","4":"1.374162e-03","5":"410","6":"5","7":"4","_rn_":"243"},{"1":"GO:1902315","2":"GO:BP","3":"nuclear cell cycle DNA replication initiation","4":"1.374162e-03","5":"410","6":"5","7":"4","_rn_":"244"},{"1":"GO:1902975","2":"GO:BP","3":"mitotic DNA replication initiation","4":"1.374162e-03","5":"410","6":"5","7":"4","_rn_":"245"},{"1":"GO:0065009","2":"GO:BP","3":"regulation of molecular function","4":"1.385858e-03","5":"410","6":"2826","7":"90","_rn_":"246"},{"1":"GO:0051445","2":"GO:BP","3":"regulation of meiotic cell cycle","4":"1.676245e-03","5":"410","6":"54","7":"9","_rn_":"247"},{"1":"GO:1901362","2":"GO:BP","3":"organic cyclic compound biosynthetic process","4":"1.767166e-03","5":"410","6":"4191","7":"121","_rn_":"248"},{"1":"GO:0016310","2":"GO:BP","3":"phosphorylation","4":"2.314756e-03","5":"410","6":"2077","7":"71","_rn_":"249"},{"1":"GO:0006334","2":"GO:BP","3":"nucleosome assembly","4":"2.360595e-03","5":"410","6":"108","7":"12","_rn_":"250"},{"1":"GO:0045859","2":"GO:BP","3":"regulation of protein kinase activity","4":"2.496747e-03","5":"410","6":"746","7":"35","_rn_":"251"},{"1":"GO:0042770","2":"GO:BP","3":"signal transduction in response to DNA damage","4":"2.544428e-03","5":"410","6":"90","7":"11","_rn_":"252"},{"1":"GO:0001556","2":"GO:BP","3":"oocyte maturation","4":"2.646896e-03","5":"410","6":"30","7":"7","_rn_":"253"},{"1":"GO:0051054","2":"GO:BP","3":"positive regulation of DNA metabolic process","4":"2.767563e-03","5":"410","6":"220","7":"17","_rn_":"254"},{"1":"GO:0065003","2":"GO:BP","3":"protein-containing complex assembly","4":"2.900709e-03","5":"410","6":"1465","7":"55","_rn_":"255"},{"1":"GO:0043085","2":"GO:BP","3":"positive regulation of catalytic activity","4":"3.203879e-03","5":"410","6":"1357","7":"52","_rn_":"256"},{"1":"GO:0045910","2":"GO:BP","3":"negative regulation of DNA recombination","4":"3.478217e-03","5":"410","6":"44","7":"8","_rn_":"257"},{"1":"GO:0000912","2":"GO:BP","3":"assembly of actomyosin apparatus involved in cytokinesis","4":"4.059807e-03","5":"410","6":"6","7":"4","_rn_":"258"},{"1":"GO:0044837","2":"GO:BP","3":"actomyosin contractile ring organization","4":"4.059807e-03","5":"410","6":"6","7":"4","_rn_":"259"},{"1":"GO:0000915","2":"GO:BP","3":"actomyosin contractile ring assembly","4":"4.059807e-03","5":"410","6":"6","7":"4","_rn_":"260"},{"1":"GO:0051640","2":"GO:BP","3":"organelle localization","4":"4.150778e-03","5":"410","6":"537","7":"28","_rn_":"261"},{"1":"GO:0051347","2":"GO:BP","3":"positive regulation of transferase activity","4":"4.188962e-03","5":"410","6":"632","7":"31","_rn_":"262"},{"1":"GO:0046653","2":"GO:BP","3":"tetrahydrofolate metabolic process","4":"4.276983e-03","5":"410","6":"21","7":"6","_rn_":"263"},{"1":"GO:2001022","2":"GO:BP","3":"positive regulation of response to DNA damage stimulus","4":"5.072422e-03","5":"410","6":"116","7":"12","_rn_":"264"},{"1":"GO:0048518","2":"GO:BP","3":"positive regulation of biological process","4":"5.305943e-03","5":"410","6":"6334","7":"165","_rn_":"265"},{"1":"GO:0006342","2":"GO:BP","3":"chromatin silencing","4":"5.394915e-03","5":"410","6":"97","7":"11","_rn_":"266"},{"1":"GO:0051171","2":"GO:BP","3":"regulation of nitrogen compound metabolic process","4":"5.571306e-03","5":"410","6":"5719","7":"152","_rn_":"267"},{"1":"GO:0051781","2":"GO:BP","3":"positive regulation of cell division","4":"5.626854e-03","5":"410","6":"79","7":"10","_rn_":"268"},{"1":"GO:0071214","2":"GO:BP","3":"cellular response to abiotic stimulus","4":"5.801544e-03","5":"410","6":"311","7":"20","_rn_":"269"},{"1":"GO:0104004","2":"GO:BP","3":"cellular response to environmental stimulus","4":"5.801544e-03","5":"410","6":"311","7":"20","_rn_":"270"},{"1":"GO:0048523","2":"GO:BP","3":"negative regulation of cellular process","4":"5.915745e-03","5":"410","6":"5115","7":"139","_rn_":"271"},{"1":"GO:0051984","2":"GO:BP","3":"positive regulation of chromosome segregation","4":"6.013826e-03","5":"410","6":"13","7":"5","_rn_":"272"},{"1":"GO:0009263","2":"GO:BP","3":"deoxyribonucleotide biosynthetic process","4":"6.013826e-03","5":"410","6":"13","7":"5","_rn_":"273"},{"1":"GO:2000104","2":"GO:BP","3":"negative regulation of DNA-dependent DNA replication","4":"6.013826e-03","5":"410","6":"13","7":"5","_rn_":"274"},{"1":"GO:0045739","2":"GO:BP","3":"positive regulation of DNA repair","4":"6.322002e-03","5":"410","6":"80","7":"10","_rn_":"275"},{"1":"GO:0006464","2":"GO:BP","3":"cellular protein modification process","4":"7.465685e-03","5":"410","6":"3637","7":"106","_rn_":"276"},{"1":"GO:0036211","2":"GO:BP","3":"protein modification process","4":"7.465685e-03","5":"410","6":"3637","7":"106","_rn_":"277"},{"1":"GO:0080090","2":"GO:BP","3":"regulation of primary metabolic process","4":"7.618539e-03","5":"410","6":"5891","7":"155","_rn_":"278"},{"1":"GO:0006468","2":"GO:BP","3":"protein phosphorylation","4":"7.780467e-03","5":"410","6":"1669","7":"59","_rn_":"279"},{"1":"GO:1902808","2":"GO:BP","3":"positive regulation of cell cycle G1/S phase transition","4":"8.138919e-03","5":"410","6":"49","7":"8","_rn_":"280"},{"1":"GO:0031325","2":"GO:BP","3":"positive regulation of cellular metabolic process","4":"8.299712e-03","5":"410","6":"3294","7":"98","_rn_":"281"},{"1":"GO:0016321","2":"GO:BP","3":"female meiosis chromosome segregation","4":"9.328946e-03","5":"410","6":"7","7":"4","_rn_":"282"},{"1":"GO:0009157","2":"GO:BP","3":"deoxyribonucleoside monophosphate biosynthetic process","4":"9.328946e-03","5":"410","6":"7","7":"4","_rn_":"283"},{"1":"GO:0051053","2":"GO:BP","3":"negative regulation of DNA metabolic process","4":"9.402808e-03","5":"410","6":"123","7":"12","_rn_":"284"},{"1":"GO:0031399","2":"GO:BP","3":"regulation of protein modification process","4":"9.561787e-03","5":"410","6":"1641","7":"58","_rn_":"285"},{"1":"GO:0051307","2":"GO:BP","3":"meiotic chromosome separation","4":"1.010317e-02","5":"410","6":"24","7":"6","_rn_":"286"},{"1":"GO:0034401","2":"GO:BP","3":"chromatin organization involved in regulation of transcription","4":"1.130275e-02","5":"410","6":"147","7":"13","_rn_":"287"},{"1":"GO:0044093","2":"GO:BP","3":"positive regulation of molecular function","4":"1.240987e-02","5":"410","6":"1734","7":"60","_rn_":"288"},{"1":"GO:0018130","2":"GO:BP","3":"heterocycle biosynthetic process","4":"1.248602e-02","5":"410","6":"4036","7":"114","_rn_":"289"},{"1":"GO:0006289","2":"GO:BP","3":"nucleotide-excision repair","4":"1.291565e-02","5":"410","6":"52","7":"8","_rn_":"290"},{"1":"GO:0045814","2":"GO:BP","3":"negative regulation of gene expression, epigenetic","4":"1.292248e-02","5":"410","6":"106","7":"11","_rn_":"291"},{"1":"GO:0048519","2":"GO:BP","3":"negative regulation of biological process","4":"1.304787e-02","5":"410","6":"5611","7":"148","_rn_":"292"},{"1":"GO:0007095","2":"GO:BP","3":"mitotic G2 DNA damage checkpoint","4":"1.307922e-02","5":"410","6":"25","7":"6","_rn_":"293"},{"1":"GO:0061983","2":"GO:BP","3":"meiosis II cell cycle process","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"294"},{"1":"GO:0090231","2":"GO:BP","3":"regulation of spindle checkpoint","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"295"},{"1":"GO:1903504","2":"GO:BP","3":"regulation of mitotic spindle checkpoint","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"296"},{"1":"GO:0007135","2":"GO:BP","3":"meiosis II","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"297"},{"1":"GO:0090266","2":"GO:BP","3":"regulation of mitotic cell cycle spindle assembly checkpoint","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"298"},{"1":"GO:0007100","2":"GO:BP","3":"mitotic centrosome separation","4":"1.359368e-02","5":"410","6":"15","7":"5","_rn_":"299"},{"1":"GO:0006796","2":"GO:BP","3":"phosphate-containing compound metabolic process","4":"1.413968e-02","5":"410","6":"2901","7":"88","_rn_":"300"},{"1":"GO:0007089","2":"GO:BP","3":"traversing start control point of mitotic cell cycle","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"301"},{"1":"GO:0006272","2":"GO:BP","3":"leading strand elongation","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"302"},{"1":"GO:0110032","2":"GO:BP","3":"positive regulation of G2/MI transition of meiotic cell cycle","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"303"},{"1":"GO:0071163","2":"GO:BP","3":"DNA replication preinitiation complex assembly","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"304"},{"1":"GO:0110030","2":"GO:BP","3":"regulation of G2/MI transition of meiotic cell cycle","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"305"},{"1":"GO:0071932","2":"GO:BP","3":"replication fork reversal","4":"1.464028e-02","5":"410","6":"3","7":"3","_rn_":"306"},{"1":"GO:0006760","2":"GO:BP","3":"folic acid-containing compound metabolic process","4":"1.672881e-02","5":"410","6":"26","7":"6","_rn_":"307"},{"1":"GO:0043549","2":"GO:BP","3":"regulation of kinase activity","4":"1.677702e-02","5":"410","6":"848","7":"36","_rn_":"308"},{"1":"GO:0010604","2":"GO:BP","3":"positive regulation of macromolecule metabolic process","4":"1.801041e-02","5":"410","6":"3442","7":"100","_rn_":"309"},{"1":"GO:1901993","2":"GO:BP","3":"regulation of meiotic cell cycle phase transition","4":"1.837456e-02","5":"410","6":"8","7":"4","_rn_":"310"},{"1":"GO:0006793","2":"GO:BP","3":"phosphorus metabolic process","4":"1.931122e-02","5":"410","6":"2924","7":"88","_rn_":"311"},{"1":"GO:0051299","2":"GO:BP","3":"centrosome separation","4":"1.946138e-02","5":"410","6":"16","7":"5","_rn_":"312"},{"1":"GO:0034622","2":"GO:BP","3":"cellular protein-containing complex assembly","4":"1.976395e-02","5":"410","6":"997","7":"40","_rn_":"313"},{"1":"GO:0006298","2":"GO:BP","3":"mismatch repair","4":"2.116177e-02","5":"410","6":"27","7":"6","_rn_":"314"},{"1":"GO:0097549","2":"GO:BP","3":"chromatin organization involved in negative regulation of transcription","4":"2.279296e-02","5":"410","6":"134","7":"12","_rn_":"315"},{"1":"GO:0051653","2":"GO:BP","3":"spindle localization","4":"2.280079e-02","5":"410","6":"56","7":"8","_rn_":"316"},{"1":"GO:0043412","2":"GO:BP","3":"macromolecule modification","4":"2.407908e-02","5":"410","6":"3822","7":"108","_rn_":"317"},{"1":"GO:2000781","2":"GO:BP","3":"positive regulation of double-strand break repair","4":"2.436657e-02","5":"410","6":"41","7":"7","_rn_":"318"},{"1":"GO:0051173","2":"GO:BP","3":"positive regulation of nitrogen compound metabolic process","4":"2.451811e-02","5":"410","6":"3072","7":"91","_rn_":"319"},{"1":"GO:0019438","2":"GO:BP","3":"aromatic compound biosynthetic process","4":"2.455354e-02","5":"410","6":"4049","7":"113","_rn_":"320"},{"1":"GO:0071900","2":"GO:BP","3":"regulation of protein serine/threonine kinase activity","4":"2.484008e-02","5":"410","6":"463","7":"24","_rn_":"321"},{"1":"GO:0007064","2":"GO:BP","3":"mitotic sister chromatid cohesion","4":"2.649916e-02","5":"410","6":"28","7":"6","_rn_":"322"},{"1":"GO:0071168","2":"GO:BP","3":"protein localization to chromatin","4":"2.649916e-02","5":"410","6":"28","7":"6","_rn_":"323"},{"1":"GO:0051782","2":"GO:BP","3":"negative regulation of cell division","4":"2.713648e-02","5":"410","6":"17","7":"5","_rn_":"324"},{"1":"GO:0097193","2":"GO:BP","3":"intrinsic apoptotic signaling pathway","4":"2.948758e-02","5":"410","6":"290","7":"18","_rn_":"325"},{"1":"GO:0040029","2":"GO:BP","3":"regulation of gene expression, epigenetic","4":"3.249506e-02","5":"410","6":"162","7":"13","_rn_":"326"},{"1":"GO:0072401","2":"GO:BP","3":"signal transduction involved in DNA integrity checkpoint","4":"3.287377e-02","5":"410","6":"29","7":"6","_rn_":"327"},{"1":"GO:0072422","2":"GO:BP","3":"signal transduction involved in DNA damage checkpoint","4":"3.287377e-02","5":"410","6":"29","7":"6","_rn_":"328"},{"1":"GO:0019985","2":"GO:BP","3":"translesion synthesis","4":"3.698265e-02","5":"410","6":"18","7":"5","_rn_":"329"},{"1":"GO:0072395","2":"GO:BP","3":"signal transduction involved in cell cycle checkpoint","4":"4.043048e-02","5":"410","6":"30","7":"6","_rn_":"330"},{"1":"GO:0034654","2":"GO:BP","3":"nucleobase-containing compound biosynthetic process","4":"4.822421e-02","5":"410","6":"3973","7":"110","_rn_":"331"},{"1":"GO:0042558","2":"GO:BP","3":"pteridine-containing compound metabolic process","4":"4.932674e-02","5":"410","6":"31","7":"6","_rn_":"332"},{"1":"GO:0031109","2":"GO:BP","3":"microtubule polymerization or depolymerization","4":"4.960563e-02","5":"410","6":"122","7":"11","_rn_":"333"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="figure-1" class="section level3">
+<h3>Figure</h3>
+<pre class="r"><code>q &lt;- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj &lt; 0.05),],
+                   color_down = &quot;#fed98e&quot;,color_up = &quot;#cc4c02&quot;,category = &quot;&quot;)
+q</code></pre>
+<pre><code>Warning: Removed 1 row containing missing values or values outside the scale range
+(`geom_text()`).</code></pre>
+<p><img src="figure/at1_at2.rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.4.0 (2024-04-24)
+Platform: x86_64-pc-linux-gnu
+Running under: Ubuntu 22.04.4 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3 
+LAPACK: /usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so;  LAPACK version 3.10.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+time zone: Etc/UTC
+tzcode source: system (glibc)
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] gprofiler2_0.2.3            DESeq2_1.46.0              
+ [3] SummarizedExperiment_1.36.0 Biobase_2.66.0             
+ [5] MatrixGenerics_1.18.1       matrixStats_1.5.0          
+ [7] GenomicRanges_1.58.0        GenomeInfoDb_1.42.3        
+ [9] IRanges_2.40.1              S4Vectors_0.44.0           
+[11] BiocGenerics_0.52.0         ggrepel_0.9.6              
+[13] ggplot2_3.5.2               biomaRt_2.62.1             
+[15] workflowr_1.7.1            
+
+loaded via a namespace (and not attached):
+ [1] bitops_1.0-9            DBI_1.2.3               httr2_1.2.1            
+ [4] rlang_1.1.6             magrittr_2.0.3          git2r_0.33.0           
+ [7] compiler_4.4.0          RSQLite_2.3.7           getPass_0.2-4          
+[10] png_0.1-8               callr_3.7.6             vctrs_0.6.5            
+[13] stringr_1.5.1           pkgconfig_2.0.3         crayon_1.5.3           
+[16] fastmap_1.2.0           dbplyr_2.5.0            XVector_0.46.0         
+[19] labeling_0.4.3          promises_1.3.3          rmarkdown_2.29         
+[22] UCSC.utils_1.2.0        ps_1.9.1                purrr_1.1.0            
+[25] bit_4.0.5               xfun_0.53               zlibbioc_1.52.0        
+[28] cachem_1.1.0            jsonlite_2.0.0          progress_1.2.3         
+[31] blob_1.2.4              later_1.4.4             DelayedArray_0.32.0    
+[34] BiocParallel_1.40.2     parallel_4.4.0          prettyunits_1.2.0      
+[37] R6_2.6.1                bslib_0.9.0             stringi_1.8.7          
+[40] RColorBrewer_1.1-3      jquerylib_0.1.4         Rcpp_1.1.0             
+[43] knitr_1.50              httpuv_1.6.16           Matrix_1.7-0           
+[46] tidyselect_1.2.1        rstudioapi_0.17.1       abind_1.4-8            
+[49] yaml_2.3.10             codetools_0.2-20        curl_7.0.0             
+[52] processx_3.8.6          lattice_0.22-6          tibble_3.3.0           
+[55] withr_3.0.2             KEGGREST_1.46.0         evaluate_1.0.4         
+[58] BiocFileCache_2.14.0    xml2_1.4.0              Biostrings_2.74.1      
+[61] pillar_1.11.0           filelock_1.0.3          whisker_0.4.1          
+[64] plotly_4.11.0           generics_0.1.4          RCurl_1.98-1.14        
+[67] rprojroot_2.1.1         hms_1.1.3               scales_1.4.0           
+[70] glue_1.8.0              lazyeval_0.2.2          tools_4.4.0            
+[73] data.table_1.17.8       locfit_1.5-9.9          fs_1.6.6               
+[76] grid_4.4.0              tidyr_1.3.1             AnnotationDbi_1.68.0   
+[79] GenomeInfoDbData_1.2.13 cli_3.6.5               rappdirs_0.3.3         
+[82] S4Arrays_1.6.0          viridisLite_0.4.2       dplyr_1.1.4            
+[85] gtable_0.3.6            sass_0.4.10             digest_0.6.37          
+[88] SparseArray_1.6.2       htmlwidgets_1.6.4       farver_2.1.2           
+[91] memoise_2.0.1           htmltools_0.5.8.1       lifecycle_1.0.4        
+[94] httr_1.4.7              bit64_4.0.5            </code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

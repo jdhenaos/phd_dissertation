@@ -1,0 +1,406 @@
+---
+title: "AT1 vs AT2"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+## Pre-process (meta table)
+
+### Code
+
+```{r}
+data.folder <- "/workspaces/invitro/invitro/data/"
+
+meta <- read.delim(paste0(data.folder,"samplesheet.txt"), sep = "\t", stringsAsFactors = F, header = T, check.names=F)
+meta$SampleName <- gsub('-', '_', meta$SampleName)
+rownames(meta) <- meta$SampleName
+meta$Experiment = 'Lung'
+meta$Experiment[meta$Treatment %in% c('C', 'S')] = 'Stretch'
+meta$Experiment[meta$Treatment %in% c('N', 'H')] = 'Hyperoxia'
+meta$Experiment[meta$Organism == "inVivo"] = 'inVivo'
+meta = meta[order(meta$Organism, meta$Experiment, meta$Sample, meta$Treatment),]
+meta$Batch = factor(meta$Batch)
+meta$Organism[meta$Organism == "AT"] <- 'ATll'
+
+meta$Organism[meta$SampleName == "N_AT_07"] <- "ATl"
+meta$Organism[meta$SampleName == "H_AT_07"] <- "ATl"
+meta$Organism[meta$SampleName == "N_AT_13"] <- "ATl"
+meta$Organism[meta$SampleName == "H_AT_13"] <- "ATl"
+
+meta$Organism = factor(meta$Organism)
+meta$Sample = factor(meta$Sample)
+meta$Sample.n = factor((do.call(c, sapply(rle(meta$Experiment)$lengths, seq)) + 1) %/% 2)
+meta$Treatment <- factor(meta$Treatment)
+levels(meta$Treatment) <- list(Control='C', Stretch='S', Normoxia='N', Hyperoxia='H', Ventilation='V')
+
+count <- read.table(paste0(data.folder,"Count.matrix.xls"), sep = "\t", header = T, stringsAsFactors = F, row.names = 1)
+colnames(count) <- gsub('\\.', '_', colnames(count))
+
+```
+
+### Table
+
+```{r}
+
+knitr::kable(meta[,c('Sample', 'Organism', 'Treatment', 'Experiment', 'Sample.n')])
+
+```
+
+
+## pre-processing
+
+1. Ensembl to Gene symbol
+2. Functions to run DEG
+
+### Gene symbol dictionary
+
+```{r}
+
+library(biomaRt)
+ensembl <- useMart('ENSEMBL_MART_ENSEMBL', dataset='mmusculus_gene_ensembl')
+ensg2symbol <- getBM(filters='ensembl_gene_id', attributes=c('ensembl_gene_id', 'mgi_symbol'), values=rownames(count), mart=ensembl)
+ensg_symbol_table <- aggregate(ensg2symbol$mgi_symbol, list(ensemb_gene_id=ensg2symbol$ensembl_gene_id), paste, collapse=",")
+colnames(ensg_symbol_table) <- colnames(ensg2symbol)
+rownames(ensg_symbol_table) <- ensg_symbol_table$ensembl_gene_id
+
+```
+
+### Functions (DEG runner)
+
+```{r}
+
+prepare_dds <- function(conditions, design=NULL, reduced=NULL)
+{
+  # Choose samples belonging to groups of interest
+  selection = rep(TRUE, nrow(meta))
+  cols = names(conditions)
+  for (condition in cols) {
+    selection = selection & meta[,condition] %in% conditions[[condition]]
+  }
+  submeta = meta[selection, cols, drop=F]
+  # Remove conditions with only one group
+  selCols = NULL       
+  for (cname in colnames(submeta)) {
+    fcname = droplevels(submeta[,cname])
+    if (length(levels(fcname)) > 1) selCols = c(selCols, cname)
+    submeta[,cname] = fcname
+  }
+  if (!is.null(length(selCols))) submeta = submeta[,selCols,drop=F]
+  count_filtd = subset(count[,rownames(submeta)], rowSums(count[,rownames(submeta)], na.rm=TRUE) >= 10)
+  
+  # Differential expression analysis
+  suppressPackageStartupMessages(library(DESeq2))
+  if (is.null(design)) {
+    factors = colnames(submeta)
+    factors = factors[!factors %in% 'sizeFactor']
+    design <- paste(factors, collapse='+')
+    design <- as.formula(paste('~', design))
+  }
+  cat("Design :", as.character(design),"\n")
+  print(ftable(submeta))
+  modelMatrix = stats::model.matrix.default(design, data=submeta)
+  modelMatrix = modelMatrix[,!apply(modelMatrix == 0, 2, all),drop=F]
+  dds <- suppressMessages(DESeqDataSetFromMatrix(countData = count_filtd,
+                                                 colData = submeta,
+                                                 design = modelMatrix))
+  if ('sizeFactor' %in% colnames(meta))
+    sizeFactors(dds) = meta[colnames(dds), 'sizeFactor']
+  deseq_args = list(object=dds,
+                    fitType = "parametric",
+                    betaPrior = FALSE)
+  if (is.null(reduced)) {
+    deseq_args$test = 'Wald'
+  } else {
+    deseq_args$test = 'LRT'
+    cat("Reduced :", as.character(reduced), "\n")
+    reduced = stats::model.matrix.default(reduced, data=submeta)
+    reduced = reduced[,!apply(reduced == 0, 2, all),drop=F]
+    deseq_args$reduced = reduced
+  }
+  dds <- suppressMessages(do.call(DESeq, deseq_args))
+  return(dds)
+}
+
+report_DE <- function(dds, contrast=NULL, coef=NULL)
+{
+  fdr.cutoff = 0.05
+  lfc.cutoff = 0.5
+  res_args = list(object=dds) #, alpha=fdr.cutoff, lfcThreshold=lfc.cutoff)
+  shrink_args = list(dds=dds, lfcThreshold=lfc.cutoff)
+  ggmain = NULL
+  if (!is.null(contrast)) {
+    res_args$contrast = shrink_args$contrast = ggmain = contrast
+  } else {
+    if (is.null(coef)) {
+      coef = resultsNames(dds)
+      coef = coef[length(coef)]
+    }
+    res_args$name = shrink_args$coef = ggmain = coef
+  }
+  if (attr(dds, 'test') == 'LRT')
+    ggmain = gsub('.*\\.', '', ggmain)
+  
+  if (is(design(dds), 'formula')) {
+    if (any(attr(terms.formula(design(dds)), 'order') > 1)) {
+      # res_args$type = ifelse (is.null(coef), 'ashr', 'apeglm')
+      shrink_args$type = 'ashr'
+    }
+  } else if (is(design(dds), "matrix")) {
+    shrink_args$type = 'ashr'
+  }
+  
+  # res = suppressMessages(do.call(lfcShrink, shrink_args))
+  res = suppressMessages(do.call(results, res_args))
+  summary(res, alpha = fdr.cutoff)
+  sig = res$padj <= fdr.cutoff & !is.na(res$padj)
+  sig_det = sig & (abs(res$log2FoldChange) >= lfc.cutoff)
+  
+  message(paste0('There are ', sum(sig), ' significantly differentially expressed genes (adjusted p-value <= ', fdr.cutoff, '), from which ', sum(sig_det), ' have an absolute log2 Fold Change above or equal to ', lfc.cutoff, '.'))
+  
+  # Get results as df
+  resdf = data.frame(res)
+  
+  # Add the normalized counts
+  normcountmat = counts(dds, normalized = TRUE)
+  vsd = vst(dds, blind = FALSE)
+  logCounts = assay(vsd)
+  out = cbind(ensg_symbol_table[rownames(dds),], resdf[rownames(dds),],
+              logCounts[,colnames(dds)])
+  rownames(out) = out$ensembl_gene_id = rownames(dds)
+  
+  # Save the table
+  # Create a file prefix
+  prefix = coef
+  #fullfn = file.path(resfolder, prefix)
+  
+  # Create table for plotting
+  #mafn <- paste0(fullfn, "_maplot.pdf")
+  plot.data <- out[!is.na(out$pvalue),]
+  cap <- quantile(plot.data$baseMean, p=0.99)
+  plot.data$baseMean[plot.data$baseMean > cap] <- cap
+  
+  # Write file
+  #write.table(out, file=paste0(fullfn, '.xls'), sep="\t", row.names = F, col.names = T, dec=",")
+  
+  return(out)
+}
+
+```
+
+## Pre-processing
+
+* Functions to produce volcano plot and pathway plot (barplot)
+
+```{r}
+#| echo: true
+
+library(ggplot2)
+library(ggrepel)
+volcano_plot <- function(exp, down_color, up_color, title){
+  colnames(exp)[grep(pattern = "log2FoldChange",x = colnames(exp))] <- "log2FoldChange"
+  colnames(exp)[grep(pattern = "padj",x = colnames(exp))] <- "padj"
+  
+  exp$direction <- "No-significant"
+  
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange > 0)] <- "Up-regulated"
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange < 0)] <- "Down-regulated"
+  
+  exp <- exp[order(exp$padj),]
+  
+  exp$threshold <- c(rep(TRUE,10),rep(FALSE,nrow(exp) - 10))
+  exp$direction <- as.factor(exp$direction)
+  result <- exp[which(!is.na(exp$padj)),]
+  result <- result[order(result$threshold,decreasing = TRUE),]
+  
+  p <- ggplot(result) +
+    geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction))  +
+    scale_color_manual(values=c(down_color,"grey",up_color)) + ggtitle(title) +
+    geom_text_repel(data =result[c(1:10),], 
+                    mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[c(1:10)]  ), size = 2.5) +
+    xlab("log2 fold-change") + 
+    ylab("-log10 adj. p-value") +
+    geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "red") + theme_classic() + theme(legend.position = "none", 
+                                                                                                    text = element_text(size = 9),
+                                                                                                    plot.title = element_text(size=7)) 
+
+  return(p)
+}
+loc_val <- function(mean_FC,SD){
+  result <- c()
+  for(i in seq(length(mean_FC))){
+    if(SD[i] == 0){SD[i] <- min(SD[which(SD != 0)])}
+    
+    if(mean_FC[i] < 0){
+      result <- c(result,mean_FC[i]-SD[i]-(min(SD[i])/2))
+    }
+    if(mean_FC[i] > 0){
+      result <- c(result,mean_FC[i]+SD[i]+(min(SD[i])/2))
+    }
+    if(mean_FC[i] == 0){
+      result <- c(result,NA)
+    }
+  }
+  return(result)
+}
+enrichment_profile = function(pathways, DEG, color_down, color_up, category){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  
+  DEG$name <- rownames(DEG)
+  
+  colnames(DEG)[grep(pattern = "log2fc",x = colnames(DEG))] <- "log2FoldChange"
+  colnames(DEG)[grep(pattern = "pvalue",x = colnames(DEG))] <- "padj"
+  colnames(DEG)[grep(pattern = "name",x = colnames(DEG))] <- "ensembl_gene_id"
+  
+  to.plot <- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,"term_id"], organism = "mmusculus")
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot <- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,"term_name"],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       Type=c("up-regulated","down-regulated"),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                            sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),"mean_FC"] <- 0
+  to.plot[is.na(to.plot$SD),"SD"] <- 0
+  
+  p <- ggplot(to.plot, aes(x = mean_FC, y = reorder(Name, abs(mean_FC)), fill = Type, label = Set_size)) + 
+    scale_fill_manual(name = "", values = c("down-regulated" = color_down, "up-regulated" = color_up)) + 
+    ylab(category) + xlab("Mean logFC") + 
+    theme(axis.line = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+    theme(legend.position = "none") +
+    geom_bar(stat = "identity") + geom_text(aes(label = Set_size, x =  loc_val(mean_FC,SD) ),size = 2.5) +
+    geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
+  
+  return(p)
+}
+
+```
+
+# AT1
+
+## DEGs
+
+```{r}
+#| echo: true
+#| message: true
+
+conditions <- list(Sample = levels(meta$Sample), Treatment = c('Normoxia', 'Hyperoxia'), Organism = 'ATl')
+dds = prepare_dds(conditions)
+res = report_DE(dds)
+
+```
+
+## Volcano plot
+
+```{r}
+
+p <- volcano_plot(exp = res,down_color = "#bdc9e1",up_color = "#0570b0", title="")
+p
+```
+
+## Biological Process (GO)
+
+### Code
+
+```{r}
+#| echo: true
+
+library(gprofiler2)
+set_base_url("https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15")
+
+DEG.AT <- res[which(res$padj < 0.05),]
+AT.gost <- gost(DEG.AT$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+AT.BP <- AT.gost$result[AT.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+
+cat("Number of hit: ",nrow(AT.BP))
+
+```
+
+### Table
+
+* Top 5 Biological processes
+
+```{r}
+
+rmarkdown::paged_table(AT.BP)
+
+```
+
+### Figure
+
+```{r}
+
+q <- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj < 0.05),],
+                   color_down = "#bdc9e1",color_up = "#0570b0",category = "")
+q
+```
+
+
+## AT2
+
+```{r}
+
+conditions <- list(Sample = levels(meta$Sample), Treatment = c('Normoxia', 'Hyperoxia'), Organism = 'ATll')
+dds = prepare_dds(conditions)
+res = report_DE(dds)
+
+```
+
+## Volcano plot
+
+```{r}
+
+p <- volcano_plot(exp = res,down_color = "#fed98e",up_color = "#cc4c02", title="")
+p
+```
+
+## Biological Process (GO)
+
+::: {.panel-tabset}
+
+### Code
+
+```{r}
+
+DEG.AT <- res[which(res$padj < 0.05),]
+AT.gost <- gost(DEG.AT$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+AT.BP <- AT.gost$result[AT.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+
+cat("Number of hit: ",nrow(AT.BP))
+
+```
+
+### Table
+
+* Top 5 Biological processes
+
+```{r}
+
+rmarkdown::paged_table(AT.BP)
+
+```
+
+### Figure
+
+```{r}
+
+q <- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj < 0.05),],
+                   color_down = "#fed98e",color_up = "#cc4c02",category = "")
+q
+```

@@ -19,6 +19,8 @@ navbar:
     href: single_cell.html
   - text: Cell cycle
     href: cell_cycle.html
+  - text: AT1 vs AT2
+    href: at1_at2.html
   right:
   - icon: fab fa-github
     text: Source code
