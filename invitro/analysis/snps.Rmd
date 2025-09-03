@@ -25,7 +25,7 @@ dat <- dat |> mutate(sex=case_when(
 dat$CIlow <- dat$estimate - 1.96 * dat$std.error
 dat$CIup <- dat$estimate + 1.96 * dat$std.error
 
-ggplot(dat,aes(x=estimate,y=sex,color=sex)) +
+p <- ggplot(dat,aes(x=estimate,y=sex,color=sex)) +
     facet_grid(Gene~.) +
     geom_vline(xintercept = 0.0, linetype=2) +
     geom_point() +
@@ -34,10 +34,12 @@ ggplot(dat,aes(x=estimate,y=sex,color=sex)) +
     ylab("") + xlab("Effect size (95% CI)") +
     theme_bw() + theme(legend.position = "none",
     strip.background =element_rect(fill="#C6DBEF")) + 
-  theme(axis.line = element_blank(),
+  theme(axis.line = element_blank(), text = element_text(size = 8),
                                                      panel.grid.major = element_blank(),
                                                      panel.grid.minor = element_blank(),
                                                      panel.background = element_blank())
 
-
+ggsave("output/figure4/snps.png",plot=p,device="png",units="mm",dpi=600,width = 100,height = 80)
+ggsave("output/figure4/snps.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 100,height = 80)
+p
 ```

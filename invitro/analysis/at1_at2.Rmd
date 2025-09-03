@@ -199,6 +199,7 @@ report_DE <- function(dds, contrast=NULL, coef=NULL)
 
 library(ggplot2)
 library(ggrepel)
+
 volcano_plot <- function(exp, down_color, up_color, title){
   colnames(exp)[grep(pattern = "log2FoldChange",x = colnames(exp))] <- "log2FoldChange"
   colnames(exp)[grep(pattern = "padj",x = colnames(exp))] <- "padj"
@@ -220,11 +221,11 @@ volcano_plot <- function(exp, down_color, up_color, title){
     scale_color_manual(values=c(down_color,"grey",up_color)) + ggtitle(title) +
     geom_text_repel(data =result[c(1:10),], 
                     mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[c(1:10)]  ), size = 2.5) +
-    xlab("log2 fold-change") + 
-    ylab("-log10 adj. p-value") +
-    geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "red") + theme_classic() + theme(legend.position = "none", 
-                                                                                                    text = element_text(size = 9),
-                                                                                                    plot.title = element_text(size=7)) 
+    xlab("log2 fold change") + 
+    ylab("-log10 adjusted p-value") +
+    geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "black") + theme_classic() + theme(legend.position = "none", 
+                                                                                                    text = element_text(size = 8),
+                                                                                                    plot.title = element_blank()) 
 
   return(p)
 }
@@ -237,7 +238,7 @@ loc_val <- function(mean_FC,SD){
       result <- c(result,mean_FC[i]-SD[i]-(min(SD[i])/2))
     }
     if(mean_FC[i] > 0){
-      result <- c(result,mean_FC[i]+SD[i]+(min(SD[i])/2))
+      result <- c(result,mean_FC[i]+SD[i]+(min(SD[i])))
     }
     if(mean_FC[i] == 0){
       result <- c(result,NA)
@@ -282,7 +283,7 @@ enrichment_profile = function(pathways, DEG, color_down, color_up, category){
     theme(axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+          panel.background = element_blank()) + theme(text = element_text(size = 8)) + 
     theme(legend.position = "none") +
     geom_bar(stat = "identity") + geom_text(aes(label = Set_size, x =  loc_val(mean_FC,SD) ),size = 2.5) +
     geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
@@ -311,6 +312,7 @@ res = report_DE(dds)
 ```{r}
 
 p <- volcano_plot(exp = res,down_color = "#bdc9e1",up_color = "#0570b0", title="")
+ggsave("output/figure2/at1_volcano.png",plot=p,device="png",units="mm",dpi=600,width = 70,height = 70)
 p
 ```
 
@@ -329,7 +331,6 @@ AT.gost <- gost(DEG.AT$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF",
 AT.BP <- AT.gost$result[AT.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
 
 cat("Number of hit: ",nrow(AT.BP))
-
 ```
 
 ### Table
@@ -346,8 +347,9 @@ rmarkdown::paged_table(AT.BP)
 
 ```{r}
 
-q <- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj < 0.05),],
+q <- enrichment_profile(pathways = AT.BP[1:10,],DEG = res[which(res$padj < 0.05),],
                    color_down = "#bdc9e1",color_up = "#0570b0",category = "")
+ggsave("output/figure2/at1_bps.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 80)
 q
 ```
 
@@ -355,7 +357,6 @@ q
 ## AT2
 
 ```{r}
-
 conditions <- list(Sample = levels(meta$Sample), Treatment = c('Normoxia', 'Hyperoxia'), Organism = 'ATll')
 dds = prepare_dds(conditions)
 res = report_DE(dds)
@@ -367,6 +368,7 @@ res = report_DE(dds)
 ```{r}
 
 p <- volcano_plot(exp = res,down_color = "#fed98e",up_color = "#cc4c02", title="")
+ggsave("output/figure2/at2_volcano.png",plot=p,device="png",units="mm",dpi=600,width = 70,height = 70)
 p
 ```
 
@@ -400,7 +402,8 @@ rmarkdown::paged_table(AT.BP)
 
 ```{r}
 
-q <- enrichment_profile(pathways = AT.BP[1:5,],DEG = res[which(res$padj < 0.05),],
+q <- enrichment_profile(pathways = AT.BP[1:10,],DEG = res[which(res$padj < 0.05),],
                    color_down = "#fed98e",color_up = "#cc4c02",category = "")
+ggsave("output/figure2/at2_bps.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 80)
 q
 ```

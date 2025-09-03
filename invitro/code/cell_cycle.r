@@ -131,19 +131,23 @@ geom_split_violin <- function(mapping = NULL, data = NULL, stat = "ydensity", po
         params = list(trim = trim, scale = scale, draw_quantiles = draw_quantiles, na.rm = na.rm, ...))
 }
 
-ggplot(S.df, aes(x = Cell, y = S.score, fill = Type)) +
+p <- ggplot(S.df, aes(x = Cell, y = S.score, fill = Type)) +
   geom_split_violin(trim = FALSE) +
   xlab("") +
   ylab("S Score")  +
   scale_fill_manual(values = c("#66c2a5","#fc8d62")) +
   theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+ggsave("output/figure1/s_score.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 50,height = 60)
+p
 
-ggplot(G2M.df, aes(x = Cell, y = G2M.score, fill = Type)) +
+p <- ggplot(G2M.df, aes(x = Cell, y = G2M.score, fill = Type)) +
   geom_split_violin(trim = FALSE) +
   xlab("") +
   ylab("G2M Score")  +
   scale_fill_manual(values = c("#66c2a5","#fc8d62")) +
   theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = "none")
+ggsave("output/figure1/g2m_score.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 50,height = 60)
+p
 
 # Wilcoxon test
 

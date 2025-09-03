@@ -14,8 +14,39 @@ library(ggplot2)
 library(RColorBrewer)
 library(GO.db)
 library(UpSetR)
+library(ggrepel)
 
 set_base_url("https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15")
+
+volcano_plot <- function(exp, down_color, up_color, title){
+  colnames(exp)[grep(pattern = "log2FoldChange",x = colnames(exp))] <- "log2FoldChange"
+  colnames(exp)[grep(pattern = "padj",x = colnames(exp))] <- "padj"
+  
+  exp$direction <- "No-significant"
+  
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange > 0)] <- "Up-regulated"
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange < 0)] <- "Down-regulated"
+  
+  exp <- exp[order(exp$padj),]
+  
+  exp$threshold <- c(rep(TRUE,10),rep(FALSE,nrow(exp) - 10))
+  exp$direction <- as.factor(exp$direction)
+  result <- exp[which(!is.na(exp$padj)),]
+  result <- result[order(result$threshold,decreasing = TRUE),]
+  
+  p <- ggplot(result) +
+    geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction))  +
+    scale_color_manual(values=c(down_color,"grey",up_color)) + ggtitle(title) +
+    geom_text_repel(data =result[c(1:10),], 
+                    mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[c(1:10)]  ), size = 2.5) +
+    xlab("log2 fold change") + 
+    ylab("-log10 adjusted p-value") +
+    geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "black") + theme_classic() + theme(legend.position = "none", 
+                                                                                                    text = element_text(size = 8),
+                                                                                                    plot.title = element_blank()) 
+
+  return(p)
+}
 
 FCplotter = function(pathways, DEG){
   # data is the dataframe containing only significant genes for a specific cell type
@@ -42,6 +73,7 @@ FCplotter = function(pathways, DEG){
   
   return(to.plot)
 }
+
 enrichment_profile = function(pathways, DEG, color_down, color_up){
   # data is the dataframe containing only significant genes for a specific cell type
   # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
@@ -71,9 +103,9 @@ enrichment_profile = function(pathways, DEG, color_down, color_up){
     theme(axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+          panel.background = element_blank()) + theme(text = element_text(size = 8)) + 
     theme(legend.position = "none") +
-    geom_bar(stat = "identity") + geom_text(size = 2, position = position_stack(vjust = 0.5)) +
+    geom_bar(stat = "identity") + geom_text(size = 2.5, position = position_stack(vjust = 0.5)) +
     geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
   
   return(p)
@@ -107,6 +139,14 @@ IVC.dev <- IVC.BP[grep(pattern = "develop",x = IVC.BP$term_name),]
 
 # Plots
 
+## in vivo - volcano
+
+```{r}
+p <- volcano_plot(exp = raw.IVC,down_color = "#ffeda0",up_color = "#feb24c", title="")
+ggsave("output/figure3/invivo_volcano.png",plot=p,device="png",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
 ## Upset plot
 
 ```{r}
@@ -117,27 +157,27 @@ frame <- fromList(list(IVC.dev$term_id,
 
 colnames(frame) <- c(paste0("in vivo Hyperoxia"," (N = ",nrow(IVC.dev),")"),
                      paste0("EC Hyperoxia"," (N = ",nrow(EC.dev),")"),
-                     paste0("MFB Hyperoxia"," (N = ",nrow(MFB.dev),")"),
-                     paste0("AT1/2 Hyperoxia"," (N = ",nrow(AT.dev),")"))
+                     paste0("FB Hyperoxia"," (N = ",nrow(MFB.dev),")"),
+                     paste0("AT Hyperoxia"," (N = ",nrow(AT.dev),")"))
 
-#pdf(file = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_upsetplot.pdf",width = 7/2.54,height = 6/2.54)
-upset(frame,nsets = 20, nintersects = 15, 
-      text.scale = 1, 
-      point.size = 1,
-      line.size = 0.3,
+p <- upset(frame,nsets = 20, nintersects = 15, text.scale = 2.5, line.size = 1,
       order.by = c("freq"),empty.intersections = NULL,
       queries = list(list(query = intersects, 
-                          params = list("AT1/2 Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)"), 
+                          params = list("AT Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)"), 
                           color = '#44AA99', active = T),
                      list(query = intersects, 
                           params = list("EC Hyperoxia (N = 8)","in vivo Hyperoxia (N = 17)"), 
                           color = '#117733', active = T),
                      list(query = intersects, 
-                          params = list("AT1/2 Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)","EC Hyperoxia (N = 8)"), 
+                          params = list("AT Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)","EC Hyperoxia (N = 8)"), 
                           color =  '#332288', active = T)),
       sets.bar.color = c("#ffeda0","#A79AD4","#DF758C","#ACD49F"),
       sets = colnames(frame),keep.order = T)
-#dev.off()
+pdf("output/figure3/upset.pdf")
+print(p)
+dev.off()
+
+print(p)
 ```
 
 ## invivo + AT1/2
@@ -146,10 +186,13 @@ upset(frame,nsets = 20, nintersects = 15,
 AT.dev$term_name[1] <- "animal organ\ndevelopment"
 IVC.dev$term_name[1] <- "animal organ\ndevelopment"
 
-enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & !AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_AT.pdf",plot = p,width = 7,height = 3, units = "cm")
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & !IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_invivo.pdf",plot = p,width = 7,height = 3, units = "cm")
+p <- enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & !AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+ggsave("output/figure3/AT_invivo_1.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 30)
+p
+
+p <- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & !IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+ggsave("output/figure3/AT_invivo_2.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 30)
+p
 ```
 
 ## invivo + EC
@@ -158,10 +201,13 @@ enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id 
 EC.dev$term_name[c(1,7,8)] <- c("circulatory system\ndevelopment","regulation of\ndevelopmental process","anatomical structure\ndevelopment")
 IVC.dev$term_name[c(4,5,10)] <- c("anatomical structure\ndevelopment","circulatory system\ndevelopment","regulation of\ndevelopmental process")
 
-enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & !EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_EC.pdf",plot = p,width = 7,height = 3, units = "cm")
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id & !IVC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_invivo.pdf",plot = p,width = 7,height = 3, units = "cm")
+p <- enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & !EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
+ggsave("output/figure3/EC_invivo_1.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 30)
+p
+
+p <- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id & !IVC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+ggsave("output/figure3/EC_invivo_2.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 30)
+p
 ```
 
 ## invivo + AT1/2 + EC
@@ -171,10 +217,15 @@ AT.dev$term_name[c(6,8)] <- c("multicellular organism\ndevelopment","system\ndev
 EC.dev$term_name[c(5,6)] <- c("multicellular organism\ndevelopment","system\ndevelopment")
 IVC.dev$term_name[c(2,3)] <- c("system\ndevelopment","multicellular organism\ndevelopment")
 
-enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_AT.pdf",plot = p,width = 7,height = 2, units = "cm")
-enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_EC.pdf",plot = p,width = 7,height = 2, units = "cm")
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
-#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_invivo.pdf",plot = p,width = 7,height = 2, units = "cm")
+p <- enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+ggsave("output/figure3/AT_EC_invivo_1.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 20)
+p
+
+p <- enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
+ggsave("output/figure3/AT_EC_invivo_2.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 20)
+p
+
+p <- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+ggsave("output/figure3/AT_EC_invivo.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 20)
+p
 ```

@@ -278,6 +278,15 @@ $(document).ready(function () {
 <li>
   <a href="cell_cycle.html">Cell cycle</a>
 </li>
+<li>
+  <a href="at1_at2.html">AT1 vs AT2</a>
+</li>
+<li>
+  <a href="invivo.html">in vivo</a>
+</li>
+<li>
+  <a href="snps.html">SNPs</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -321,10 +330,10 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-08-28
+<strong>Last updated:</strong> 2025-09-03
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 2
 </p>
 <p>
 <strong>Knit directory:</strong> <code>invitro/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -340,12 +349,12 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -436,44 +445,57 @@ data
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree39f50392e3e8ae70eb6323c5c34137738eaba12dtargetblank39f5039a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/39f50392e3e8ae70eb6323c5c34137738eaba12d" target="_blank">39f5039</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree53a8ec705ee3ed1e4a32efaff9cb380193dcca49targetblank53a8ec7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/53a8ec705ee3ed1e4a32efaff9cb380193dcca49" target="_blank">53a8ec7</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree39f50392e3e8ae70eb6323c5c34137738eaba12dtargetblank39f5039a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree53a8ec705ee3ed1e4a32efaff9cb380193dcca49targetblank53a8ec7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/39f50392e3e8ae70eb6323c5c34137738eaba12d" target="_blank">39f5039</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/53a8ec705ee3ed1e4a32efaff9cb380193dcca49" target="_blank">53a8ec7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Untracked files:
+    Untracked:  analysis/at1_at2.Rmd
     Untracked:  code/cell_cycle.r
     Untracked:  code/common_genes.r
     Untracked:  code/deg_plots.r
+    Untracked:  code/invivo.r
     Untracked:  code/single_cell.r
+    Untracked:  code/snps.r
     Untracked:  code/unique_genes.r
     Untracked:  data/220427_ATII_embedding.rds
     Untracked:  data/220427_EC_embedding.rds
     Untracked:  data/220427_MFB_embedding.rds
+    Untracked:  data/Count.matrix.xls
     Untracked:  data/G1S.txt
     Untracked:  data/G2M.txt
+    Untracked:  data/GWAS_sex.xlsx
     Untracked:  data/Hyperoxia_AT.xls
     Untracked:  data/Hyperoxia_EC.xls
     Untracked:  data/Hyperoxia_MFB.xls
     Untracked:  data/bulk_seurat_endothelial.rds
     Untracked:  data/bulk_seurat_epithelial.rds
     Untracked:  data/bulk_seurat_stroma.rds
+    Untracked:  data/inVivo_hyperoxia.txt
     Untracked:  data/inVivo_hyperoxia.xlsx
+    Untracked:  data/samplesheet.txt
     Untracked:  et(frame,nsets = 20, nintersects = 15,
+    Untracked:  output/figure1/
 
 Unstaged changes:
     Modified:   README.md
     Modified:   _workflowr.yml
+    Modified:   analysis/_site.yml
+    Modified:   analysis/cell_cycle.Rmd
+    Modified:   analysis/common_genes.Rmd
+    Modified:   analysis/degs.Rmd
+    Modified:   analysis/unique_genes.Rmd
     Modified:   data/README.md
     Modified:   invitro.Rproj
 
@@ -514,6 +536,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jdhenaos/invitro/f813be898357676fa5a36827b07f684efd8e416e/docs/cell_cycle.html" target="_blank">f813be8</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-08-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -697,23 +736,101 @@ geom_split_violin &lt;- function(mapping = NULL, data = NULL, stat = &quot;ydens
         params = list(trim = trim, scale = scale, draw_quantiles = draw_quantiles, na.rm = na.rm, ...))
 }</code></pre>
 <p>#S Score</p>
-<pre class="r"><code>ggplot(S.df, aes(x = Cell, y = S.score, fill = Type)) +
+<pre class="r"><code>p &lt;- ggplot(S.df, aes(x = Cell, y = S.score, fill = Type)) +
   geom_split_violin(trim = FALSE) +
   xlab(&quot;&quot;) +
   ylab(&quot;S Score&quot;)  +
   scale_fill_manual(values = c(&quot;#66c2a5&quot;,&quot;#fc8d62&quot;)) +
-  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = &quot;none&quot;)</code></pre>
+  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = &quot;none&quot;)
+ggsave(&quot;output/figure1/s_score.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 50,height = 60)
+p</code></pre>
 <p><img src="figure/cell_cycle.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-1">
+Past versions of unnamed-chunk-6-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/f813be898357676fa5a36827b07f684efd8e416e/docs/figure/cell_cycle.Rmd/unnamed-chunk-6-1.png" target="_blank">f813be8</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-08-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="g2m-score" class="section level1">
 <h1>G2M Score</h1>
-<pre class="r"><code>ggplot(G2M.df, aes(x = Cell, y = G2M.score, fill = Type)) +
+<pre class="r"><code>p &lt;- ggplot(G2M.df, aes(x = Cell, y = G2M.score, fill = Type)) +
   geom_split_violin(trim = FALSE) +
   xlab(&quot;&quot;) +
   ylab(&quot;G2M Score&quot;)  +
   scale_fill_manual(values = c(&quot;#66c2a5&quot;,&quot;#fc8d62&quot;)) +
-  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = &quot;none&quot;)</code></pre>
+  theme_classic() + theme(text = element_text(size = 8), plot.title = element_text(size=8), legend.position = &quot;none&quot;)
+ggsave(&quot;output/figure1/g2m_score.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 50,height = 60)
+p</code></pre>
 <p><img src="figure/cell_cycle.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-7-1">
+Past versions of unnamed-chunk-7-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/f813be898357676fa5a36827b07f684efd8e416e/docs/figure/cell_cycle.Rmd/unnamed-chunk-7-1.png" target="_blank">f813be8</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-08-28
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="wilcoxon-test" class="section level1">
 <h1>Wilcoxon test</h1>

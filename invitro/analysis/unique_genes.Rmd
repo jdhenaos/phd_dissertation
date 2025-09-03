@@ -43,9 +43,9 @@ enrichment_profile = function(pathways, DEG, color_down, color_up){
     theme(axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.background = element_blank()) + theme(text = element_text(size = )) + 
+          panel.background = element_blank()) + theme(text = element_text(size = 8)) + 
     theme(legend.position = "none") +
-    geom_bar(stat = "identity") + geom_text(size = 3.5, position = position_stack(vjust = 0.5)) +
+    geom_bar(stat = "identity") + geom_text(size = 2.5, position = position_stack(vjust = 0.5)) +
     geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
   
   return(p)
@@ -84,17 +84,15 @@ MFB.BP <- MFB.gost$result[MFB.gost$result$source == "GO:BP",c("term_id", "source
 # AT
 
 ```{r}
-enrichment_profile(pathways = AT.BP[1:10,],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+p <- enrichment_profile(pathways = AT.BP[1:10,],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+ggsave("output/figure1/unique_AT.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 105,height = 60)
+p
 ```
 
 # FB
 
 ```{r}
-enrichment_profile(pathways = MFB.BP[1:10,],DEG = DEG.MFB,color_down = "#DF758C",color_up = "#E7298A")
-```
-
-# Session info
-
-```{r}
-sessionInfo()
+p <- enrichment_profile(pathways = MFB.BP[1:10,],DEG = DEG.MFB,color_down = "#DF758C",color_up = "#E7298A")
+ggsave("output/figure1/unique_FB.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 105,height = 60)
+p
 ```

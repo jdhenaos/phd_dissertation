@@ -284,6 +284,9 @@ $(document).ready(function () {
 <li>
   <a href="invivo.html">in vivo</a>
 </li>
+<li>
+  <a href="snps.html">SNPs</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
@@ -327,10 +330,10 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2025-09-02
+<strong>Last updated:</strong> 2025-09-03
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 1
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 5 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 2
 </p>
 <p>
 <strong>Knit directory:</strong> <code>invitro/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -346,12 +349,12 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguncommittedchanges"> <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> <strong>R Markdown file:</strong> uncommitted changes </a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguncommittedchanges" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>The R Markdown file has unstaged changes. To know which version of the R Markdown file created these results, you’ll want to first commit it to the Git repo. If you’re still working on the analysis, you can ignore this warning. When you’re finished, you can run <code>wflow_publish</code> to commit the R Markdown file and build the HTML.</p>
 </div>
 </div>
 </div>
@@ -442,16 +445,16 @@ data
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree2bba1591ff879590b7dc34d96e8a49ec2433c050targetblank2bba159a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/2bba1591ff879590b7dc34d96e8a49ec2433c050" target="_blank">2bba159</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree53a8ec705ee3ed1e4a32efaff9cb380193dcca49targetblank53a8ec7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jdhenaos/invitro/tree/53a8ec705ee3ed1e4a32efaff9cb380193dcca49" target="_blank">53a8ec7</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree2bba1591ff879590b7dc34d96e8a49ec2433c050targetblank2bba159a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjdhenaosinvitrotree53a8ec705ee3ed1e4a32efaff9cb380193dcca49targetblank53a8ec7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/2bba1591ff879590b7dc34d96e8a49ec2433c050" target="_blank">2bba159</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jdhenaos/invitro/tree/53a8ec705ee3ed1e4a32efaff9cb380193dcca49" target="_blank">53a8ec7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -464,6 +467,7 @@ Untracked files:
     Untracked:  code/deg_plots.r
     Untracked:  code/invivo.r
     Untracked:  code/single_cell.r
+    Untracked:  code/snps.r
     Untracked:  code/unique_genes.r
     Untracked:  data/220427_ATII_embedding.rds
     Untracked:  data/220427_EC_embedding.rds
@@ -471,6 +475,7 @@ Untracked files:
     Untracked:  data/Count.matrix.xls
     Untracked:  data/G1S.txt
     Untracked:  data/G2M.txt
+    Untracked:  data/GWAS_sex.xlsx
     Untracked:  data/Hyperoxia_AT.xls
     Untracked:  data/Hyperoxia_EC.xls
     Untracked:  data/Hyperoxia_MFB.xls
@@ -481,13 +486,23 @@ Untracked files:
     Untracked:  data/inVivo_hyperoxia.xlsx
     Untracked:  data/samplesheet.txt
     Untracked:  et(frame,nsets = 20, nintersects = 15,
+    Untracked:  output/figure1/
+    Untracked:  output/figure2/
+    Untracked:  output/figure3/
 
 Unstaged changes:
     Modified:   README.md
     Modified:   _workflowr.yml
     Modified:   analysis/_site.yml
+    Modified:   analysis/cell_cycle.Rmd
+    Modified:   analysis/common_genes.Rmd
+    Modified:   analysis/degs.Rmd
+    Modified:   analysis/invivo.Rmd
+    Modified:   analysis/single_cell.Rmd
+    Modified:   analysis/unique_genes.Rmd
     Modified:   data/README.md
     Modified:   invitro.Rproj
+    Modified:   output/README.md
 
 </code></pre>
 <p>
@@ -526,6 +541,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jdhenaos/invitro/624936dfc6e36da3bac21c920c98d81a678532b6/docs/invivo.html" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -589,8 +621,39 @@ Attaching package: &#39;S4Vectors&#39;</code></pre>
     expand.grid, I, unname</code></pre>
 <pre><code></code></pre>
 <pre class="r"><code>library(UpSetR)
+library(ggrepel)
 
 set_base_url(&quot;https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15&quot;)
+
+volcano_plot &lt;- function(exp, down_color, up_color, title){
+  colnames(exp)[grep(pattern = &quot;log2FoldChange&quot;,x = colnames(exp))] &lt;- &quot;log2FoldChange&quot;
+  colnames(exp)[grep(pattern = &quot;padj&quot;,x = colnames(exp))] &lt;- &quot;padj&quot;
+  
+  exp$direction &lt;- &quot;No-significant&quot;
+  
+  exp$direction[which(exp$padj &lt; 0.05 &amp; exp$log2FoldChange &gt; 0)] &lt;- &quot;Up-regulated&quot;
+  exp$direction[which(exp$padj &lt; 0.05 &amp; exp$log2FoldChange &lt; 0)] &lt;- &quot;Down-regulated&quot;
+  
+  exp &lt;- exp[order(exp$padj),]
+  
+  exp$threshold &lt;- c(rep(TRUE,10),rep(FALSE,nrow(exp) - 10))
+  exp$direction &lt;- as.factor(exp$direction)
+  result &lt;- exp[which(!is.na(exp$padj)),]
+  result &lt;- result[order(result$threshold,decreasing = TRUE),]
+  
+  p &lt;- ggplot(result) +
+    geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction))  +
+    scale_color_manual(values=c(down_color,&quot;grey&quot;,up_color)) + ggtitle(title) +
+    geom_text_repel(data =result[c(1:10),], 
+                    mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$mgi_symbol[c(1:10)]  ), size = 2.5) +
+    xlab(&quot;log2 fold change&quot;) + 
+    ylab(&quot;-log10 adjusted p-value&quot;) +
+    geom_hline(yintercept=-log10(0.05), linetype=&quot;dashed&quot;, color = &quot;black&quot;) + theme_classic() + theme(legend.position = &quot;none&quot;, 
+                                                                                                    text = element_text(size = 8),
+                                                                                                    plot.title = element_blank()) 
+
+  return(p)
+}
 
 FCplotter = function(pathways, DEG){
   # data is the dataframe containing only significant genes for a specific cell type
@@ -617,6 +680,7 @@ FCplotter = function(pathways, DEG){
   
   return(to.plot)
 }
+
 enrichment_profile = function(pathways, DEG, color_down, color_up){
   # data is the dataframe containing only significant genes for a specific cell type
   # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
@@ -646,9 +710,9 @@ enrichment_profile = function(pathways, DEG, color_down, color_up){
     theme(axis.line = element_blank(),
           panel.grid.major = element_blank(),
           panel.grid.minor = element_blank(),
-          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+          panel.background = element_blank()) + theme(text = element_text(size = 8)) + 
     theme(legend.position = &quot;none&quot;) +
-    geom_bar(stat = &quot;identity&quot;) + geom_text(size = 2, position = position_stack(vjust = 0.5)) +
+    geom_bar(stat = &quot;identity&quot;) + geom_text(size = 2.5, position = position_stack(vjust = 0.5)) +
     geom_linerange(aes(xmin=ifelse(mean_FC &lt; 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC &gt; 0,mean_FC + SD, mean_FC) ))
   
   return(p)
@@ -680,6 +744,50 @@ MFB.dev &lt;- MFB.BP[grep(pattern = &quot;develop&quot;,x = MFB.BP$term_name),]
 IVC.dev &lt;- IVC.BP[grep(pattern = &quot;develop&quot;,x = IVC.BP$term_name),]</code></pre>
 <div id="plots" class="section level1">
 <h1>Plots</h1>
+<div id="in-vivo---volcano" class="section level2">
+<h2>in vivo - volcano</h2>
+<pre class="r"><code>p &lt;- volcano_plot(exp = raw.IVC,down_color = &quot;#ffeda0&quot;,up_color = &quot;#feb24c&quot;, title=&quot;&quot;)
+ggsave(&quot;output/figure3/invivo_volcano.png&quot;,plot=p,device=&quot;png&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 70)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-2-1.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 <div id="upset-plot" class="section level2">
 <h2>Upset plot</h2>
 <pre class="r"><code>frame &lt;- fromList(list(IVC.dev$term_id,
@@ -689,52 +797,242 @@ IVC.dev &lt;- IVC.BP[grep(pattern = &quot;develop&quot;,x = IVC.BP$term_name),]<
 
 colnames(frame) &lt;- c(paste0(&quot;in vivo Hyperoxia&quot;,&quot; (N = &quot;,nrow(IVC.dev),&quot;)&quot;),
                      paste0(&quot;EC Hyperoxia&quot;,&quot; (N = &quot;,nrow(EC.dev),&quot;)&quot;),
-                     paste0(&quot;MFB Hyperoxia&quot;,&quot; (N = &quot;,nrow(MFB.dev),&quot;)&quot;),
-                     paste0(&quot;AT1/2 Hyperoxia&quot;,&quot; (N = &quot;,nrow(AT.dev),&quot;)&quot;))
+                     paste0(&quot;FB Hyperoxia&quot;,&quot; (N = &quot;,nrow(MFB.dev),&quot;)&quot;),
+                     paste0(&quot;AT Hyperoxia&quot;,&quot; (N = &quot;,nrow(AT.dev),&quot;)&quot;))
 
-#pdf(file = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_upsetplot.pdf&quot;,width = 7/2.54,height = 6/2.54)
-upset(frame,nsets = 20, nintersects = 15, 
-      text.scale = 1, 
-      point.size = 1,
-      line.size = 0.3,
+p &lt;- upset(frame,nsets = 20, nintersects = 15, text.scale = 2.5, line.size = 1,
       order.by = c(&quot;freq&quot;),empty.intersections = NULL,
       queries = list(list(query = intersects, 
-                          params = list(&quot;AT1/2 Hyperoxia (N = 9)&quot;,&quot;in vivo Hyperoxia (N = 17)&quot;), 
+                          params = list(&quot;AT Hyperoxia (N = 9)&quot;,&quot;in vivo Hyperoxia (N = 17)&quot;), 
                           color = &#39;#44AA99&#39;, active = T),
                      list(query = intersects, 
                           params = list(&quot;EC Hyperoxia (N = 8)&quot;,&quot;in vivo Hyperoxia (N = 17)&quot;), 
                           color = &#39;#117733&#39;, active = T),
                      list(query = intersects, 
-                          params = list(&quot;AT1/2 Hyperoxia (N = 9)&quot;,&quot;in vivo Hyperoxia (N = 17)&quot;,&quot;EC Hyperoxia (N = 8)&quot;), 
+                          params = list(&quot;AT Hyperoxia (N = 9)&quot;,&quot;in vivo Hyperoxia (N = 17)&quot;,&quot;EC Hyperoxia (N = 8)&quot;), 
                           color =  &#39;#332288&#39;, active = T)),
       sets.bar.color = c(&quot;#ffeda0&quot;,&quot;#A79AD4&quot;,&quot;#DF758C&quot;,&quot;#ACD49F&quot;),
-      sets = colnames(frame),keep.order = T)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#dev.off()</code></pre>
+      sets = colnames(frame),keep.order = T)
+pdf(&quot;output/figure3/upset.pdf&quot;)
+print(p)
+dev.off()</code></pre>
+<pre><code>png 
+  2 </code></pre>
+<pre class="r"><code>print(p)</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-3-1.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="invivo-at12" class="section level2">
 <h2>invivo + AT1/2</h2>
 <pre class="r"><code>AT.dev$term_name[1] &lt;- &quot;animal organ\ndevelopment&quot;
 IVC.dev$term_name[1] &lt;- &quot;animal organ\ndevelopment&quot;
 
-enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id &amp; !AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = &quot;#ACD49F&quot;,color_up = &quot;#008F00&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_AT.pdf&quot;,plot = p,width = 7,height = 3, units = &quot;cm&quot;)
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id &amp; !IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_invivo.pdf&quot;,plot = p,width = 7,height = 3, units = &quot;cm&quot;)</code></pre>
+p &lt;- enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id &amp; !AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = &quot;#ACD49F&quot;,color_up = &quot;#008F00&quot;)
+ggsave(&quot;output/figure3/AT_invivo_1.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 30)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-4-1.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p &lt;- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id &amp; !IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)
+ggsave(&quot;output/figure3/AT_invivo_2.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 30)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-2">
+Past versions of unnamed-chunk-4-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-4-2.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="invivo-ec" class="section level2">
 <h2>invivo + EC</h2>
 <pre class="r"><code>EC.dev$term_name[c(1,7,8)] &lt;- c(&quot;circulatory system\ndevelopment&quot;,&quot;regulation of\ndevelopmental process&quot;,&quot;anatomical structure\ndevelopment&quot;)
 IVC.dev$term_name[c(4,5,10)] &lt;- c(&quot;anatomical structure\ndevelopment&quot;,&quot;circulatory system\ndevelopment&quot;,&quot;regulation of\ndevelopmental process&quot;)
 
-enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id &amp; !EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = &quot;#A79AD4&quot;,color_up = &quot;#7030A0&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_EC.pdf&quot;,plot = p,width = 7,height = 3, units = &quot;cm&quot;)
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id &amp; !IVC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_invivo.pdf&quot;,plot = p,width = 7,height = 3, units = &quot;cm&quot;)</code></pre>
+p &lt;- enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id &amp; !EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = &quot;#A79AD4&quot;,color_up = &quot;#7030A0&quot;)
+ggsave(&quot;output/figure3/EC_invivo_1.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 30)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
+Past versions of unnamed-chunk-5-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-5-1.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>p &lt;- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id &amp; !IVC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)
+ggsave(&quot;output/figure3/EC_invivo_2.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 30)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-2">
+Past versions of unnamed-chunk-5-2.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-5-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jdhenaos/invitro/blob/624936dfc6e36da3bac21c920c98d81a678532b6/docs/figure/invivo.Rmd/unnamed-chunk-5-2.png" target="_blank">624936d</a>
+</td>
+<td>
+jdhenaos
+</td>
+<td>
+2025-09-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="invivo-at12-ec" class="section level2">
 <h2>invivo + AT1/2 + EC</h2>
@@ -742,15 +1040,18 @@ enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id 
 EC.dev$term_name[c(5,6)] &lt;- c(&quot;multicellular organism\ndevelopment&quot;,&quot;system\ndevelopment&quot;)
 IVC.dev$term_name[c(2,3)] &lt;- c(&quot;system\ndevelopment&quot;,&quot;multicellular organism\ndevelopment&quot;)
 
-enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id &amp; AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = &quot;#ACD49F&quot;,color_up = &quot;#008F00&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_AT.pdf&quot;,plot = p,width = 7,height = 2, units = &quot;cm&quot;)
-enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id &amp; EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = &quot;#A79AD4&quot;,color_up = &quot;#7030A0&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_EC.pdf&quot;,plot = p,width = 7,height = 2, units = &quot;cm&quot;)
-enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id &amp; IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)</code></pre>
-<p><img src="figure/invivo.Rmd/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#ggsave(filename = &quot;~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_invivo.pdf&quot;,plot = p,width = 7,height = 2, units = &quot;cm&quot;)</code></pre>
+p &lt;- enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id &amp; AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = &quot;#ACD49F&quot;,color_up = &quot;#008F00&quot;)
+ggsave(&quot;output/figure3/AT_EC_invivo_1.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 20)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id &amp; EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = &quot;#A79AD4&quot;,color_up = &quot;#7030A0&quot;)
+ggsave(&quot;output/figure3/AT_EC_invivo_2.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 20)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id &amp; IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = &quot;#ffeda0&quot;,color_up = &quot;#feb24c&quot;)
+ggsave(&quot;output/figure3/AT_EC_invivo.pdf&quot;,plot=p,device=&quot;pdf&quot;,units=&quot;mm&quot;,dpi=600,width = 70,height = 20)
+p</code></pre>
+<p><img src="figure/invivo.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -783,10 +1084,11 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] UpSetR_1.4.0         GO.db_3.20.0         AnnotationDbi_1.68.0
- [4] IRanges_2.40.1       S4Vectors_0.44.0     Biobase_2.66.0      
- [7] BiocGenerics_0.52.0  RColorBrewer_1.1-3   ggplot2_3.5.2       
-[10] gprofiler2_0.2.3     biomaRt_2.62.1       workflowr_1.7.1     
+ [1] ggrepel_0.9.6        UpSetR_1.4.0         GO.db_3.20.0        
+ [4] AnnotationDbi_1.68.0 IRanges_2.40.1       S4Vectors_0.44.0    
+ [7] Biobase_2.66.0       BiocGenerics_0.52.0  RColorBrewer_1.1-3  
+[10] ggplot2_3.5.2        gprofiler2_0.2.3     biomaRt_2.62.1      
+[13] workflowr_1.7.1     
 
 loaded via a namespace (and not attached):
  [1] tidyselect_1.2.1        viridisLite_0.4.2       dplyr_1.1.4            

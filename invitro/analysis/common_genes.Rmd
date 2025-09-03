@@ -62,9 +62,9 @@ DEG.AT <- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
 DEG.EC <- DEG.EC[which(DEG.EC$ensembl_gene_id %in% common.genes),]
 DEG.MFB <- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
 
-AT.plot <- FCplotter(pathways = common.BP,DEG = DEG.AT)
-EC.plot <- FCplotter(pathways = common.BP,DEG = DEG.EC)
-MFB.plot <- FCplotter(pathways = common.BP,DEG = DEG.MFB)
+AT.plot <- FCplotter(pathways = common.BP[1:8,],DEG = DEG.AT)
+EC.plot <- FCplotter(pathways = common.BP[1:8,],DEG = DEG.EC)
+MFB.plot <- FCplotter(pathways = common.BP[1:8,],DEG = DEG.MFB)
 
 to.plot <- rbind(#AT.plot[which(AT.plot$Name == "cellular response to DNA damage stimulus"),],
   #MFB.plot[which(MFB.plot$Name == "cellular response to DNA damage stimulus"),],
@@ -100,7 +100,7 @@ to.plot$Cell <- c(#rep("AT2",2),rep("MFB",2),rep("EC",2),
 to.plot$Cell <- factor(to.plot$Cell,levels = c("AT","FB","EC"))
 to.plot$Name <- as.factor(to.plot$Name)
 
-ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell) )) + ylab("Cell type") + xlab("Mean logFC") +
+p <- ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell) )) + ylab("Cell type") + xlab("Mean logFC") +
   geom_bar(stat = "identity",size=2) + scale_fill_manual(name = "", labels = c("AT down-regulated", "AT up-regulated",
                                                                                "FB down-regulated", "FB up-regulated",
                                                                                "EC down-regulated", "EC up-regulated"),values = c("#ACD49F","#008F00","#DF758C","#E7298A","#A79AD4","#7030A0"),aesthetics = "fill") + 
@@ -108,11 +108,13 @@ ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell) )) + yl
                                                                                                                        panel.grid.major = element_blank(),
                                                                                                                        panel.grid.minor = element_blank(),
                                                                                                                        panel.background = element_blank()) + 
-  theme(legend.position = "left",
-        legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) + 
-  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 3.5) +
+  theme(legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) + 
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 2.5) +
   geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) )) + 
   coord_flip()
+
+ggsave("output/figure1/common_genes.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 160,height = 60)
 ```
 
 # AT vs FB
@@ -135,8 +137,8 @@ common.BP <- common.gost$result[common.gost$result$source == "GO:BP",c("term_id"
 DEG.AT <- DEG.AT[which(DEG.AT$ensembl_gene_id %in% common.genes),]
 DEG.MFB <- DEG.MFB[which(DEG.MFB$ensembl_gene_id %in% common.genes),]
 
-AT.plot <- FCplotter(pathways = common.BP,DEG = DEG.AT)
-MFB.plot <- FCplotter(pathways = common.BP,DEG = DEG.MFB)
+AT.plot <- FCplotter(pathways = common.BP[1:8,],DEG = DEG.AT)
+MFB.plot <- FCplotter(pathways = common.BP[1:8,],DEG = DEG.MFB)
 
 to.plot <- rbind(#AT.plot[which(AT.plot$Name == "cellular response to DNA damage stimulus"),],
   #MFB.plot[which(MFB.plot$Name == "cellular response to DNA damage stimulus"),],
@@ -164,13 +166,13 @@ swr <- Vectorize(swr)
 to.plot$Name <- swr(to.plot$Name)
 
 to.plot$Cell <- c(#rep("AT2",2),rep("MFB",2),rep("EC",2),
-  rep("AT2",16),rep("MFB",16))
+  rep("AT",16),rep("FB",16))
 # rep("AT2",2),rep("EC",2))
 
-to.plot$Cell <- factor(to.plot$Cell,levels = c("AT2","MFB"))
+to.plot$Cell <- factor(to.plot$Cell,levels = c("AT","FB"))
 to.plot$Name <- as.factor(to.plot$Name)
 
-ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell))) + ylab("Cell type") + xlab("Mean logFC") +
+p <- ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell))) + ylab("Cell type") + xlab("Mean logFC") +
   geom_bar(stat = "identity",size=2) + scale_fill_manual(values = c("#ACD49F","#008F00","#DF758C","#E7298A"),aesthetics = "fill") + 
   facet_grid(cols = vars(Name)) + theme_bw() + theme(legend.position = "none",
     strip.background =element_rect(fill="#C6DBEF")) + 
@@ -178,15 +180,11 @@ ggplot(to.plot, aes(x = mean_FC, y = Cell, fill = interaction(Type,Cell))) + yla
                                                      panel.grid.major = element_blank(),
                                                      panel.grid.minor = element_blank(),
                                                      panel.background = element_blank()) + 
-  theme(legend.position = "left",
-        legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) +
-  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 3.5) +
+  theme(legend.direction = "vertical") + theme(strip.background =element_rect(fill="#4292C6")) +
+  theme(legend.position = "none", text = element_text(size=8), plot.title = element_text(size=8)) +
+  geom_text(aes(label = Set_size, x =  ifelse(mean_FC < 0,-0.1, 0.1) ),size = 2.5) +
   geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) )) +
   coord_flip()
-```
 
-# Session info
-
-```{r}
-sessionInfo()
+ggsave("output/figure1/common_genes_at_fb.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 160,height = 60)
 ```
