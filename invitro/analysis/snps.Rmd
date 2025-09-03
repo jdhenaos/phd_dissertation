@@ -1,0 +1,43 @@
+---
+title: "SNPs"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+library(openxlsx)
+library(ggplot2)
+library(dplyr)
+
+data.folder <- "/workspaces/invitro/invitro/data/"
+
+dat <- read.xlsx(paste0(data.folder,"GWAS_sex.xlsx"))
+
+dat <- dat |> mutate(sex=case_when(
+    sex == "all" ~ "all",
+    sex == "f" ~ "female",
+    sex == "m" ~ "male"
+)) |> mutate(Gene=paste(Gene, SNP))
+
+dat$CIlow <- dat$estimate - 1.96 * dat$std.error
+dat$CIup <- dat$estimate + 1.96 * dat$std.error
+
+ggplot(dat,aes(x=estimate,y=sex,color=sex)) +
+    facet_grid(Gene~.) +
+    geom_vline(xintercept = 0.0, linetype=2) +
+    geom_point() +
+    geom_errorbarh(aes(xmin = CIlow, xmax = CIup), height=0.1) +
+    scale_color_manual(values = c("#998ec3", "#91bfdb", "#fc8d59")) +
+    ylab("") + xlab("Effect size (95% CI)") +
+    theme_bw() + theme(legend.position = "none",
+    strip.background =element_rect(fill="#C6DBEF")) + 
+  theme(axis.line = element_blank(),
+                                                     panel.grid.major = element_blank(),
+                                                     panel.grid.minor = element_blank(),
+                                                     panel.background = element_blank())
+
+
+```

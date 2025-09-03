@@ -1,0 +1,180 @@
+---
+title: "in vivo"
+output:
+  workflowr::wflow_html:
+    toc: false
+editor_options:
+  chunk_output_type: console
+---
+
+```{r}
+library(biomaRt)
+library(gprofiler2)
+library(ggplot2)
+library(RColorBrewer)
+library(GO.db)
+library(UpSetR)
+
+set_base_url("https://biit.cs.ut.ee/gprofiler_archive3/e102_eg49_p15")
+
+FCplotter = function(pathways, DEG){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  to.plot <- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,"term_id"], organism = "mmusculus")
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot <- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,"term_name"],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       Type=c("up-regulated","down-regulated"),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                            sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),"mean_FC"] <- 0
+  
+  return(to.plot)
+}
+enrichment_profile = function(pathways, DEG, color_down, color_up){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  to.plot <- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,"term_id"], organism = "mmusculus")
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot <- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,"term_name"],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       Type=c("up-regulated","down-regulated"),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                            sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),"mean_FC"] <- 0
+  
+  p <- ggplot(to.plot, aes(x = mean_FC, y = reorder(Name, abs(mean_FC)), fill = Type, label = Set_size)) + 
+    scale_fill_manual(name = "", values = c("down-regulated" = color_down, "up-regulated" = color_up)) + 
+    ylab("") + xlab("Mean logFC") + 
+    theme(axis.line = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank()) + theme(text = element_text(size = 7)) + 
+    theme(legend.position = "none") +
+    geom_bar(stat = "identity") + geom_text(size = 2, position = position_stack(vjust = 0.5)) +
+    geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
+  
+  return(p)
+}
+
+data.folder <- "/workspaces/invitro/invitro/data/"
+
+raw.AT <- read.table(paste0(data.folder,"Hyperoxia_AT.xls"),sep = "\t",header = T,stringsAsFactors = F)
+DEG.AT <- raw.AT[which(raw.AT$padj < 0.05),]
+raw.EC <- read.table(paste0(data.folder,"Hyperoxia_EC.xls"),sep = "\t",header = T,stringsAsFactors = F)
+DEG.EC <- raw.EC[which(raw.EC$padj < 0.05),]
+raw.MFB <- read.table(paste0(data.folder,"Hyperoxia_MFB.xls"),sep = "\t",header = T,stringsAsFactors = F)
+DEG.MFB <- raw.MFB[which(raw.MFB$padj < 0.05),]
+raw.IVC <- read.table(paste0(data.folder,"inVivo_hyperoxia.txt"),sep = "\t",header = T,stringsAsFactors = F)
+DEG.IVC <- raw.IVC[which(raw.IVC$padj < 0.05),]
+
+AT.gost <- gost(DEG.AT$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+AT.BP <- AT.gost$result[AT.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+EC.gost <- gost(DEG.EC$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+EC.BP <- EC.gost$result[EC.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+MFB.gost <- gost(DEG.MFB$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+MFB.BP <- MFB.gost$result[MFB.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+IVC.gost <- gost(DEG.IVC$ensembl_gene_id,organism = "mmusculus",sources=c("GO:MF", "GO:BP","GO:CC", "KEGG"))
+IVC.BP <- IVC.gost$result[IVC.gost$result$source == "GO:BP",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+
+AT.dev <- AT.BP[grep(pattern = "develop",x = AT.BP$term_name),]
+EC.dev <- EC.BP[grep(pattern = "develop",x = EC.BP$term_name),]
+MFB.dev <- MFB.BP[grep(pattern = "develop",x = MFB.BP$term_name),]
+IVC.dev <- IVC.BP[grep(pattern = "develop",x = IVC.BP$term_name),]
+```
+
+# Plots
+
+## Upset plot
+
+```{r}
+frame <- fromList(list(IVC.dev$term_id,
+                       EC.dev$term_id,
+                       MFB.dev$term_id,
+                       AT.dev$term_id))
+
+colnames(frame) <- c(paste0("in vivo Hyperoxia"," (N = ",nrow(IVC.dev),")"),
+                     paste0("EC Hyperoxia"," (N = ",nrow(EC.dev),")"),
+                     paste0("MFB Hyperoxia"," (N = ",nrow(MFB.dev),")"),
+                     paste0("AT1/2 Hyperoxia"," (N = ",nrow(AT.dev),")"))
+
+#pdf(file = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_upsetplot.pdf",width = 7/2.54,height = 6/2.54)
+upset(frame,nsets = 20, nintersects = 15, 
+      text.scale = 1, 
+      point.size = 1,
+      line.size = 0.3,
+      order.by = c("freq"),empty.intersections = NULL,
+      queries = list(list(query = intersects, 
+                          params = list("AT1/2 Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)"), 
+                          color = '#44AA99', active = T),
+                     list(query = intersects, 
+                          params = list("EC Hyperoxia (N = 8)","in vivo Hyperoxia (N = 17)"), 
+                          color = '#117733', active = T),
+                     list(query = intersects, 
+                          params = list("AT1/2 Hyperoxia (N = 9)","in vivo Hyperoxia (N = 17)","EC Hyperoxia (N = 8)"), 
+                          color =  '#332288', active = T)),
+      sets.bar.color = c("#ffeda0","#A79AD4","#DF758C","#ACD49F"),
+      sets = colnames(frame),keep.order = T)
+#dev.off()
+```
+
+## invivo + AT1/2
+
+```{r}
+AT.dev$term_name[1] <- "animal organ\ndevelopment"
+IVC.dev$term_name[1] <- "animal organ\ndevelopment"
+
+enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & !AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_AT.pdf",plot = p,width = 7,height = 3, units = "cm")
+enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & !IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT/240110_invivo.pdf",plot = p,width = 7,height = 3, units = "cm")
+```
+
+## invivo + EC
+
+```{r}
+EC.dev$term_name[c(1,7,8)] <- c("circulatory system\ndevelopment","regulation of\ndevelopmental process","anatomical structure\ndevelopment")
+IVC.dev$term_name[c(4,5,10)] <- c("anatomical structure\ndevelopment","circulatory system\ndevelopment","regulation of\ndevelopmental process")
+
+enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & !EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_EC.pdf",plot = p,width = 7,height = 3, units = "cm")
+enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% EC.dev$term_id & !IVC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_EC/240110_invivo.pdf",plot = p,width = 7,height = 3, units = "cm")
+```
+
+## invivo + AT1/2 + EC
+
+```{r}
+AT.dev$term_name[c(6,8)] <- c("multicellular organism\ndevelopment","system\ndevelopment")
+EC.dev$term_name[c(5,6)] <- c("multicellular organism\ndevelopment","system\ndevelopment")
+IVC.dev$term_name[c(2,3)] <- c("system\ndevelopment","multicellular organism\ndevelopment")
+
+enrichment_profile(pathways = AT.dev[which(AT.dev$term_id %in% IVC.dev$term_id & AT.dev$term_id %in% EC.dev$term_id),],DEG = DEG.AT,color_down = "#ACD49F",color_up = "#008F00")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_AT.pdf",plot = p,width = 7,height = 2, units = "cm")
+enrichment_profile(pathways = EC.dev[which(EC.dev$term_id %in% IVC.dev$term_id & EC.dev$term_id %in% AT.dev$term_id),],DEG = DEG.EC,color_down = "#A79AD4",color_up = "#7030A0")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_EC.pdf",plot = p,width = 7,height = 2, units = "cm")
+enrichment_profile(pathways = IVC.dev[which(IVC.dev$term_id %in% AT.dev$term_id & IVC.dev$term_id %in% EC.dev$term_id),],DEG = DEG.IVC,color_down = "#ffeda0",color_up = "#feb24c")
+#ggsave(filename = "~/Documents/230516_hyperoxia/240110_common_development_paths/240110_invivo_AT_EC/240110_invivo.pdf",plot = p,width = 7,height = 2, units = "cm")
+```
