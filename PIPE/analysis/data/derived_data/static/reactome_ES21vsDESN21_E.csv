@@ -1,0 +1,42 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-1474244","REAC","Extracellular matrix organization",4.0112903141419e-15,372,298,46
+"2","REAC:R-HSA-1280215","REAC","Cytokine Signaling in Immune system",2.56309372739675e-10,372,696,64
+"3","REAC:R-HSA-6785807","REAC","Interleukin-4 and Interleukin-13 signaling",1.1220910974275e-08,372,110,22
+"4","REAC:R-HSA-381426","REAC","Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)",1.98281446466089e-08,372,124,23
+"5","REAC:R-HSA-449147","REAC","Signaling by Interleukins",4.11436214663542e-08,372,459,46
+"6","REAC:R-HSA-1474290","REAC","Collagen formation",8.12075398627638e-08,372,89,19
+"7","REAC:R-HSA-6783783","REAC","Interleukin-10 signaling",9.88387054145973e-08,372,45,14
+"8","REAC:R-HSA-8957275","REAC","Post-translational protein phosphorylation",2.18528980736792e-06,372,107,19
+"9","REAC:R-HSA-1650814","REAC","Collagen biosynthesis and modifying enzymes",3.52290134361715e-06,372,67,15
+"10","REAC:R-HSA-2022090","REAC","Assembly of collagen fibrils and other multimeric structures",6.3650140093617e-06,372,60,14
+"11","REAC:R-HSA-1474228","REAC","Degradation of the extracellular matrix",7.75194586805615e-06,372,140,21
+"12","REAC:R-HSA-216083","REAC","Integrin cell surface interactions",1.30839159928481e-05,372,84,16
+"13","REAC:R-HSA-909733","REAC","Interferon alpha/beta signaling",3.50381164208429e-05,372,68,14
+"14","REAC:R-HSA-1442490","REAC","Collagen degradation",0.000122062287618256,372,64,13
+"15","REAC:R-HSA-3000178","REAC","ECM proteoglycans",0.000127535640932256,372,75,14
+"16","REAC:R-HSA-381119","REAC","Unfolded Protein Response (UPR)",0.000259523915255162,372,91,15
+"17","REAC:R-HSA-3371571","REAC","HSF1-dependent transactivation",0.000458172240056961,372,24,8
+"18","REAC:R-HSA-983170","REAC","Antigen Presentation: Folding, assembly and peptide loading of class I MHC",0.000653350010066651,372,25,8
+"19","REAC:R-HSA-877300","REAC","Interferon gamma signaling",0.000839674624248845,372,87,14
+"20","REAC:R-HSA-9006936","REAC","Signaling by TGFB family members",0.000899761799294089,372,100,15
+"21","REAC:R-HSA-3000170","REAC","Syndecan interactions",0.000915118817867234,372,26,8
+"22","REAC:R-HSA-168256","REAC","Immune System",0.000974732589415155,372,2038,108
+"23","REAC:R-HSA-1566948","REAC","Elastic fibre formation",0.00102183500139832,372,44,10
+"24","REAC:R-HSA-8948216","REAC","Collagen chain trimerization",0.00102183500139832,372,44,10
+"25","REAC:R-HSA-8953897","REAC","Cellular responses to external stimuli",0.0052358979447189,372,596,42
+"26","REAC:R-HSA-162582","REAC","Signal Transduction",0.00644523646094809,372,2730,132
+"27","REAC:R-HSA-913531","REAC","Interferon Signaling",0.0066526211293813,372,193,20
+"28","REAC:R-HSA-3000484","REAC","Scavenging by Class F Receptors",0.0101948251423756,372,6,4
+"29","REAC:R-HSA-5083635","REAC","Defective B3GALTL causes Peters-plus syndrome (PpS)",0.0104554506525761,372,35,8
+"30","REAC:R-HSA-2243919","REAC","Crosslinking of collagen fibrils",0.0111687433998129,372,18,6
+"31","REAC:R-HSA-380108","REAC","Chemokine receptors bind chemokines",0.0118486494031138,372,57,10
+"32","REAC:R-HSA-5173214","REAC","O-glycosylation of TSR domain-containing proteins",0.0130366718749741,372,36,8
+"33","REAC:R-HSA-3000171","REAC","Non-integrin membrane-ECM interactions",0.0138775717885283,372,58,10
+"34","REAC:R-HSA-3781865","REAC","Diseases of glycosylation",0.0146201143872473,372,140,16
+"35","REAC:R-HSA-2262752","REAC","Cellular responses to stress",0.0153053823599523,372,582,40
+"36","REAC:R-HSA-170834","REAC","Signaling by TGF-beta Receptor Complex",0.0157751566983964,372,71,11
+"37","REAC:R-HSA-3000480","REAC","Scavenging by Class A Receptors",0.0158444911048816,372,19,6
+"38","REAC:R-HSA-3371556","REAC","Cellular response to heat stress",0.0229286383108198,372,87,12
+"39","REAC:R-HSA-3906995","REAC","Diseases associated with O-glycosylation of proteins",0.0382828200892862,372,65,10
+"40","REAC:R-HSA-3371568","REAC","Attenuation phase",0.0383780151191411,372,14,5
+"41","REAC:R-HSA-186797","REAC","Signaling by PDGF",0.0459757107270931,372,54,9

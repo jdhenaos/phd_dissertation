@@ -1,0 +1,32 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-1474244","REAC","Extracellular matrix organization",5.67954377000802e-23,616,298,71
+"2","REAC:R-HSA-1474290","REAC","Collagen formation",2.36385191158602e-11,616,89,28
+"3","REAC:R-HSA-2022090","REAC","Assembly of collagen fibrils and other multimeric structures",3.69099100146163e-10,616,60,22
+"4","REAC:R-HSA-216083","REAC","Integrin cell surface interactions",2.20729413034779e-09,616,84,25
+"5","REAC:R-HSA-381426","REAC","Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)",3.11476215602374e-08,616,124,29
+"6","REAC:R-HSA-1442490","REAC","Collagen degradation",1.1704362096752e-07,616,64,20
+"7","REAC:R-HSA-1650814","REAC","Collagen biosynthesis and modifying enzymes",2.93292640004904e-07,616,67,20
+"8","REAC:R-HSA-8957275","REAC","Post-translational protein phosphorylation",6.71268722771818e-07,616,107,25
+"9","REAC:R-HSA-1474228","REAC","Degradation of the extracellular matrix",6.75163883066668e-07,616,140,29
+"10","REAC:R-HSA-3000171","REAC","Non-integrin membrane-ECM interactions",1.05952905391439e-06,616,58,18
+"11","REAC:R-HSA-6785807","REAC","Interleukin-4 and Interleukin-13 signaling",1.24341633938095e-06,616,110,25
+"12","REAC:R-HSA-3000178","REAC","ECM proteoglycans",2.62021919968062e-06,616,75,20
+"13","REAC:R-HSA-3000170","REAC","Syndecan interactions",2.88222317509048e-06,616,26,12
+"14","REAC:R-HSA-2243919","REAC","Crosslinking of collagen fibrils",5.57081311916577e-06,616,18,10
+"15","REAC:R-HSA-191273","REAC","Cholesterol biosynthesis",1.38446317091277e-05,616,24,11
+"16","REAC:R-HSA-1566948","REAC","Elastic fibre formation",4.63273661143461e-05,616,44,14
+"17","REAC:R-HSA-8948216","REAC","Collagen chain trimerization",0.00035121394745812,616,44,13
+"18","REAC:R-HSA-186797","REAC","Signaling by PDGF",0.000761785960271094,616,54,14
+"19","REAC:R-HSA-114608","REAC","Platelet degranulation ",0.00445736479116065,616,125,21
+"20","REAC:R-HSA-3371497","REAC","HSP90 chaperone cycle for steroid hormone receptors (SHR)",0.00823708287786042,616,57,13
+"21","REAC:R-HSA-3781865","REAC","Diseases of glycosylation",0.00824893605808565,616,140,22
+"22","REAC:R-HSA-76005","REAC","Response to elevated platelet cytosolic Ca2+",0.00830905688493589,616,130,21
+"23","REAC:R-HSA-1630316","REAC","Glycosaminoglycan metabolism",0.0118999652049878,616,123,20
+"24","REAC:R-HSA-6798695","REAC","Neutrophil degranulation",0.0140109122491035,616,476,50
+"25","REAC:R-HSA-76002","REAC","Platelet activation, signaling and aggregation",0.0178445887113103,616,258,32
+"26","REAC:R-HSA-6783783","REAC","Interleukin-10 signaling",0.0183999922781653,616,45,11
+"27","REAC:R-HSA-3371571","REAC","HSF1-dependent transactivation",0.0190369125404333,616,24,8
+"28","REAC:R-HSA-71387","REAC","Metabolism of carbohydrates",0.022974825469062,616,285,34
+"29","REAC:R-HSA-109582","REAC","Hemostasis",0.0247643245210697,616,673,64
+"30","REAC:R-HSA-2426168","REAC","Activation of gene expression by SREBF (SREBP)",0.0337046493983599,616,40,10
+"31","REAC:R-HSA-3371568","REAC","Attenuation phase",0.0362332305178996,616,14,6

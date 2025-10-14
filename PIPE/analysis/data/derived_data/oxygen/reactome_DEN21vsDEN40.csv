@@ -1,0 +1,17 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-186797","REAC","Signaling by PDGF",2.80019971542372e-08,29,54,7
+"2","REAC:R-HSA-2022090","REAC","Assembly of collagen fibrils and other multimeric structures",3.59899683303219e-06,29,60,6
+"3","REAC:R-HSA-3000178","REAC","ECM proteoglycans",1.40763069221376e-05,29,75,6
+"4","REAC:R-HSA-8948216","REAC","Collagen chain trimerization",3.54788777780092e-05,29,44,5
+"5","REAC:R-HSA-1474290","REAC","Collagen formation",3.95762248593866e-05,29,89,6
+"6","REAC:R-HSA-1442490","REAC","Collagen degradation",0.000239855966716325,29,64,5
+"7","REAC:R-HSA-1474244","REAC","Extracellular matrix organization",0.00029917634755204,29,298,8
+"8","REAC:R-HSA-1650814","REAC","Collagen biosynthesis and modifying enzymes",0.000302099062899477,29,67,5
+"9","REAC:R-HSA-216083","REAC","Integrin cell surface interactions",0.000935183620822413,29,84,5
+"10","REAC:R-HSA-9006934","REAC","Signaling by Receptor Tyrosine Kinases",0.00119979503010309,29,486,9
+"11","REAC:R-HSA-419037","REAC","NCAM1 interactions",0.00155605298916967,29,42,4
+"12","REAC:R-HSA-3000171","REAC","Non-integrin membrane-ECM interactions",0.0057229520325327,29,58,4
+"13","REAC:R-HSA-375165","REAC","NCAM signaling for neurite out-growth",0.00612760399332302,29,59,4
+"14","REAC:R-HSA-1474228","REAC","Degradation of the extracellular matrix",0.0113619227113607,29,140,5
+"15","REAC:R-HSA-3000170","REAC","Syndecan interactions",0.0152028775745946,29,26,3
+"16","REAC:R-HSA-8874081","REAC","MET activates PTK2 signaling",0.0235661861105153,29,30,3

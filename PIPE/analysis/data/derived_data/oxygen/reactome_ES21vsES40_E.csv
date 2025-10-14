@@ -1,0 +1,36 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-381119","REAC","Unfolded Protein Response (UPR)",4.08114750995642e-13,111,91,16
+"2","REAC:R-HSA-3371497","REAC","HSP90 chaperone cycle for steroid hormone receptors (SHR)",6.48818089200692e-12,111,57,13
+"3","REAC:R-HSA-8953897","REAC","Cellular responses to external stimuli",1.02234958249424e-10,111,596,30
+"4","REAC:R-HSA-3371568","REAC","Attenuation phase",1.41449687654177e-10,111,14,8
+"5","REAC:R-HSA-2262752","REAC","Cellular responses to stress",3.6444247900981e-10,111,582,29
+"6","REAC:R-HSA-3371571","REAC","HSF1-dependent transactivation",5.52623108566685e-10,111,24,9
+"7","REAC:R-HSA-3371556","REAC","Cellular response to heat stress",2.0928272569854e-09,111,87,13
+"8","REAC:R-HSA-532668","REAC","N-glycan trimming in the ER and Calnexin/Calreticulin cycle",2.71230248566878e-08,111,35,9
+"9","REAC:R-HSA-381070","REAC","IRE1alpha activates chaperones",6.98831116477604e-07,111,49,9
+"10","REAC:R-HSA-901042","REAC","Calnexin/calreticulin cycle",2.82873189407984e-06,111,26,7
+"11","REAC:R-HSA-381183","REAC","ATF6 (ATF6-alpha) activates chaperone genes",6.24934387213473e-06,111,9,5
+"12","REAC:R-HSA-381038","REAC","XBP1(S) activates chaperone genes",1.1130650887888e-05,111,47,8
+"13","REAC:R-HSA-381033","REAC","ATF6 (ATF6-alpha) activates chaperones",2.25348264069748e-05,111,11,5
+"14","REAC:R-HSA-3000484","REAC","Scavenging by Class F Receptors",7.51094400190443e-05,111,6,4
+"15","REAC:R-HSA-449147","REAC","Signaling by Interleukins",0.000108268077712413,111,459,19
+"16","REAC:R-HSA-446203","REAC","Asparagine N-linked glycosylation",0.000268863802886496,111,305,15
+"17","REAC:R-HSA-381042","REAC","PERK regulates gene expression",0.000371947202897471,111,32,6
+"18","REAC:R-HSA-168256","REAC","Immune System",0.000541527074849582,111,2038,43
+"19","REAC:R-HSA-9663891","REAC","Selective autophagy",0.000771278609058759,111,80,8
+"20","REAC:R-HSA-1280215","REAC","Cytokine Signaling in Immune system",0.00108836605006872,111,696,22
+"21","REAC:R-HSA-3371511","REAC","HSF1 activation",0.00236124555107205,111,12,4
+"22","REAC:R-HSA-9646399","REAC","Aggrephagy",0.00261685147808671,111,44,6
+"23","REAC:R-HSA-3371453","REAC","Regulation of HSF1-mediated heat shock response",0.00262960329979006,111,67,7
+"24","REAC:R-HSA-380994","REAC","ATF4 activates genes in response to endoplasmic reticulum  stress",0.00344603824235907,111,27,5
+"25","REAC:R-HSA-6798695","REAC","Neutrophil degranulation",0.003694718199604,111,476,17
+"26","REAC:R-HSA-392499","REAC","Metabolism of proteins",0.00744069914490442,111,2016,40
+"27","REAC:R-HSA-5362768","REAC","Hh mutants are degraded by ERAD",0.0108723649792213,111,56,6
+"28","REAC:R-HSA-9612973","REAC","Autophagy",0.0111340504704865,111,149,9
+"29","REAC:R-HSA-5387390","REAC","Hh mutants abrogate ligand secretion",0.0147094482239211,111,59,6
+"30","REAC:R-HSA-5358346","REAC","Hedgehog ligand biogenesis",0.025630024317008,111,65,6
+"31","REAC:R-HSA-901032","REAC","ER Quality Control Compartment (ERQC)",0.0265498777178502,111,21,4
+"32","REAC:R-HSA-9613829","REAC","Chaperone Mediated Autophagy",0.0321894301218246,111,22,4
+"33","REAC:R-HSA-1632852","REAC","Macroautophagy",0.0347808532754917,111,134,8
+"34","REAC:R-HSA-168316","REAC","Assembly of Viral Components at the Budding Site",0.0487518368584133,111,2,2
+"35","REAC:R-HSA-168268","REAC","Virus Assembly and Release",0.0487518368584133,111,2,2

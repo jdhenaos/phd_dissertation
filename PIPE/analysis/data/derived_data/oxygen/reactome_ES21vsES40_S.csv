@@ -1,0 +1,31 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-3371568","REAC","Attenuation phase",5.3996970943841e-08,66,14,6
+"2","REAC:R-HSA-381119","REAC","Unfolded Protein Response (UPR)",7.49759069515315e-08,66,91,10
+"3","REAC:R-HSA-3371497","REAC","HSP90 chaperone cycle for steroid hormone receptors (SHR)",7.64277912387233e-07,66,57,8
+"4","REAC:R-HSA-3371556","REAC","Cellular response to heat stress",1.12730305577873e-06,66,87,9
+"5","REAC:R-HSA-3371571","REAC","HSF1-dependent transactivation",2.30547910941243e-06,66,24,6
+"6","REAC:R-HSA-3000484","REAC","Scavenging by Class F Receptors",8.28004479703076e-06,66,6,4
+"7","REAC:R-HSA-532668","REAC","N-glycan trimming in the ER and Calnexin/Calreticulin cycle",2.63573664756488e-05,66,35,6
+"8","REAC:R-HSA-6785807","REAC","Interleukin-4 and Interleukin-13 signaling",0.00014633542005141,66,110,8
+"9","REAC:R-HSA-901042","REAC","Calnexin/calreticulin cycle",0.000193510629580948,66,26,5
+"10","REAC:R-HSA-381070","REAC","IRE1alpha activates chaperones",0.000212159420543398,66,49,6
+"11","REAC:R-HSA-392499","REAC","Metabolism of proteins",0.000321398285818769,66,2016,30
+"12","REAC:R-HSA-2262752","REAC","Cellular responses to stress",0.000817921027502878,66,582,15
+"13","REAC:R-HSA-8953897","REAC","Cellular responses to external stimuli",0.00109866000633684,66,596,15
+"14","REAC:R-HSA-6798695","REAC","Neutrophil degranulation",0.00236843756760301,66,476,13
+"15","REAC:R-HSA-9613829","REAC","Chaperone Mediated Autophagy",0.00374676827600653,66,22,4
+"16","REAC:R-HSA-381038","REAC","XBP1(S) activates chaperone genes",0.00408064234037286,66,47,5
+"17","REAC:R-HSA-983170","REAC","Antigen Presentation: Folding, assembly and peptide loading of class I MHC",0.00638919997678956,66,25,4
+"18","REAC:R-HSA-381183","REAC","ATF6 (ATF6-alpha) activates chaperone genes",0.0076809791343124,66,9,3
+"19","REAC:R-HSA-449147","REAC","Signaling by Interleukins",0.00883222869469403,66,459,12
+"20","REAC:R-HSA-2173782","REAC","Binding and Uptake of Ligands by Scavenger Receptors",0.0118793803389635,66,97,6
+"21","REAC:R-HSA-381033","REAC","ATF6 (ATF6-alpha) activates chaperones",0.0149538637311713,66,11,3
+"22","REAC:R-HSA-168256","REAC","Immune System",0.0150266095055624,66,2038,27
+"23","REAC:R-HSA-168316","REAC","Assembly of Viral Components at the Budding Site",0.0155846035858862,66,2,2
+"24","REAC:R-HSA-168268","REAC","Virus Assembly and Release",0.0155846035858862,66,2,2
+"25","REAC:R-HSA-3371511","REAC","HSF1 activation",0.019849926326995,66,12,3
+"26","REAC:R-HSA-8957275","REAC","Post-translational protein phosphorylation",0.0206984897150251,66,107,6
+"27","REAC:R-HSA-3371453","REAC","Regulation of HSF1-mediated heat shock response",0.0233473067503212,66,67,5
+"28","REAC:R-HSA-1280215","REAC","Cytokine Signaling in Immune system",0.0308218978225234,66,696,14
+"29","REAC:R-HSA-597592","REAC","Post-translational protein modification",0.0328819127063367,66,1415,21
+"30","REAC:R-HSA-381426","REAC","Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)",0.0471018113911803,66,124,6

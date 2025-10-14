@@ -1,0 +1,26 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-2262752","REAC","Cellular responses to stress",9.50178788283076e-05,115,582,22
+"2","REAC:R-HSA-8953897","REAC","Cellular responses to external stimuli",0.000143126035174483,115,596,22
+"3","REAC:R-HSA-190840","REAC","Microtubule-dependent trafficking of connexons from Golgi to the plasma membrane",0.000793242208947133,115,20,5
+"4","REAC:R-HSA-190872","REAC","Transport of connexons to the plasma membrane",0.00103216451304938,115,21,5
+"5","REAC:R-HSA-389977","REAC","Post-chaperonin tubulin folding pathway",0.00210073393044971,115,24,5
+"6","REAC:R-HSA-9646399","REAC","Aggrephagy",0.00304739348733336,115,44,6
+"7","REAC:R-HSA-389960","REAC","Formation of tubulin folding intermediates by CCT/TriC",0.00319542581711167,115,26,5
+"8","REAC:R-HSA-449147","REAC","Signaling by Interleukins",0.00353011060271389,115,459,17
+"9","REAC:R-HSA-9619483","REAC","Activation of AMPK downstream of NMDARs",0.00469241428968103,115,28,5
+"10","REAC:R-HSA-437239","REAC","Recycling pathway of L1",0.00511435822385217,115,48,6
+"11","REAC:R-HSA-1632852","REAC","Macroautophagy",0.00600346701113299,115,134,9
+"12","REAC:R-HSA-1280215","REAC","Cytokine Signaling in Immune system",0.0066350667237153,115,696,21
+"13","REAC:R-HSA-5626467","REAC","RHO GTPases activate IQGAPs",0.00928837537373447,115,32,5
+"14","REAC:R-HSA-9668328","REAC","Sealing of the nuclear envelope (NE) by ESCRT-III",0.00928837537373447,115,32,5
+"15","REAC:R-HSA-8852276","REAC","The role of GTSE1 in G2/M progression after G2 checkpoint",0.00945113089608789,115,79,7
+"16","REAC:R-HSA-9663891","REAC","Selective autophagy",0.010265655044249,115,80,7
+"17","REAC:R-HSA-6785807","REAC","Interleukin-4 and Interleukin-13 signaling",0.0103321582893159,115,110,8
+"18","REAC:R-HSA-389958","REAC","Cooperation of Prefoldin and TriC/CCT  in actin and tubulin folding",0.0108529448576737,115,33,5
+"19","REAC:R-HSA-3371497","REAC","HSP90 chaperone cycle for steroid hormone receptors (SHR)",0.0139728681518721,115,57,6
+"20","REAC:R-HSA-9612973","REAC","Autophagy",0.0140179576952156,115,149,9
+"21","REAC:R-HSA-190861","REAC","Gap junction assembly",0.0219840433929312,115,38,5
+"22","REAC:R-HSA-390466","REAC","Chaperonin-mediated protein folding",0.0312498777919534,115,95,7
+"23","REAC:R-HSA-9609736","REAC","Assembly and cell surface presentation of NMDA receptors",0.0403818853691655,115,43,5
+"24","REAC:R-HSA-2995410","REAC","Nuclear Envelope (NE) Reassembly",0.0450393529113113,115,70,6
+"25","REAC:R-HSA-391251","REAC","Protein folding",0.0490762331862974,115,102,7

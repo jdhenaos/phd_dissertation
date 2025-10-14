@@ -1,0 +1,10 @@
+"","term_id","source","term_name","p_value","query_size","term_size","intersection_size"
+"1","REAC:R-HSA-8948216","REAC","Collagen chain trimerization",0.00695970419168732,14,44,3
+"2","REAC:R-HSA-2022090","REAC","Assembly of collagen fibrils and other multimeric structures",0.0177600812334243,14,60,3
+"3","REAC:R-HSA-1442490","REAC","Collagen degradation",0.0215562858131713,14,64,3
+"4","REAC:R-HSA-1650814","REAC","Collagen biosynthesis and modifying enzymes",0.024727474148821,14,67,3
+"5","REAC:R-HSA-430116","REAC","GP1b-IX-V activation signalling",0.0262287681856894,14,11,2
+"6","REAC:R-HSA-3000178","REAC","ECM proteoglycans",0.0346384951199868,14,75,3
+"7","REAC:R-HSA-216083","REAC","Integrin cell surface interactions",0.0485368153540879,14,84,3
+"8","REAC:R-HSA-2214320","REAC","Anchoring fibril formation",0.0499224315169277,14,15,2
+"9","REAC:R-HSA-75892","REAC","Platelet Adhesion to exposed collagen",0.0499224315169277,14,15,2

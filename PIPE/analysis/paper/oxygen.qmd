@@ -1,0 +1,639 @@
+---
+title: "Effect of oxygen"
+author:
+  - Juan Henao:
+      correspondence: "yes"
+institute:
+  - fosg:
+      name: Formatting Open Science Group
+      address: 23 Science Street, Eureka, Mississippi, USA
+  - fop: Federation of Planets
+title-block-published: "Last updated"  
+date: now
+date-format: long
+format: 
+  docx:
+    reference-doc: "../templates/template.docx" # Insert path for the DOCX file
+execute:
+  echo: true
+  warning: false
+  message: false
+  comment: "#>"
+  fig-path: "../figures/"
+  fig-dpi: 600
+filters:
+  - ../templates/scholarly-metadata.lua
+  - ../templates/author-info-blocks.lua
+  - ../templates/pagebreak.lua
+bibliography: references.bib
+csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
+abstract: |
+  Text of abstract
+keywords: |
+  keyword 1; keyword 2; keyword 3
+highlights: |
+  These are the highlights. 
+---
+
+<!-- This is the format for text comments that will be ignored during renderings. Do not put R code in these comments because it will not be ignored. -->
+
+<!-- With the following code you can access and display values from the yml header above. -->
+
+Keywords: `r rmarkdown::metadata$keywords`
+
+Highlights: `r rmarkdown::metadata$highlights`
+
+```{r}
+library(DESeq2)
+library(ggplot2)
+library(ggrepel)
+library(gprofiler2)
+library(openxlsx)
+library(dplyr)
+
+set_base_url("https://biit.cs.ut.ee/gprofiler_archive3/e104_eg51_p15")
+
+volcano_plot <- function(exp, down_color, up_color, title, subtitle){
+  colnames(exp)[grep(pattern = "log2FoldChange",x = colnames(exp))] <- "log2FoldChange"
+  colnames(exp)[grep(pattern = "padj",x = colnames(exp))] <- "padj"
+  
+  exp$direction <- "No-significant"
+  
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange > 0)] <- "Up-regulated"
+  exp$direction[which(exp$padj < 0.05 & exp$log2FoldChange < 0)] <- "Down-regulated"
+  
+  exp <- exp[order(exp$padj),]
+  
+  exp$threshold <- c(rep(TRUE,10),rep(FALSE,nrow(exp) - 10))
+  exp$direction <- as.factor(exp$direction)
+  result <- exp[which(!is.na(exp$padj)),]
+  result <- result[order(result$threshold,decreasing = TRUE),]
+  
+  ggplot(result) +
+    geom_point(aes(x=log2FoldChange, y=-log10(padj),colour=direction)) + 
+    scale_color_manual(values=c(down_color,"grey",up_color)) + labs(title=title,  subtitle=subtitle) +
+    geom_text_repel(data =result[c(1:10),], 
+                    mapping =aes(x= log2FoldChange, y = -log10(padj), label = result$name[c(1:10)] ), size = 2.5, max.overlaps = Inf,
+                    box.padding = 0.5,       # space around each label
+                    point.padding = 0.3,     # space between label and point
+                    force = 5,               # strength of repulsion (try 1–10)
+                    segment.size = 0.3,) +
+    xlab("log2 fold change") + 
+    ylab("-log10 adj. p-value") +
+    geom_hline(yintercept=-log10(0.05), linetype="dashed", color = "black") + theme_classic() + theme(legend.position = "none", 
+                                                                                                    text = element_text(size = 8),
+                                                                                                    plot.title = element_text(size=8)) 
+  
+}
+loc_val <- function(mean_FC,SD){
+  result <- c()
+  for(i in seq(length(mean_FC))){
+    if(SD[i] == 0){SD[i] <- min(SD[which(SD != 0)])}
+    
+    if(mean_FC[i] < 0){
+      result <- c(result,mean_FC[i]-SD[i]-(min(SD[i])/2))
+    }
+    if(mean_FC[i] > 0){
+      result <- c(result,mean_FC[i]+SD[i]+(min(SD[i])/2))
+    }
+    if(mean_FC[i] == 0){
+      result <- c(result,NA)
+    }
+  }
+  return(result)
+}
+enrichment_profile = function(pathways, DEG, color_down, color_up,title,subtitle){
+  # data is the dataframe containing only significant genes for a specific cell type
+  # pathway is a df of pathway ids/go ids that are statistically enriched from geneprofile
+  
+  DEG$name <- rownames(DEG)
+  
+  colnames(DEG)[grep(pattern = "log2fc",x = colnames(DEG))] <- "log2FoldChange"
+  colnames(DEG)[grep(pattern = "pvalue",x = colnames(DEG))] <- "padj"
+  colnames(DEG)[grep(pattern = "name",x = colnames(DEG))] <- "ensembl_gene_id"
+  
+  to.plot <- data.frame()
+  for(i in 1:nrow(pathways)){
+    res = gost(query = pathways[i,"term_id"], organism = "hsapiens")
+    gene_set = res$meta$genes_metadata$query$query_1$ensgs
+    
+    to.plot <- rbind(to.plot,
+                     data.frame(
+                       Name=pathways[i,"term_name"],
+                       mean_FC=c(mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                 mean(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       Type=c("up-regulated","down-regulated"),
+                       Set_size = c(length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                                    length(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0])),
+                       SD=c(sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange > 0]),
+                            sd(DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange[DEG[DEG$ensembl_gene_id %in% gene_set,]$log2FoldChange < 0]))
+                     ))
+  }
+  
+  to.plot[is.nan(to.plot$mean_FC),"mean_FC"] <- 0
+  to.plot[is.na(to.plot$SD),"SD"] <- 0
+  
+  to.plot$Name[which(to.plot$Name == "Regulation of Insulin-like Growth Factor (IGF) transport and uptake by Insulin-like Growth Factor Binding Proteins (IGFBPs)")] <- "Regulation of Insulin-like Growth Factor\n (IGF) transport and uptake by Insulin-like\n Growth Factor Binding Proteins (IGFBPs)"
+  
+  to.plot$Name[which(to.plot$Name == "Assembly of collagen fibrils and other multimeric structures")] <- "Assembly of collagen fibrils\n and other multimeric structures"
+  
+  to.plot$Name[which(to.plot$Name == "Microtubule-dependent trafficking of connexons from Golgi to the plasma membrane")] <- "Microtubule-dependent trafficking of connexons from\n Golgi to the plasma membrane"
+
+  p <- ggplot(to.plot, aes(x = mean_FC, y = reorder(Name, abs(mean_FC)), fill = Type, label = Set_size)) + 
+    scale_fill_manual(name = "", values = c("down-regulated" = color_down, "up-regulated" = color_up)) + 
+    xlab("Mean logFC") + ylab("") +
+    labs(title=title, subtitle=subtitle) +
+    theme(axis.line = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.background = element_blank()) + theme(text = element_text(size = 8), plot.title = element_text(size=8)) + 
+    theme(legend.position = "none") +
+    geom_bar(stat = "identity") + geom_text(aes(label = Set_size, x =  loc_val(mean_FC,SD) ),size = 2.5) +
+    geom_linerange(aes(xmin=ifelse(mean_FC < 0,mean_FC - SD, mean_FC), xmax=ifelse(mean_FC > 0,mean_FC + SD, mean_FC) ))
+  
+  return(p)
+}
+
+raw_data <- "/workspaces/phd_dissertation/PIPE/analysis/data/raw_data/"
+first <- read.xlsx(paste0(raw_data,"231203_raw_data.xlsx"),sheet = 1)
+```
+
+# Change in Oxygen
+
+## Static
+
+### Endothelial mono-culture (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_E21_BR|raw_E40_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_E21")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/degs_E21vsE40.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#a6cee3",up_color = "#1f78b4", title="Oxygen effect (static)", subtitle="hPMEC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_E21vsE40.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+q <- enrichment_profile(pathways = exp1.reac,DEG = degs,
+                   color_down = "#a6cee3",color_up = "#1f78b4",title="Oxygen effect (static)", subtitle="hPMEC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/reactome_E21vsE40.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 70)
+write.csv(x = exp1.reac,file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/reactome_E21vsE40.csv")
+q
+```
+
+### Smooth muscle cell mono-culture (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_S21_BR|raw_S40_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_S21")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+```
+
+#### Volcano plot
+
+```{r}
+volcano_plot(exp = resLFC,down_color = "#FDE725FF",up_color = "#4AC16DFF", title="Endothelial oxygen")
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+enrichment_profile(pathways = exp1.reac[1:5,],DEG = degs,
+                   color_down = "#365C8DFF",color_up = "#440154FF",category = "Reactome Pathways")
+```
+
+### Endothelial/smooth cell co-culture - Endothelial (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_ES21_E_BR|raw_ES40_E_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_ES21_E")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/degs_ES21vsES40_E.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#a6cee3",up_color = "#1f78b4", title="Oxygen effect (static)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_ES21vsES40_E.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+q <- enrichment_profile(pathways = exp1.reac[1:10,],DEG = degs,
+                   color_down = "#a6cee3",color_up = "#1f78b4",title="Oxygen effect (static)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/reactome_ES21vsES40_E.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 70)
+write.csv(x = exp1.reac,file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/reactome_ES21vsES40_E.csv")
+q
+```
+
+### Endothelial/smooth cell co-culture - Smooth muscle (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_ES21_S_BR|raw_ES40_S_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_ES21_S")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/degs_ES21vsES40_S.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#b2df8a",up_color = "#33a02c", title="Oxygen effect (static)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_ES21vsES40_S.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+q <- enrichment_profile(pathways = exp1.reac[1:10,],DEG = degs,
+                   color_down = "#b2df8a",color_up = "#33a02c",title="Oxygen effect (static)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/reactome_ES21vsES40_S.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 70)
+write.csv(x = exp1.reac,file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/reactome_ES21vsES40_S.csv")
+q
+```
+
+## Dynamic
+
+### Endothelial mono-culture. Normal shear stress (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DEN21_BR|raw_DEN40_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DEN21")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/degs_DEN21vsDEN40.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#a6cee3",up_color = "#1f78b4", title="Oxygen effect (dynamic)", subtitle="hPMEC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_DEN21vsDEN40_E.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+q <- enrichment_profile(pathways = exp1.reac[1:10,],DEG = degs,
+                   color_down = "#a6cee3",color_up = "#1f78b4",title="Oxygen effect (dynamic)", subtitle="hPMEC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/reactome_DEN21vsDEN40.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 70)
+write.csv(x = exp1.reac,file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/reactome_DEN21vsDEN40.csv")
+q
+```
+
+### Endothelial mono-culture. High sear stress (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DEH21_BR|raw_DEH40_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DEH21")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+```
+
+#### Volcano plot
+
+```{r}
+volcano_plot(exp = resLFC,down_color = "#FDE725FF",up_color = "#4AC16DFF", title="Endothelial oxygen")
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+enrichment_profile(pathways = exp1.reac[1:5,],DEG = degs,
+                   color_down = "#365C8DFF",color_up = "#440154FF",category = "Reactome Pathways")
+```
+
+### Endothelial/smooth muscle co-culture. Normal shear stress - Endothelial (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DESN21_E_BR|raw_DESN40_E_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DESN21_E")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/degs_DESN21vsDESN40_E.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#a6cee3",up_color = "#1f78b4", title="Static vs Dynamic flow", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_DESN21vsDESN40_E.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+### Endothelial/smooth muscle co-culture. Normal shear stress - Smooth muscle (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DESN21_S_BR|raw_DESN40_S_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DESN21_S")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+write.csv(x = resLFC[order(resLFC$padj),],file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/degs_DESN21vsDESN40_S.csv")
+```
+
+#### Volcano plot
+
+```{r}
+p <- volcano_plot(exp = resLFC,down_color = "#b2df8a",up_color = "#33a02c", title="Oxygen effect (dynamic)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/volcano_DESN21vsDESN40_S.pdf",plot=p,device="pdf",units="mm",dpi=600,width = 70,height = 70)
+p
+```
+
+#### REACTOME
+
+```{r}
+#| warning: false
+
+degs <- resLFC[which(resLFC$padj < 0.05),]
+
+exp1.enr <- gost(rownames(degs),organism = "hsapiens",sources=c("REAC"),
+                 user_threshold = 0.05)
+exp1.reac <- exp1.enr$result[exp1.enr$result$source == "REAC",c("term_id", "source", "term_name", "p_value", "query_size", "term_size", "intersection_size")]
+nrow(exp1.reac)
+q <- enrichment_profile(pathways = exp1.reac[1:10,],DEG = degs,
+                   color_down = "#b2df8a",color_up = "#33a02c",title="Oxygen effect (dynamic)", subtitle="hPMEC + hPASMC")
+ggsave("/workspaces/phd_dissertation/PIPE/analysis/figures/oxygen/reactome_DESN21vsDESN40_S.pdf",plot=q,device="pdf",units="mm",dpi=600,width = 105,height = 70)
+write.csv(x = exp1.reac,file = "/workspaces/phd_dissertation/PIPE/analysis/data/derived_data/oxygen/reactome_DESN21vsDESN40_S.csv")
+q
+```
+
+### Endothelial/smooth muscle co-culture. High shear stress - Endothelial (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DESH21_E_BR|raw_DESH40_E_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DESH21_E")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+```
+
+#### Volcano plot
+
+```{r}
+volcano_plot(exp = resLFC,down_color = "#FDE725FF",up_color = "#4AC16DFF", title="Endothelial oxygen")
+```
+
+### Endothelial/smooth muscle co-culture. High shear stress - Smooth muscle (40% - 21% O2)
+
+```{r}
+#| warning: false
+
+counts <- first[,grep(pattern = 'raw_DESH21_S_BR|raw_DESH40_S_BR',x = colnames(first))]
+rownames(counts) <- first$id
+
+meta <- data.frame(experiment = as.factor(gsub(pattern = "\\_BR[1-3]",replacement = "",x = colnames(counts))))
+rownames(meta) <- colnames(counts)
+
+dds <- DESeqDataSetFromMatrix(countData = counts,
+                              colData = meta,
+                              design = ~experiment)
+
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds$experiment <- relevel(dds$experiment, ref = "raw_DESH21_S")
+dds <- DESeq(dds)
+resultsNames(dds)
+resLFC <- lfcShrink(dds, coef=2, type="apeglm")
+resLFC <- as.data.frame(resLFC) %>% mutate(name = first$name[which(first$id %in% rownames(resLFC))], .before=1)
+
+cat("number of significant genes: ",nrow(resLFC[which(resLFC$padj < 0.05),]))
+head(resLFC[order(resLFC$padj),])
+```
+
+#### Volcano plot
+
+```{r}
+volcano_plot(exp = resLFC,down_color = "#FDE725FF",up_color = "#4AC16DFF", title="Endothelial oxygen")
+```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
