@@ -1,0 +1,2589 @@
+---
+title: "BRCA"
+author:
+  - Juan Henao:
+      orcid: 0000-0003-0783-1432
+title-block-published: "Last updated"  
+date: now
+date-format: long
+format: 
+  docx:
+    reference-doc: "../templates/template.docx" # Insert path for the DOCX file
+execute:
+  echo: true
+  warning: false
+  message: false
+  comment: "#>"
+  fig-path: "../figures/"
+  fig-dpi: 600
+filters:
+  - ../templates/scholarly-metadata.lua
+  - ../templates/author-info-blocks.lua
+  - ../templates/pagebreak.lua
+bibliography: references.bib
+csl: "../templates/journal-of-archaeological-science.csl" # Insert path for the bib-style
+abstract: |
+  Text of abstract
+keywords: |
+  keyword 1; keyword 2; keyword 3
+highlights: |
+  These are the highlights. 
+---
+
+# No noise
+
+## Number of nodes
+
+### Single-omics
+
+```{r}
+library(tidyverse)
+library(data.table)
+library(reshape)
+library(ggplot2)
+library(dplyr)
+library(viridis)
+
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+## Transitivity
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+## Median R-squared
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+### Multi_omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+## F1-score (reference)
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+## F1-score (stability selection)
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
+
+# Noise
+
+## Number of nodes
+
+### Single-omics
+
+```{r}
+library(tidyverse)
+library(data.table)
+library(reshape)
+library(ggplot2)
+library(dplyr)
+library(viridis)
+
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (n_cnv+n_genes+n_methylation), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot1 <- p + geom_line(data = dat, 
+                          aes(y= (n_cnv+n_genes+n_methylation), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot1
+```
+
+## Transitivity
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (clustering), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot2 <- p + geom_line(data = dat, 
+                          aes(y= (clustering), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot2
+```
+
+## Median R-squared
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+### Multi_omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (median_r2), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot3 <- p + geom_line(data = dat, 
+                          aes(y= (median_r2), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot3
+```
+
+## F1-score (reference)
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_reference), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot4 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_reference), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot4
+```
+
+## F1-score (stability selection)
+
+### Single-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
+
+### Multi-omics
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
+
+### Block-wise
+
+```{r}
+#general setup
+dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+
+#load library
+setwd(dir)
+
+dat_raw <- fread("220411_all_project_info.csv")
+
+#dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
+#dat_raw <- dat_raw[dat_raw$iteration == 1,]
+
+dat_raw$method <- gsub(pattern = "_moran|_mos|_mor|_so|_sor",replacement = "",x = dat_raw$method)
+
+dat <- dat_raw[tolower(dat_raw$method) %in% c("galasso_false","galasso_true","knn_kimono","salasso_false","salasso_true","cocolasso","hmlasso"),]
+
+
+#ggplot(dat, aes(x=clustering, y=n_genes+n_methylation+n_cnv, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(y=clustering, x=missingness, color=as.factor(method)) )+
+#  geom_point(alpha=0.5) + facet_grid(experiment~noise)
+
+#ggplot(dat, aes(x=missingness, y=clustering,fill=as.factor(method)))+
+#  scale_y_continuous(trans='sqrt') + geom_boxplot() + facet_grid(experiment~noise)
+
+
+dat$method <- as.factor(dat$method) 
+dat <- dat %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat$experiment <- as.factor(dat$experiment)
+dat <- dat %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+palette_OkabeIto <- c(  "#CC79A7", "#D55E00",  "#E69F00","#0072B2", "#56B4E9", "#009E73", "#F0E442")
+
+dat <- aggregate(dat[, -c(1:8)], list('noise'=dat$noise,
+                                      'missingness'=dat$missingness,
+                                      'method'=dat$method,
+                                      'experiment'=dat$experiment), function(x){mean(x,na.rm=TRUE)})
+
+dat_raw$method <- as.factor(dat_raw$method) 
+dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "galasso_false" ,"galasso_true" ,  "salasso_false" , "salasso_true" ,"cocolasso",  "hmlasso"  ))
+dat_raw$experiment <- as.factor(dat_raw$experiment)
+dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
+
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+
+dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
+dat$adaptive <- grepl(pattern = "true",x = dat$method)
+
+p <- ggplot(dat_raw, 
+            aes(y= (f1_score_stability), x=missingness,color=as.factor(method)))+
+  
+  geom_line(aes( group = interaction(method, iteration),linetype=adaptive),alpha = 0.2)+
+  facet_grid(noise~experiment, scales="free")+
+  scale_color_manual(values = palette_OkabeIto)+
+  scale_fill_manual(values = palette_OkabeIto)+ 
+  theme_light() +
+  theme(legend.position="bottom",
+        axis.text.x = element_text(size = 8),
+        axis.text.y = element_text(size = 8),
+        strip.background = element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  ) +
+  ylab("#Nodes") 
+
+to.plot5 <- p + geom_line(data = dat, 
+                          aes(y= (f1_score_stability), x=missingness, color=as.factor(method),linetype=adaptive)) + 
+  theme(strip.background = element_blank(), panel.grid.minor = element_blank(),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        #axis.text.x=element_blank(),
+        #axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        #axis.text.y=element_blank(),
+        #axis.ticks.y=element_blank(), 
+        plot.margin = unit(c(-0.5, -0.5, 0, 0), "cm")
+  )
+
+to.plot5
+```
