@@ -46,6 +46,7 @@ library(viridis)
 
 #general setup
 dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
+file_dir <- "/workspaces/phd_dissertation/kimono/analysis/figures/BRCA/"
 
 #load library
 setwd(dir)
@@ -123,6 +124,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"so/noise_0_so_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -207,6 +210,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -291,6 +296,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Transitivity
@@ -377,6 +384,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"so/noise_0_so_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -461,6 +470,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -545,6 +556,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Median R-squared
@@ -631,6 +644,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"so/noise_0_so_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi_omics
@@ -715,6 +730,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -799,6 +816,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## F1-score (reference)
@@ -885,6 +904,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"so/noise_0_so_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -969,6 +990,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -1053,6 +1076,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## F1-score (stability selection)
@@ -1139,6 +1164,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"so/noise_0_so_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -1223,6 +1250,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -1307,6 +1336,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 # Noise
@@ -1366,8 +1397,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==0.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1402,6 +1433,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"so/noise_05_so_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -1450,8 +1483,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==0.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1486,6 +1519,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"moran/noise_05_moran_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -1534,8 +1569,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==0.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1570,6 +1605,8 @@ to.plot1 <- p + geom_line(data = dat,
   )
 
 to.plot1
+
+ggsave(paste0(file_dir,"mos/noise_05_mos_nodes.pdf"), plot=to.plot1, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Transitivity
@@ -1620,8 +1657,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==0.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1656,6 +1693,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"so/noise_05_so_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -1704,8 +1743,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==0.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1740,6 +1779,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"moran/noise_05_moran_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -1788,8 +1829,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1824,6 +1865,8 @@ to.plot2 <- p + geom_line(data = dat,
   )
 
 to.plot2
+
+ggsave(paste0(file_dir,"mos/noise_05_mos_transitivity.pdf"), plot=to.plot2, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Median R-squared
@@ -1874,8 +1917,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1910,6 +1953,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"so/noise_05_so_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi_omics
@@ -1958,8 +2003,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -1994,6 +2039,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"moran/noise_05_moran_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -2042,8 +2089,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2078,6 +2125,8 @@ to.plot3 <- p + geom_line(data = dat,
   )
 
 to.plot3
+
+ggsave(paste0(file_dir,"mos/noise_05_mos_rsquared.pdf"), plot=to.plot3, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## F1-score (reference)
@@ -2128,8 +2177,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2164,6 +2213,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"so/noise_05_so_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -2212,8 +2263,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2248,6 +2299,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"moran/noise_05_moran_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -2296,8 +2349,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2332,6 +2385,8 @@ to.plot4 <- p + geom_line(data = dat,
   )
 
 to.plot4
+
+ggsave(paste0(file_dir,"mos/noise_05_mos_reference.pdf"), plot=to.plot4, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ## F1-score (stability selection)
@@ -2382,8 +2437,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2418,6 +2473,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"so/noise_05_so_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Multi-omics
@@ -2466,8 +2523,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'moran' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'moran' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2502,6 +2559,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"moran/noise_05_moran_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 ### Block-wise
@@ -2550,8 +2609,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[  dat_raw$noise==0.5 & dat_raw$experiment %in% 'mos' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==0.5 & dat$experiment %in% 'mos' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
@@ -2586,6 +2645,8 @@ to.plot5 <- p + geom_line(data = dat,
   )
 
 to.plot5
+
+ggsave(paste0(file_dir,"mos/noise_05_mos_stability.pdf"), plot=to.plot5, width = 4, height = 4,device = "pdf",dpi=600, units="cm")
 ```
 
 # Betweeness
