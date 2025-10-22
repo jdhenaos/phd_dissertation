@@ -2835,6 +2835,8 @@ p <-  ggplot(gg_dat, aes(x=method, y=value*100, fill=variable)) + geom_boxplot(l
                                         colour = NA_character_)) 
 
 p
+
+ggsave(paste0(file_dir,"so/noise_0_so_betweenness.pdf"), plot=p, width = 8.5, height = 5.5,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Multi-omics
@@ -2875,6 +2877,8 @@ p <-  ggplot(gg_dat, aes(x=method, y=value*100, fill=variable)) + geom_boxplot(l
                                         colour = NA_character_)) 
 
 p
+
+ggsave(paste0(file_dir,"moran/noise_0_moran_betweenness.pdf"), plot=p, width = 8.5, height = 5.5,device = "pdf",dpi=600, units="cm")
 ```
 
 ## Block-wise
@@ -2915,4 +2919,6 @@ p <-  ggplot(gg_dat, aes(x=method, y=value*100, fill=variable)) + geom_boxplot(l
                                         colour = NA_character_)) 
 
 p
+
+ggsave(paste0(file_dir,"mos/noise_0_mos_betweenness.pdf"), plot=p, width = 8.5, height = 5.5,device = "pdf",dpi=600, units="cm")
 ```
