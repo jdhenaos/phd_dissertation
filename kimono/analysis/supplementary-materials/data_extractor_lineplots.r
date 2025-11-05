@@ -8,12 +8,13 @@ library(viridis)
 #general setup
 dir <- "/workspaces/phd_dissertation/kimono/analysis/data/derived_data/"
 file_dir <- "/workspaces/phd_dissertation/kimono/analysis/figures/BRCA/"
-# file_dir <- "/workspaces/phd_dissertation/kimono/analysis/figures/MIBC/"
+#file_dir <- "/workspaces/phd_dissertation/kimono/analysis/figures/MIBC/"
 
 #load library
 setwd(dir)
 
 dat_raw <- fread("220411_all_project_info.csv")
+#dat_raw <- fread("221116_all_project_info.csv")
 
 #dat_raw <- cbind(dat_raw[,c(1,2,3,16,18)],nodes=dat_raw$V6+dat_raw$V8+dat_raw$V10)
 #dat_raw <- dat_raw[dat_raw$iteration == 1,]
@@ -50,8 +51,8 @@ dat_raw <- dat_raw %>% mutate(method = fct_relevel(method,  "knn_kimono",    "ga
 dat_raw$experiment <- as.factor(dat_raw$experiment)
 dat_raw <- dat_raw %>% mutate(experiment = fct_relevel(experiment,  "so",    "moran" ,"mos" ,  "sor" , "mor"))
 
-dat_raw <- dat_raw[ dat_raw$noise==0 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
-dat <- dat[ dat$noise==0 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
+dat_raw <- dat_raw[ dat_raw$noise==1.5 & dat_raw$experiment %in% 'so' & !dat_raw$method %in% "bdcoco_lasso",]
+dat <- dat[ dat$noise==1.5 & dat$experiment %in% 'so' & !dat$method %in% "bdcoco_lasso",]
 
 dat_raw$adaptive <- grepl(pattern = "true",x = dat_raw$method)
 dat$adaptive <- grepl(pattern = "true",x = dat$method)
